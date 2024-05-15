@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Common.Domain" />
+    <PackageReference Include="TrackHubCommon.Domain" />
     <PackageReference Include="MediatR" />
   </ItemGroup>
 

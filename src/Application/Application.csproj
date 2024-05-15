@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.GuardClauses" />
-    <PackageReference Include="Common.Application" />
-    <PackageReference Include="Common.Domain" />
+    <PackageReference Include="TrackHubCommon.Application" />
+    <PackageReference Include="TrackHubCommon.Domain" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
   </ItemGroup>
