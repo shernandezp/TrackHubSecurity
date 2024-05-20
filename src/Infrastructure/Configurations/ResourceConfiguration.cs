@@ -18,25 +18,26 @@ using Common.Domain.Constants;
 
 namespace TrackHubSecurity.Infrastructure.Configurations;
 
-public class RoleConfiguration : IEntityTypeConfiguration<Role>
+public class ResourceConfiguration : IEntityTypeConfiguration<Resource>
 {
-    public void Configure(EntityTypeBuilder<Role> builder)
+    public void Configure(EntityTypeBuilder<Resource> builder)
     {
         //Table name
-        builder.ToTable(name: TableMetadata.Role, schema: SchemaMetadata.Security);
+        builder.ToTable(name: TableMetadata.Resource, schema: SchemaMetadata.Security);
 
         //Column names
-        builder.Property(x => x.RoleId).HasColumnName("id");
-        builder.Property(x => x.RoleName).HasColumnName("name");
-        builder.Property(x => x.Description).HasColumnName("description");
+        builder.Property(x => x.ResourceId).HasColumnName("id");
+        builder.Property(x => x.ResourceName).HasColumnName("name");
 
-        builder.Property(t => t.RoleName)
+        builder.Property(t => t.ResourceName)
             .HasMaxLength(ColumnMetadata.DefaultNameLength)
             .IsRequired();
 
-        builder.Property(t => t.Description)
-            .HasMaxLength(ColumnMetadata.DefaultDescriptionLength)
-            .IsRequired();
+        //Constraints
+        builder
+            .HasMany(e => e.Actions)
+            .WithOne(e => e.Resource)
+            .HasForeignKey(e => e.ResourceId);
 
     }
 }

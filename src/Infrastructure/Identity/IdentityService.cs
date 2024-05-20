@@ -22,9 +22,17 @@ public class IdentityService(IUserReader userReader) : IIdentityService
     public async Task<string> GetUserNameAsync(Guid userId, CancellationToken token)
         => await userReader.GetUserNameAsync(userId, token);
 
-    public async Task<bool> IsInRoleAsync(Guid userId, string role, CancellationToken token)
-        => await userReader.IsInRoleAsync(userId, role, token);
+    public async Task<bool> IsInRoleAsync(Guid userId, string resource, string action, CancellationToken token)
+    {
+        var resourceActionRoles = await userReader.GetResourceActionRolesAsync(resource, action, token);
+        var userRoles = await userReader.GetUserRolesAsync(userId, token);
+        return resourceActionRoles.Any(role => userRoles.Contains(role));
+    }
 
-    public async Task<bool> AuthorizeAsync(Guid userId, string policyName, CancellationToken token)
-        => await userReader.AuthorizeAsync(userId, policyName, token);
+    public async Task<bool> AuthorizeAsync(Guid userId, string resource, string action, CancellationToken token)
+    {
+        var resourceActionPolicies = await userReader.GetResourceActionPoliciesAsync(resource, action, token);
+        var userPolicies = await userReader.GetUserPoliciesAsync(userId, token);
+        return resourceActionPolicies.All(policy => userPolicies.Contains(policy));
+    }
 }

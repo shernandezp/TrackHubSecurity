@@ -14,8 +14,10 @@
 //
 
 namespace TrackHubSecurity.Infrastructure.Entities;
-public class UserProfile
+public sealed class Policy
 {
-    public required Guid UserId { get; set; }
-    public required int ProfileId { get; set; }
+    public int PolicyId { get; set; }
+    public required string PolicyName { get; set; }
+    public string? Description { get; set; }
+    public ICollection<User> Users { get; set; } = [];
 }

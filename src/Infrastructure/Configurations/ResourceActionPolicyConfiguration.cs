@@ -18,16 +18,33 @@ using Common.Domain.Constants;
 
 namespace TrackHubSecurity.Infrastructure.Configurations;
 
-public class UserProfileConfiguration : IEntityTypeConfiguration<UserPolicy>
+public class ResourceActionPolicyConfiguration : IEntityTypeConfiguration<ResourceActionPolicy>
 {
-    public void Configure(EntityTypeBuilder<UserPolicy> builder)
+    public void Configure(EntityTypeBuilder<ResourceActionPolicy> builder)
     {
         //Table name
-        builder.ToTable(name: TableMetadata.UserPolicy, schema: SchemaMetadata.Security);
+        builder.ToTable(name: TableMetadata.ResourceActionPolicy, schema: SchemaMetadata.Security);
 
         //Column names
-        builder.Property(x => x.UserId).HasColumnName("userid");
+        builder.Property(x => x.ResourceActionPolicyId).HasColumnName("id");
+        builder.Property(x => x.ResourceId).HasColumnName("resourceid");
+        builder.Property(x => x.ActionId).HasColumnName("actionid");
         builder.Property(x => x.PolicyId).HasColumnName("policyid");
+
+        builder
+            .HasOne(rap => rap.Resource)
+            .WithMany()
+            .HasForeignKey(rap => rap.ResourceId);
+
+        builder
+            .HasOne(rap => rap.Action)
+            .WithMany()
+            .HasForeignKey(rap => rap.ActionId);
+
+        builder
+            .HasOne(rap => rap.Policy)
+            .WithMany()
+            .HasForeignKey(rap => rap.PolicyId);
 
     }
 }

@@ -29,7 +29,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationDbContext(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
-builder.Services.AddWebServices();
+builder.Services.AddWebServices("Security API");
 
 // Add HealthChecks
 builder.Services.AddHealthChecks()
@@ -67,10 +67,6 @@ app.UseSwaggerUi(settings =>
     settings.Path = "/api";
     settings.DocumentPath = "api/specification.json";
 });
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller}/{action=Index}/{id?}");
 
 app.UseExceptionHandler(options => { });
 

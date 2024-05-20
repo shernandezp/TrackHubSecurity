@@ -29,7 +29,7 @@ public sealed class Users : EndpointGroupBase
         app.MapGroup(this)
             .RequireAuthorization()
             .MapGet(GetUser)
-            .MapGet(GetUsers, "ByAccount/{id}")
+            .MapGet(GetUsers, "ByAccount")
             .MapPost(CreateUser)
             .MapPut(UpdateUser, "{id}")
             .MapDelete(DeleteUser, "{id}");

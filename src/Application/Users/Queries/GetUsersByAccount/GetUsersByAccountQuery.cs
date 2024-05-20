@@ -20,9 +20,9 @@ using TrackHubSecurity.Domain.Models;
 
 namespace TrackHubSecurity.Application.Users.Queries.GetUsersByAccount;
 
+[Authorize(Resource = "Map", Action = "View")]
 public readonly record struct GetUsersByAccountQuery(Guid AccountId) : IRequest<IReadOnlyCollection<UserVm>>;
 
-[Authorize(Roles = Roles.Administrator)]
 public class GetUsersByAccountQueryHandler(IUserReader reader) : IRequestHandler<GetUsersByAccountQuery, IReadOnlyCollection<UserVm>>
 {
     public async Task<IReadOnlyCollection<UserVm>> Handle(GetUsersByAccountQuery request, CancellationToken cancellationToken)

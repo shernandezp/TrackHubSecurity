@@ -41,6 +41,6 @@ public sealed class User(string username,
     public bool Active { get; set; } = false;
     public Guid AccountId { get; set; } = accountId;
     public Account? Account { get; set; }
-    public IEnumerable<Role> Roles { get; } = [];
-    public IEnumerable<Profile> Profiles { get; } = [];
+    public ICollection<Role> Roles { get; } = [];
+    public ICollection<Policy> Policies { get; } = [];
 }

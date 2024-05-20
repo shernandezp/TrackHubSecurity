@@ -14,10 +14,9 @@
 //
 
 namespace TrackHubSecurity.Infrastructure.Entities;
-public sealed class Profile
+public sealed class Resource
 {
-    public int ProfileId { get; set; }
-    public required string Name { get; set; }
-    public string? Description { get; set; }
-    public IEnumerable<User>? Users { get; set; }
+    public int ResourceId { get; set; }
+    public required string ResourceName { get; set; }
+    public ICollection<Action> Actions { get; set; } = [];
 }

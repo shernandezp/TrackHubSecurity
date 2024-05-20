@@ -18,19 +18,19 @@ using Common.Domain.Constants;
 
 namespace TrackHubSecurity.Infrastructure.Configurations;
 
-public class ProfileConfiguration : IEntityTypeConfiguration<Profile>
+public class PolicyConfiguration : IEntityTypeConfiguration<Policy>
 {
-    public void Configure(EntityTypeBuilder<Profile> builder)
+    public void Configure(EntityTypeBuilder<Policy> builder)
     {
         //Table name
-        builder.ToTable(name: TableMetadata.Profile, schema: SchemaMetadata.Security);
+        builder.ToTable(name: TableMetadata.Policy, schema: SchemaMetadata.Security);
 
         //Column names
-        builder.Property(x => x.ProfileId).HasColumnName("id");
-        builder.Property(x => x.Name).HasColumnName("name");
+        builder.Property(x => x.PolicyId).HasColumnName("id");
+        builder.Property(x => x.PolicyName).HasColumnName("name");
         builder.Property(x => x.Description).HasColumnName("description");
 
-        builder.Property(t => t.Name)
+        builder.Property(t => t.PolicyName)
             .HasMaxLength(ColumnMetadata.DefaultNameLength)
             .IsRequired();
 

@@ -18,9 +18,7 @@ using TrackHubSecurity.Domain.Models;
 
 namespace TrackHubSecurity.Application.Users.Queries.GetUser;
 
-public readonly record struct GetUserQuery(Guid Id) : IRequest<UserVm>
-{
-}
+public readonly record struct GetUserQuery(Guid Id) : IRequest<UserVm>;
 
 public class GetUsersQueryHandler(IUserReader reader) : IRequestHandler<GetUserQuery, UserVm>
 {

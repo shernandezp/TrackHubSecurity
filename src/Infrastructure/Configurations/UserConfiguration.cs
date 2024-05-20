@@ -59,9 +59,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .UsingEntity<UserRole>();
 
         builder
-            .HasMany(e => e.Profiles)
+            .HasMany(e => e.Policies)
             .WithMany(e => e.Users)
-            .UsingEntity<UserProfile>();
+            .UsingEntity<UserPolicy>();
 
     }
 }

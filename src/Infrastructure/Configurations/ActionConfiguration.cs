@@ -13,22 +13,26 @@
 //  limitations under the License.
 //
 
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Common.Domain.Constants;
 using Action = TrackHubSecurity.Infrastructure.Entities.Action;
 
-namespace TrackHubSecurity.Infrastructure.Interfaces;
+namespace TrackHubSecurity.Infrastructure.Configurations;
 
-public interface IApplicationDbContext
+public class ActionConfiguration : IEntityTypeConfiguration<Action>
 {
-    public DbSet<Account> Accounts { get; set; }
-    public DbSet<Action> Actions { get; set; }
-    public DbSet<Policy> Policies { get; set; }
-    public DbSet<Resource> Resources { get; set; }
-    public DbSet<ResourceActionPolicy> ResourceActionPolicy { get; set; }
-    public DbSet<ResourceActionRole> ResourceActionRole { get; set; }
-    public DbSet<Role> Roles { get; set; }
-    public DbSet<User> Users { get; set; }
-    public DbSet<UserRole> UserRoles { get; set; }
-    public DbSet<UserPolicy> UserPolicies { get; set; }
+    public void Configure(EntityTypeBuilder<Action> builder)
+    {
+        //Table name
+        builder.ToTable(name: TableMetadata.Action, schema: SchemaMetadata.Security);
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+        //Column names
+        builder.Property(x => x.ActionId).HasColumnName("id");
+        builder.Property(x => x.ActionName).HasColumnName("name");
+
+        builder.Property(t => t.ActionName)
+            .HasMaxLength(ColumnMetadata.DefaultNameLength)
+            .IsRequired();
+
+    }
 }

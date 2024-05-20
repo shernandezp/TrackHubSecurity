@@ -13,17 +13,17 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Domain.Interfaces;
+using Common.Application.Interfaces;
 
 namespace TrackHubSecurity.Application.Identity.Queries.Authorize;
 
-public readonly record struct AuthorizeQuery(Guid UserId, string PolicyName) : IRequest<bool>
+public readonly record struct AuthorizeQuery(Guid UserId, string Resource, string Action) : IRequest<bool>
 {
 }
 
-public class GetUsersQueryHandler(IUserReader reader) : IRequestHandler<AuthorizeQuery, bool>
+public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<AuthorizeQuery, bool>
 {
     public async Task<bool> Handle(AuthorizeQuery request, CancellationToken cancellationToken)
-        => await reader.AuthorizeAsync(request.UserId, request.PolicyName, cancellationToken);
+        => await service.AuthorizeAsync(request.UserId, request.Resource, request.Action, cancellationToken);
 
 }

@@ -33,7 +33,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
         return await context.Users
             .Where(u => u.UserId.Equals(id))
             .Include(role => role.Roles)
-            .Include(profile => profile.Profiles)
+            .Include(policy => policy.Policies)
             .Select(u => new UserVm(
                 u.UserId,
                 u.Username,
@@ -44,12 +44,12 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.LastName,
                 u.SeconSurname,
                 u.DOB,
-                u.Roles.Select(r => new RoleVm(r.Name)).ToList(),
-                u.Profiles.Select(p => new ProfileVm(p.Name)).ToList()))
+                u.Roles.Select(r => new RoleVm(r.RoleName)).ToList(),
+                u.Policies.Select(p => new ProfileVm(p.PolicyName)).ToList()))
             .FirstAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<UserVm>> GetUserByAccountAsync(Guid accountId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<UserVm>> GetUserByAccountAsync(Guid accountId, CancellationToken cancellationToken = default)
     {
         return await context.Users
             .Where(u => u.AccountId.Equals(accountId))
@@ -68,27 +68,35 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> IsInRoleAsync(Guid id, string name, CancellationToken cancellationToken = default)
-    {
-        var user = await context.Users
-            .Where(u => u.UserId.Equals(id))
-            .Include(
-                role => role.Roles
-                    .Where(r => r.Name.Equals(name)))
-            .FirstAsync(cancellationToken);
+    public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default)
+        => await context.UserRoles
+            .Include(ur => ur.Role)
+            .Where(ur => ur.UserId.Equals(userId))
+            .Select(ur => ur.Role.RoleName)
+            .ToListAsync(cancellationToken);
 
-        return user.Roles.Any();
-    }
+    public async Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken = default)
+        => await context.UserPolicies
+            .Include(up => up.Policy)
+            .Where(up => up.UserId.Equals(userId))
+            .Select(up => up.Policy.PolicyName)
+            .ToListAsync(cancellationToken);
 
-    public async Task<bool> AuthorizeAsync(Guid id, string name, CancellationToken cancellationToken = default)
-    {
-        var user = await context.Users
-           .Where(u => u.UserId.Equals(id))
-           .Include(
-               profile => profile.Profiles
-                   .Where(r => r.Name.Equals(name)))
-           .FirstAsync(cancellationToken);
+    public async Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken = default)
+        => await context.ResourceActionRole
+            .Include(rar => rar.Resource)
+            .Include(rar => rar.Action)
+            .Include(rar => rar.Role)
+            .Where(rar => rar.Resource.ResourceName.Equals(resource) && rar.Action.ActionName.Equals(action))
+            .Select(rar => rar.Role.RoleName)
+            .ToListAsync(cancellationToken);
 
-        return user.Profiles.Any();
-    }
+    public async Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken = default)
+        => await context.ResourceActionPolicy
+            .Include(rap => rap.Policy)
+            .Include(rap => rap.Resource)
+            .Include(rap => rap.Action)
+            .Where(rap => rap.Resource.ResourceName.Equals(resource) && rap.Action.ActionName.Equals(action))
+            .Select(rap => rap.Policy.PolicyName)
+            .ToListAsync(cancellationToken);
 }

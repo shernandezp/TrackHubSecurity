@@ -2,7 +2,7 @@
   "x-generator": "NSwag v14.0.7.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
-    "title": "ReThinkMarket API",
+    "title": "Security API API",
     "version": "1.0.0"
   },
   "paths": {
@@ -43,7 +43,7 @@
         ]
       }
     },
-    "/api/Identity/IsInRole/{userId}/{role}": {
+    "/api/Identity/IsInRole/{userId}": {
       "get": {
         "tags": [
           "Identity"
@@ -71,13 +71,24 @@
             "x-position": 2
           },
           {
-            "name": "role",
-            "in": "path",
+            "name": "Resource",
+            "in": "query",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "nullable": true
             },
             "x-position": 3
+          },
+          {
+            "name": "Action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
           }
         ],
         "responses": {
@@ -99,7 +110,7 @@
         ]
       }
     },
-    "/api/Identity/Authorize/{userId}/{policyName}": {
+    "/api/Identity/Authorize/{userId}": {
       "get": {
         "tags": [
           "Identity"
@@ -127,13 +138,24 @@
             "x-position": 2
           },
           {
-            "name": "policyName",
-            "in": "path",
+            "name": "Resource",
+            "in": "query",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "nullable": true
             },
             "x-position": 3
+          },
+          {
+            "name": "Action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
           }
         ],
         "responses": {

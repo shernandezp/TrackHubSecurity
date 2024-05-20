@@ -18,7 +18,9 @@ public interface IUserReader
 {
     Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken = default);
     Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyCollection<UserVm>> GetUserByAccountAsync(Guid accountId, CancellationToken cancellationToken);
-    Task<bool> IsInRoleAsync(Guid id, string name, CancellationToken cancellationToken = default);
-    Task<bool> AuthorizeAsync(Guid id, string name, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<UserVm>> GetUserByAccountAsync(Guid accountId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken = default);
+    Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken = default);
 }

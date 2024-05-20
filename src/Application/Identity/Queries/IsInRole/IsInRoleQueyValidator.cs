@@ -21,7 +21,9 @@ public sealed class IsInRoleQueyValidator : AbstractValidator<IsInRoleQuey>
     {
         RuleFor(x => x.UserId)
             .NotEmpty().WithMessage("User Id is required.");
-        RuleFor(x => x.Role)
-            .NotEmpty().WithMessage("Role is required.");
+        RuleFor(x => x.Resource)
+            .NotEmpty().WithMessage("Resource is required.");
+        RuleFor(x => x.Action)
+            .NotEmpty().WithMessage("Action is required.");
     }
 }

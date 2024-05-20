@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>Security.Infrastructure</RootNamespace>
-    <AssemblyName>Security.Infrastructure</AssemblyName>
+    <RootNamespace>TrackHubSecurity.Infrastructure</RootNamespace>
+    <AssemblyName>TrackHubSecurity.Infrastructure</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

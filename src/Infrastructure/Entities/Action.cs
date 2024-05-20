@@ -13,17 +13,11 @@
 //  limitations under the License.
 //
 
-using Common.Application.Interfaces;
-
-namespace TrackHubSecurity.Application.Identity.Queries.IsInRole;
-
-public readonly record struct IsInRoleQuey(Guid UserId, string Resource, string Action) : IRequest<bool>
+namespace TrackHubSecurity.Infrastructure.Entities;
+public sealed class Action
 {
-}
-
-public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<IsInRoleQuey, bool>
-{
-    public async Task<bool> Handle(IsInRoleQuey request, CancellationToken cancellationToken)
-        => await service.IsInRoleAsync(request.UserId, request.Resource, request.Action, cancellationToken);
-
+    public int ActionId { get; set; }
+    public required string ActionName { get; set; }
+    public int ResourceId { get; set; }
+    public Resource? Resource { get; set; }
 }

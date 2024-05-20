@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Domain.Interfaces;
+using Common.Application.Interfaces;
 
 namespace TrackHubSecurity.Application.Identity.Queries.GetUsername;
 
@@ -21,9 +21,9 @@ public readonly record struct GetUserNameQuery(Guid UserId) : IRequest<string>
 {
 }
 
-public class GetUsersQueryHandler(IUserReader reader) : IRequestHandler<GetUserNameQuery, string>
+public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<GetUserNameQuery, string>
 {
     public async Task<string> Handle(GetUserNameQuery request, CancellationToken cancellationToken)
-        => await reader.GetUserNameAsync(request.UserId, cancellationToken);
+        => await service.GetUserNameAsync(request.UserId, cancellationToken);
 
 }

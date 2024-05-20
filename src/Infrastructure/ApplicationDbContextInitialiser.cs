@@ -18,6 +18,7 @@ using Common.Domain.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Action = TrackHubSecurity.Infrastructure.Entities.Action;
 
 namespace TrackHubSecurity.Infrastructure;
 
@@ -64,14 +65,45 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
     {
         // Default data
         // Seed, if necessary
-        if (!context.Profiles.Any())
+        if (!context.Resources.Any())
         {
-            context.Profiles.Add(new Profile
-            {
-                Name = "Administrador",
-                Description = string.Empty
-            });
-
+            context.Resources.Add(new Resource { ResourceName = "Map" });
+            await context.SaveChangesAsync();
+        }
+        if (!context.Actions.Any())
+        {
+            context.Actions.Add(new Action { ActionName = "View", ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = "Edit", ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = "Export", ResourceId = 1 });
+            await context.SaveChangesAsync();
+        }
+        if (!context.Roles.Any())
+        {
+            context.Roles.Add(new Role { RoleName = "Manager", Description = string.Empty });
+            context.Roles.Add(new Role { RoleName = "User", Description = string.Empty });
+            await context.SaveChangesAsync();
+        }
+        if (!context.Policies.Any())
+        {
+            context.Policies.Add(new Policy { PolicyName = "CanView", Description = string.Empty });
+            context.Policies.Add(new Policy { PolicyName = "CanEdit", Description = string.Empty });
+            context.Policies.Add(new Policy { PolicyName = "CanExport", Description = string.Empty });
+            await context.SaveChangesAsync();
+        }
+        if (!context.ResourceActionRole.Any())
+        {
+            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 1, RoleId = 2 });    //View Map: User
+            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 1, RoleId = 1 });    //View Map: Manager
+            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 2, RoleId = 1 });    //Edit Map: Manager
+            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 3, RoleId = 1 });    //Export Map: Manager
+            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 3, RoleId = 2 });    //Export Map: User
+            await context.SaveChangesAsync();
+        }
+        if (!context.ResourceActionPolicy.Any())
+        {
+            context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = 1, ActionId = 1, PolicyId = 1 });  //View Map: CanView
+            context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = 1, ActionId = 2, PolicyId = 2 });  //Edit Map: CanEdit
+            context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = 1, ActionId = 3, PolicyId = 3 });  //Export Map: CanExport
             await context.SaveChangesAsync();
         }
 
