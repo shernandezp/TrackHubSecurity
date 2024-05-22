@@ -20,7 +20,7 @@ using TrackHubSecurity.Domain.Models;
 
 namespace TrackHubSecurity.Application.Users.Queries.GetUsersByAccount;
 
-[Authorize(Resource = "Map", Action = "View")]
+[Authorize(Resource = Resources.MapScreen, Action = Actions.View)]
 public readonly record struct GetUsersByAccountQuery(Guid AccountId) : IRequest<IReadOnlyCollection<UserVm>>;
 
 public class GetUsersByAccountQueryHandler(IUserReader reader) : IRequestHandler<GetUsersByAccountQuery, IReadOnlyCollection<UserVm>>

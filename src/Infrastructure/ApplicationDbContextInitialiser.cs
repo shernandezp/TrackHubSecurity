@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Domain.Constants;
 using Common.Domain.Enums;
 using Common.Domain.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -67,14 +68,19 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         // Seed, if necessary
         if (!context.Resources.Any())
         {
-            context.Resources.Add(new Resource { ResourceName = "Map" });
+            context.Resources.Add(new Resource { ResourceName = Resources.AccountScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.MapScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.PermissionScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.SettingsScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.UserScreen });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())
         {
-            context.Actions.Add(new Action { ActionName = "View", ResourceId = 1 });
-            context.Actions.Add(new Action { ActionName = "Edit", ResourceId = 1 });
-            context.Actions.Add(new Action { ActionName = "Export", ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = Actions.View, ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = Actions.Edit, ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = Actions.Export, ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = Actions.Execute, ResourceId = 1 });
             await context.SaveChangesAsync();
         }
         if (!context.Roles.Any())
