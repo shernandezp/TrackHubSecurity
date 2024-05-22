@@ -17,25 +17,17 @@ using TrackHubSecurity.Application.Identity.Queries.Authorize;
 using TrackHubSecurity.Application.Identity.Queries.GetUsername;
 using TrackHubSecurity.Application.Identity.Queries.IsInRole;
 
-namespace TrackHubSecurity.Web.Endpoints;
+namespace TrackHubSecurity.Web.GraphQL.Query;
 
-public sealed class Identity : EndpointGroupBase
+public partial class Query
 {
-    public override void Map(WebApplication app)
-    {
-        app.MapGroup(this)
-            .RequireAuthorization()
-            .MapGet(GetUserName, "UserName")
-            .MapGet(IsInRole, "IsInRole")
-            .MapGet(Authorize, "Authorize");
-    }
-
-    public async Task<string> GetUserName(ISender sender, [AsParameters] GetUserNameQuery query)
+    public async Task<string> GetUserName([Service] ISender sender, [AsParameters] GetUserNameQuery query)
         => await sender.Send(query);
 
-    public async Task<bool> IsInRole(ISender sender, [AsParameters] IsInRoleQuey query)
+    public async Task<bool> IsInRole([Service] ISender sender, [AsParameters] IsInRoleQuey query)
         => await sender.Send(query);
 
-    public async Task<bool> Authorize(ISender sender, [AsParameters] AuthorizeQuery query)
+    public async Task<bool> Authorize([Service] ISender sender, [AsParameters] AuthorizeQuery query)
         => await sender.Send(query);
+
 }

@@ -6,7 +6,7 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/Identity/UserName/{userId}": {
+    "/api/Identity/UserName": {
       "get": {
         "tags": [
           "Identity"
@@ -14,8 +14,8 @@
         "operationId": "GetUserName",
         "parameters": [
           {
-            "name": "userId",
-            "in": "path",
+            "name": "UserId",
+            "in": "query",
             "required": true,
             "schema": {
               "type": "string",
@@ -43,7 +43,7 @@
         ]
       }
     },
-    "/api/Identity/IsInRole/{userId}": {
+    "/api/Identity/IsInRole": {
       "get": {
         "tags": [
           "Identity"
@@ -51,24 +51,14 @@
         "operationId": "IsInRole",
         "parameters": [
           {
-            "name": "userId",
-            "in": "path",
+            "name": "UserId",
+            "in": "query",
             "required": true,
             "schema": {
               "type": "string",
               "format": "guid"
             },
             "x-position": 1
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
           },
           {
             "name": "Resource",
@@ -78,7 +68,7 @@
               "type": "string",
               "nullable": true
             },
-            "x-position": 3
+            "x-position": 2
           },
           {
             "name": "Action",
@@ -88,7 +78,7 @@
               "type": "string",
               "nullable": true
             },
-            "x-position": 4
+            "x-position": 3
           }
         ],
         "responses": {
@@ -110,7 +100,7 @@
         ]
       }
     },
-    "/api/Identity/Authorize/{userId}": {
+    "/api/Identity/Authorize": {
       "get": {
         "tags": [
           "Identity"
@@ -118,24 +108,14 @@
         "operationId": "Authorize",
         "parameters": [
           {
-            "name": "userId",
-            "in": "path",
+            "name": "UserId",
+            "in": "query",
             "required": true,
             "schema": {
               "type": "string",
               "format": "guid"
             },
             "x-position": 1
-          },
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 2
           },
           {
             "name": "Resource",
@@ -145,7 +125,7 @@
               "type": "string",
               "nullable": true
             },
-            "x-position": 3
+            "x-position": 2
           },
           {
             "name": "Action",
@@ -155,7 +135,7 @@
               "type": "string",
               "nullable": true
             },
-            "x-position": 4
+            "x-position": 3
           }
         ],
         "responses": {

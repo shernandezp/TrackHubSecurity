@@ -19,7 +19,7 @@ using TrackHubSecurity.Domain.Models;
 
 namespace TrackHubSecurity.Web.GraphQL.Query;
 
-public class UsersQuery
+public partial class Query
 {
     public async Task<UserVm> GetUser([Service] ISender sender, [AsParameters] GetUserQuery query)
         => await sender.Send(query);

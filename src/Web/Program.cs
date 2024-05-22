@@ -38,7 +38,7 @@ builder.Services.AddHealthChecks()
 builder.Services
     .AddGraphQLServer()
     .AddAuthorization()
-    .AddQueryType<UsersQuery>()
+    .AddQueryType<Query>()
     .AddMutationType<UsersMutation>();
 
 var app = builder.Build();
