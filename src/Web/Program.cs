@@ -60,7 +60,6 @@ app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-//app.UsePathBase("/Security/api");
 app.UseSwaggerUi();
 app.UseSwaggerUi(settings =>
 {
@@ -69,15 +68,17 @@ app.UseSwaggerUi(settings =>
 });
 
 app.UseExceptionHandler(options => { });
-
 app.Map("/", () => Results.Redirect("/api"));
+app.MapEndpoints(Assembly.GetExecutingAssembly());
 
-var assembly = Assembly.GetExecutingAssembly();
-
-app.MapEndpoints(assembly);
-
-app.MapGraphQL();
-
+if (app.Environment.IsDevelopment())
+{
+    app.MapGraphQL();
+}
+else
+{
+    app.MapGraphQL().RequireAuthorization();
+}
 app.Run();
 
 public partial class Program { }

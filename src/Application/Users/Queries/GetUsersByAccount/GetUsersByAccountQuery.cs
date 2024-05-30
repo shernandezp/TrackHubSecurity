@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-using Common.Application.Security;
+using Common.Application.Attributes;
 using Common.Domain.Constants;
 using TrackHubSecurity.Domain.Interfaces;
 using TrackHubSecurity.Domain.Models;
