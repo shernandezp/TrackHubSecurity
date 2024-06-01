@@ -15,9 +15,9 @@
 
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Common.Domain.Constants;
-using Action = TrackHubSecurity.Infrastructure.Entities.Action;
+using Action = TrackHub.Security.Infrastructure.Entities.Action;
 
-namespace TrackHubSecurity.Infrastructure.Configurations;
+namespace TrackHub.Security.Infrastructure.Configurations;
 
 public class ActionConfiguration : IEntityTypeConfiguration<Action>
 {

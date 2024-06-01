@@ -14,7 +14,7 @@
 //
 
 
-namespace TrackHubSecurity.Application.Identity.Queries.Authorize;
+namespace TrackHub.Security.Application.Identity.Queries.Authorize;
 
 public sealed class AuthorizeQueryValidator : AbstractValidator<AuthorizeQuery>
 {

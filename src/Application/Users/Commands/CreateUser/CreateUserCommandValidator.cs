@@ -15,7 +15,7 @@
 
 using Common.Domain.Constants;
 
-namespace TrackHubSecurity.Application.Users.Commands.CreateUser;
+namespace TrackHub.Security.Application.Users.Commands.CreateUser;
 public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     public CreateUserCommandValidator()

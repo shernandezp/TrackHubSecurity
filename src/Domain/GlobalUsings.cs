@@ -13,4 +13,4 @@
 //  limitations under the License.
 //
 
-global using TrackHubSecurity.Domain.Models;
+global using TrackHub.Security.Domain.Models;

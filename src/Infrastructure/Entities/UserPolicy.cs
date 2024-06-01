@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace TrackHubSecurity.Infrastructure.Entities;
+namespace TrackHub.Security.Infrastructure.Entities;
 public sealed class UserPolicy
 {
 

@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Users.Queries.GetUser;
-using TrackHubSecurity.Domain.Interfaces;
-using TrackHubSecurity.Domain.Models;
+using TrackHub.Security.Application.Users.Queries.GetUser;
+using TrackHub.Security.Domain.Interfaces;
+using TrackHub.Security.Domain.Models;
 
 namespace Application.UnitTests.Users;
 

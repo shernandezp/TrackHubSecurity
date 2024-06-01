@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace TrackHubSecurity.Application.Users.Queries.GetUser;
+namespace TrackHub.Security.Application.Users.Queries.GetUser;
 
 public sealed class GetUserQueryValidator : AbstractValidator<GetUserQuery>
 {

@@ -14,10 +14,10 @@
 //
 
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using TrackHubSecurity.Domain.Records;
-using TrackHubSecurity.Infrastructure.Entities;
-using TrackHubSecurity.Infrastructure.Interfaces;
-using TrackHubSecurity.Infrastructure.Writers;
+using TrackHub.Security.Domain.Records;
+using TrackHub.Security.Infrastructure.Entities;
+using TrackHub.Security.Infrastructure.Interfaces;
+using TrackHub.Security.Infrastructure.Writers;
 
 namespace Infrastructure.UnitTests;
 

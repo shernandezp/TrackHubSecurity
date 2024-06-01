@@ -19,9 +19,9 @@ using Common.Domain.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Action = TrackHubSecurity.Infrastructure.Entities.Action;
+using Action = TrackHub.Security.Infrastructure.Entities.Action;
 
-namespace TrackHubSecurity.Infrastructure;
+namespace TrackHub.Security.Infrastructure;
 
 public static class InitialiserExtensions
 {

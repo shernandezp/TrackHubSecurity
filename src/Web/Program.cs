@@ -15,9 +15,9 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.HttpOverrides;
-using TrackHubSecurity.Infrastructure;
-using TrackHubSecurity.Web.GraphQL.Mutation;
-using TrackHubSecurity.Web.GraphQL.Query;
+using TrackHub.Security.Infrastructure;
+using TrackHub.Security.Web.GraphQL.Mutation;
+using TrackHub.Security.Web.GraphQL.Query;
 
 var builder = WebApplication.CreateBuilder(args);
 

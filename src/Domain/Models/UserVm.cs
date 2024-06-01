@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace TrackHubSecurity.Domain.Models;
+namespace TrackHub.Security.Domain.Models;
 
 public readonly record struct UserVm(
     Guid UserId,

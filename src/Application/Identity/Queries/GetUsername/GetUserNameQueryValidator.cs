@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace TrackHubSecurity.Application.Identity.Queries.GetUsername;
+namespace TrackHub.Security.Application.Identity.Queries.GetUsername;
 
 public sealed class GetUserNameQueryValidator : AbstractValidator<GetUserNameQuery>
 {

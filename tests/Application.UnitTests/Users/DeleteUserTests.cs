@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Users.Commands.DeleteUser;
-using TrackHubSecurity.Application.Users.Events;
-using TrackHubSecurity.Domain.Interfaces;
+using TrackHub.Security.Application.Users.Commands.DeleteUser;
+using TrackHub.Security.Application.Users.Events;
+using TrackHub.Security.Domain.Interfaces;
 
 namespace Application.UnitTests.Users;
 

@@ -14,10 +14,10 @@
 //
 
 using System.Reflection;
-using TrackHubSecurity.Infrastructure.Interfaces;
-using Action = TrackHubSecurity.Infrastructure.Entities.Action;
+using TrackHub.Security.Infrastructure.Interfaces;
+using Action = TrackHub.Security.Infrastructure.Entities.Action;
 
-namespace TrackHubSecurity.Infrastructure;
+namespace TrackHub.Security.Infrastructure;
 
 public class ApplicationDbContext : DbContext, IApplicationDbContext
 {

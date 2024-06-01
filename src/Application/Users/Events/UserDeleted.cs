@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace TrackHubSecurity.Application.Users.Events;
+namespace TrackHub.Security.Application.Users.Events;
 public sealed class UserDeleted
 {
     public class Notification(Guid id) : INotification 

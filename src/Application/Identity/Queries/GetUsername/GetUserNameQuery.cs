@@ -15,7 +15,7 @@
 
 using Common.Application.Interfaces;
 
-namespace TrackHubSecurity.Application.Identity.Queries.GetUsername;
+namespace TrackHub.Security.Application.Identity.Queries.GetUsername;
 
 public readonly record struct GetUserNameQuery(Guid UserId) : IRequest<string>
 {

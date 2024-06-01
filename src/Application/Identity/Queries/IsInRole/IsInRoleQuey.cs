@@ -15,7 +15,7 @@
 
 using Common.Application.Interfaces;
 
-namespace TrackHubSecurity.Application.Identity.Queries.IsInRole;
+namespace TrackHub.Security.Application.Identity.Queries.IsInRole;
 
 public readonly record struct IsInRoleQuey(Guid UserId, string Resource, string Action) : IRequest<bool>
 {

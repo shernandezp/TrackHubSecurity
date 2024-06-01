@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace TrackHubSecurity.Application.Identity.Queries.IsInRole;
+namespace TrackHub.Security.Application.Identity.Queries.IsInRole;
 
 public sealed class IsInRoleQueyValidator : AbstractValidator<IsInRoleQuey>
 {

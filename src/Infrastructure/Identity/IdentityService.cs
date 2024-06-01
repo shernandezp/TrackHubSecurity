@@ -14,9 +14,9 @@
 //
 
 using Common.Application.Interfaces;
-using TrackHubSecurity.Domain.Interfaces;
+using TrackHub.Security.Domain.Interfaces;
 
-namespace TrackHubSecurity.Infrastructure.Identity;
+namespace TrackHub.Security.Infrastructure.Identity;
 public class IdentityService(IUserReader userReader) : IIdentityService
 {
     public async Task<string> GetUserNameAsync(Guid userId, CancellationToken token)

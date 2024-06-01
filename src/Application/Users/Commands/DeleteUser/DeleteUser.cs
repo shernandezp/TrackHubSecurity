@@ -13,10 +13,10 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Users.Events;
-using TrackHubSecurity.Domain.Interfaces;
+using TrackHub.Security.Application.Users.Events;
+using TrackHub.Security.Domain.Interfaces;
 
-namespace TrackHubSecurity.Application.Users.Commands.DeleteUser;
+namespace TrackHub.Security.Application.Users.Commands.DeleteUser;
 
 public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
 

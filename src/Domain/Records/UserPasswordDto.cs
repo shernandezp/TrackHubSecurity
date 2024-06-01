@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-namespace TrackHubSecurity.Domain.Records;
+namespace TrackHub.Security.Domain.Records;
 
 public record struct UserPasswordDto(
     Guid UserId,

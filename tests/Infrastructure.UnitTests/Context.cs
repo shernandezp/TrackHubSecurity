@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Infrastructure.Entities;
+using TrackHub.Security.Infrastructure.Entities;
 
 namespace Infrastructure.UnitTests;
 internal abstract class Context

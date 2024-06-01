@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Domain.Records;
+using TrackHub.Security.Domain.Records;
 
-namespace TrackHubSecurity.Domain.Interfaces;
+namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserWriter
 {
     Task<UserVm> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken = default);

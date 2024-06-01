@@ -15,7 +15,7 @@
 
 using Common.Domain.Constants;
 
-namespace TrackHubSecurity.Application.Users.Commands.UpdateUser;
+namespace TrackHub.Security.Application.Users.Commands.UpdateUser;
 public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {
     public UpdateUserCommandValidator()

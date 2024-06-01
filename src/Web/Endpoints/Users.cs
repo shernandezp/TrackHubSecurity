@@ -13,13 +13,13 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Users.Commands.CreateUser;
-using TrackHubSecurity.Application.Users.Commands.DeleteUser;
-using TrackHubSecurity.Application.Users.Commands.UpdateUser;
-using TrackHubSecurity.Application.Users.Queries.GetUser;
-using TrackHubSecurity.Domain.Models;
+using TrackHub.Security.Application.Users.Commands.CreateUser;
+using TrackHub.Security.Application.Users.Commands.DeleteUser;
+using TrackHub.Security.Application.Users.Commands.UpdateUser;
+using TrackHub.Security.Application.Users.Queries.GetUser;
+using TrackHub.Security.Domain.Models;
 
-namespace TrackHubSecurity.Web.Endpoints;
+namespace TrackHub.Security.Web.Endpoints;
 
 public sealed class Users : EndpointGroupBase
 {

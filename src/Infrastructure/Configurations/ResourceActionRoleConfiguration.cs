@@ -16,7 +16,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Common.Domain.Constants;
 
-namespace TrackHubSecurity.Infrastructure.Configurations;
+namespace TrackHub.Security.Infrastructure.Configurations;
 
 public class ResourceActionRoleConfiguration : IEntityTypeConfiguration<ResourceActionRole>
 {

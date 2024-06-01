@@ -16,12 +16,12 @@
 using Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using TrackHubSecurity.Domain.Interfaces;
-using TrackHubSecurity.Infrastructure;
-using TrackHubSecurity.Infrastructure.Identity;
-using TrackHubSecurity.Infrastructure.Interfaces;
-using TrackHubSecurity.Infrastructure.Readers;
-using TrackHubSecurity.Infrastructure.Writers;
+using TrackHub.Security.Domain.Interfaces;
+using TrackHub.Security.Infrastructure;
+using TrackHub.Security.Infrastructure.Identity;
+using TrackHub.Security.Infrastructure.Interfaces;
+using TrackHub.Security.Infrastructure.Readers;
+using TrackHub.Security.Infrastructure.Writers;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

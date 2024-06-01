@@ -13,11 +13,11 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Identity.Queries.Authorize;
-using TrackHubSecurity.Application.Identity.Queries.GetUsername;
-using TrackHubSecurity.Application.Identity.Queries.IsInRole;
+using TrackHub.Security.Application.Identity.Queries.Authorize;
+using TrackHub.Security.Application.Identity.Queries.GetUsername;
+using TrackHub.Security.Application.Identity.Queries.IsInRole;
 
-namespace TrackHubSecurity.Web.Endpoints;
+namespace TrackHub.Security.Web.Endpoints;
 
 public sealed class Identity : EndpointGroupBase
 {

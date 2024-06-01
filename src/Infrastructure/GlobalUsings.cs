@@ -15,5 +15,5 @@
 
 global using Ardalis.GuardClauses;
 global using Microsoft.EntityFrameworkCore;
-global using TrackHubSecurity.Infrastructure.Entities;
-global using TrackHubSecurity.Domain.Models;
+global using TrackHub.Security.Infrastructure.Entities;
+global using TrackHub.Security.Domain.Models;

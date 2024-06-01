@@ -13,10 +13,10 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Domain.Interfaces;
-using TrackHubSecurity.Domain.Models;
+using TrackHub.Security.Domain.Interfaces;
+using TrackHub.Security.Domain.Models;
 
-namespace TrackHubSecurity.Application.Users.Queries.GetUser;
+namespace TrackHub.Security.Application.Users.Queries.GetUser;
 
 public readonly record struct GetUserQuery(Guid Id) : IRequest<UserVm>;
 

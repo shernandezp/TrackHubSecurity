@@ -13,12 +13,12 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Users.Commands.CreateUser;
-using TrackHubSecurity.Application.Users.Commands.DeleteUser;
-using TrackHubSecurity.Application.Users.Commands.UpdateUser;
-using TrackHubSecurity.Domain.Models;
+using TrackHub.Security.Application.Users.Commands.CreateUser;
+using TrackHub.Security.Application.Users.Commands.DeleteUser;
+using TrackHub.Security.Application.Users.Commands.UpdateUser;
+using TrackHub.Security.Domain.Models;
 
-namespace TrackHubSecurity.Web.GraphQL.Mutation;
+namespace TrackHub.Security.Web.GraphQL.Mutation;
 
 public class UsersMutation
 {

@@ -15,7 +15,7 @@
 
 using Common.Infrastructure;
 
-namespace TrackHubSecurity.Infrastructure.Entities;
+namespace TrackHub.Security.Infrastructure.Entities;
 
 public sealed class User(string username,
     string password,

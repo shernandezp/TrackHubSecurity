@@ -15,7 +15,7 @@
 
 using Common.Application.Interfaces;
 
-namespace TrackHubSecurity.Application.Identity.Queries.Authorize;
+namespace TrackHub.Security.Application.Identity.Queries.Authorize;
 
 public readonly record struct AuthorizeQuery(Guid UserId, string Resource, string Action) : IRequest<bool>
 {

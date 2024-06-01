@@ -13,10 +13,10 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Users.Queries.GetUser;
-using TrackHubSecurity.Domain.Models;
+using TrackHub.Security.Application.Users.Queries.GetUser;
+using TrackHub.Security.Domain.Models;
 
-namespace TrackHubSecurity.Web.GraphQL.Query;
+namespace TrackHub.Security.Web.GraphQL.Query;
 
 public partial class Query
 {

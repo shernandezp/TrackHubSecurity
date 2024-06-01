@@ -13,11 +13,11 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Application.Users.Commands.CreateUser;
-using TrackHubSecurity.Application.Users.Events;
-using TrackHubSecurity.Domain.Interfaces;
-using TrackHubSecurity.Domain.Models;
-using TrackHubSecurity.Domain.Records;
+using TrackHub.Security.Application.Users.Commands.CreateUser;
+using TrackHub.Security.Application.Users.Events;
+using TrackHub.Security.Domain.Interfaces;
+using TrackHub.Security.Domain.Models;
+using TrackHub.Security.Domain.Records;
 
 namespace Application.UnitTests.Users;
 

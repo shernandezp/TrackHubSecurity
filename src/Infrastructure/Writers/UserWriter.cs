@@ -14,11 +14,11 @@
 //
 
 using Common.Domain.Extensions;
-using TrackHubSecurity.Domain.Interfaces;
-using TrackHubSecurity.Domain.Records;
-using TrackHubSecurity.Infrastructure.Interfaces;
+using TrackHub.Security.Domain.Interfaces;
+using TrackHub.Security.Domain.Records;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHubSecurity.Infrastructure.Writers;
+namespace TrackHub.Security.Infrastructure.Writers;
 
 public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 {

@@ -13,10 +13,10 @@
 //  limitations under the License.
 //
 
-using TrackHubSecurity.Domain.Interfaces;
-using TrackHubSecurity.Infrastructure.Interfaces;
+using TrackHub.Security.Domain.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHubSecurity.Infrastructure.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 public sealed class UserReader(IApplicationDbContext context) : IUserReader
 {
 
