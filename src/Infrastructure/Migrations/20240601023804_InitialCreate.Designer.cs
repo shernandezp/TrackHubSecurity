@@ -12,7 +12,7 @@ using TrackHubSecurity.Infrastructure;
 namespace TrackHubSecurity.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240520202051_InitialCreate")]
+    [Migration("20240601023804_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -20,54 +20,10 @@ namespace TrackHubSecurity.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.5")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("TrackHubSecurity.Infrastructure.Entities.Account", b =>
-                {
-                    b.Property<Guid>("AccountId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean")
-                        .HasColumnName("active");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<DateTimeOffset>("LastModified")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer")
-                        .HasColumnName("type");
-
-                    b.HasKey("AccountId");
-
-                    b.ToTable("accounts", "security");
-                });
 
             modelBuilder.Entity("TrackHubSecurity.Infrastructure.Entities.Action", b =>
                 {
@@ -237,10 +193,6 @@ namespace TrackHubSecurity.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<Guid>("AccountId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("accountid");
-
                     b.Property<bool>("Active")
                         .HasColumnType("boolean")
                         .HasColumnName("active");
@@ -287,13 +239,13 @@ namespace TrackHubSecurity.Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("passwordreset");
 
-                    b.Property<string>("SeconSurname")
-                        .HasColumnType("text")
-                        .HasColumnName("secondsurname");
-
                     b.Property<string>("SecondName")
                         .HasColumnType("text")
                         .HasColumnName("secondname");
+
+                    b.Property<string>("SecondSurname")
+                        .HasColumnType("text")
+                        .HasColumnName("secondsurname");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -306,8 +258,6 @@ namespace TrackHubSecurity.Infrastructure.Migrations
                         .HasColumnName("verified");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("AccountId");
 
                     b.ToTable("users", "security");
                 });
@@ -326,7 +276,7 @@ namespace TrackHubSecurity.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("user_profile", "security");
+                    b.ToTable("user_policy", "security");
                 });
 
             modelBuilder.Entity("TrackHubSecurity.Infrastructure.Entities.UserRole", b =>
@@ -411,17 +361,6 @@ namespace TrackHubSecurity.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("TrackHubSecurity.Infrastructure.Entities.User", b =>
-                {
-                    b.HasOne("TrackHubSecurity.Infrastructure.Entities.Account", "Account")
-                        .WithMany("Users")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Account");
-                });
-
             modelBuilder.Entity("TrackHubSecurity.Infrastructure.Entities.UserPolicy", b =>
                 {
                     b.HasOne("TrackHubSecurity.Infrastructure.Entities.Policy", "Policy")
@@ -458,11 +397,6 @@ namespace TrackHubSecurity.Infrastructure.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TrackHubSecurity.Infrastructure.Entities.Account", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("TrackHubSecurity.Infrastructure.Entities.Resource", b =>

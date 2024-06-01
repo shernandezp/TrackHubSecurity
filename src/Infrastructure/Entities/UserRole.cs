@@ -16,8 +16,20 @@
 namespace TrackHubSecurity.Infrastructure.Entities;
 public sealed class UserRole
 {
+    private Role? _role;
+    private User? _user;
+
     public required Guid UserId { get; set; }
     public required int RoleId { get; set; }
-    public required Role Role { get; set; }
-    public required User User { get; set; }
+
+    public Role Role
+    {
+        get => _role ?? throw new InvalidOperationException("Role is not loaded");
+        set => _role = value;
+    }
+    public User User
+    {
+        get => _user ?? throw new InvalidOperationException("User is not loaded");
+        set => _user = value;
+    }
 }

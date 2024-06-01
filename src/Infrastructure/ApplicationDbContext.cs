@@ -26,7 +26,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
 
-    public DbSet<Account> Accounts { get; set; }
     public DbSet<Action> Actions { get; set; }
     public DbSet<Policy> Policies { get; set; }
     public DbSet<Resource> Resources { get; set; }

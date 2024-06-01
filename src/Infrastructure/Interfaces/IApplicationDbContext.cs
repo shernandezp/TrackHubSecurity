@@ -19,7 +19,6 @@ namespace TrackHubSecurity.Infrastructure.Interfaces;
 
 public interface IApplicationDbContext
 {
-    public DbSet<Account> Accounts { get; set; }
     public DbSet<Action> Actions { get; set; }
     public DbSet<Policy> Policies { get; set; }
     public DbSet<Resource> Resources { get; set; }

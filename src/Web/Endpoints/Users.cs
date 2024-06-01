@@ -17,7 +17,6 @@ using TrackHubSecurity.Application.Users.Commands.CreateUser;
 using TrackHubSecurity.Application.Users.Commands.DeleteUser;
 using TrackHubSecurity.Application.Users.Commands.UpdateUser;
 using TrackHubSecurity.Application.Users.Queries.GetUser;
-using TrackHubSecurity.Application.Users.Queries.GetUsersByAccount;
 using TrackHubSecurity.Domain.Models;
 
 namespace TrackHubSecurity.Web.Endpoints;
@@ -29,16 +28,12 @@ public sealed class Users : EndpointGroupBase
         app.MapGroup(this)
             .RequireAuthorization()
             .MapGet(GetUser)
-            .MapGet(GetUsers, "ByAccount")
             .MapPost(CreateUser)
             .MapPut(UpdateUser, "{id}")
             .MapDelete(DeleteUser, "{id}");
     }
 
     public async Task<UserVm> GetUser(ISender sender, [AsParameters] GetUserQuery query)
-        => await sender.Send(query);
-
-    public async Task<IReadOnlyCollection<UserVm>> GetUsers(ISender sender, [AsParameters] GetUsersByAccountQuery query)
         => await sender.Send(query);
 
     public async Task<UserVm> CreateUser(ISender sender, CreateUserCommand command)

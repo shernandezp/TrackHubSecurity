@@ -20,7 +20,7 @@ internal abstract class Context
 {
     // Helper method to generate a mock user for testing purposes
     public static User GetUser() 
-        => new("username", "password", "email@mail.com", "firstName", "secondName", "lastName", "secondSurname", null, new Guid());
+        => new("username", "password", "email@mail.com", "firstName", "secondName", "lastName", "secondSurname", null);
 
     public static IEnumerable<User> GetUsers()
         => [GetUser()];

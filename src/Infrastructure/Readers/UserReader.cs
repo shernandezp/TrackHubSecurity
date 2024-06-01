@@ -42,30 +42,11 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.FirstName,
                 u.SecondName,
                 u.LastName,
-                u.SeconSurname,
+                u.SecondSurname,
                 u.DOB,
                 u.Roles.Select(r => new RoleVm(r.RoleName)).ToList(),
                 u.Policies.Select(p => new ProfileVm(p.PolicyName)).ToList()))
             .FirstAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyCollection<UserVm>> GetUserByAccountAsync(Guid accountId, CancellationToken cancellationToken = default)
-    {
-        return await context.Users
-            .Where(u => u.AccountId.Equals(accountId))
-            .Select(u => new UserVm(
-                u.UserId,
-                u.Username,
-                string.Empty,
-                u.Email,
-                u.FirstName,
-                u.SecondName,
-                u.LastName,
-                u.SeconSurname,
-                u.DOB,
-                new List<RoleVm>(),
-                new List<ProfileVm>()))
-            .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default)

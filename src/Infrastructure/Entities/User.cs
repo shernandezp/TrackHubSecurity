@@ -23,10 +23,10 @@ public sealed class User(string username,
     string firstName,
     string? secondName,
     string lastName,
-    string? seconSurname,
-    DateTime? dOB,
-    Guid accountId) : BaseAuditableEntity
+    string? secondSurname,
+    DateTime? dOB) : BaseAuditableEntity
 {
+
     public Guid UserId { get; private set; } = Guid.NewGuid();
     public string Username { get; set; } = username;
     public string Password { get; set; } = password;
@@ -34,13 +34,11 @@ public sealed class User(string username,
     public string FirstName { get; set; } = firstName;
     public string? SecondName { get; set; } = secondName;
     public string LastName { get; set; } = lastName;
-    public string? SeconSurname { get; set; } = seconSurname;
+    public string? SecondSurname { get; set; } = secondSurname;
     public DateTime? DOB { get; set; } = dOB;
     public DateTime? PasswordReset { get; set; }
     public DateTime? Verified { get; set; }
     public bool Active { get; set; } = false;
-    public Guid AccountId { get; set; } = accountId;
-    public Account? Account { get; set; }
     public ICollection<Role> Roles { get; } = [];
     public ICollection<Policy> Policies { get; } = [];
 }

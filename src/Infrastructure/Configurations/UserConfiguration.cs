@@ -32,13 +32,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.FirstName).HasColumnName("firstname");
         builder.Property(x => x.SecondName).HasColumnName("secondname");
         builder.Property(x => x.LastName).HasColumnName("lastname");
-        builder.Property(x => x.SeconSurname).HasColumnName("secondsurname");
+        builder.Property(x => x.SecondSurname).HasColumnName("secondsurname");
         builder.Property(x => x.Email).HasColumnName("email");
         builder.Property(x => x.DOB).HasColumnName("dob");
         builder.Property(x => x.PasswordReset).HasColumnName("passwordreset");
         builder.Property(x => x.Verified).HasColumnName("verified");
         builder.Property(x => x.Active).HasColumnName("active");
-        builder.Property(x => x.AccountId).HasColumnName("accountid");
 
         builder.Property(t => t.Username)
             .HasMaxLength(ColumnMetadata.DefaultUserNameLength)

@@ -14,7 +14,6 @@
 //
 
 using TrackHubSecurity.Application.Users.Queries.GetUser;
-using TrackHubSecurity.Application.Users.Queries.GetUsersByAccount;
 using TrackHubSecurity.Domain.Models;
 
 namespace TrackHubSecurity.Web.GraphQL.Query;
@@ -24,7 +23,5 @@ public partial class Query
     public async Task<UserVm> GetUser([Service] ISender sender, [AsParameters] GetUserQuery query)
         => await sender.Send(query);
 
-    public async Task<IReadOnlyCollection<UserVm>> GetUsers([Service] ISender sender, [AsParameters] GetUsersByAccountQuery query)
-        => await sender.Send(query);
 
 }

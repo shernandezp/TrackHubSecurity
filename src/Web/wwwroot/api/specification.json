@@ -229,46 +229,6 @@
         ]
       }
     },
-    "/api/Users/ByAccount": {
-      "get": {
-        "tags": [
-          "Users"
-        ],
-        "operationId": "GetUsers",
-        "parameters": [
-          {
-            "name": "AccountId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserVm"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": []
-          }
-        ]
-      }
-    },
     "/api/Users/{id}": {
       "put": {
         "tags": [
@@ -369,7 +329,7 @@
           "lastName": {
             "type": "string"
           },
-          "seconSurname": {
+          "secondSurname": {
             "type": "string",
             "nullable": true
           },
@@ -448,7 +408,7 @@
           "lastName": {
             "type": "string"
           },
-          "seconSurname": {
+          "secondSurname": {
             "type": "string",
             "nullable": true
           },
@@ -461,10 +421,6 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
-          },
-          "accountId": {
-            "type": "string",
-            "format": "guid"
           }
         }
       },

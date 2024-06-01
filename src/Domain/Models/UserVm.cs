@@ -23,7 +23,7 @@ public readonly record struct UserVm(
     string FirstName,
     string? SecondName,
     string LastName,
-    string? SeconSurname,
+    string? SecondSurname,
     DateTime? DOB,
     IEnumerable<RoleVm>? Roles,
     IEnumerable<ProfileVm>? Profiles);

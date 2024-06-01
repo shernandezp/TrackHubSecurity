@@ -115,16 +115,6 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
 
         if (!context.Users.Any())
         {
-            var account = new Account
-            {
-                Name = "Administrador",
-                Description = string.Empty,
-                Type = AccountType.Business,
-                Active = true
-            };
-            context.Accounts.Add(account);
-            await context.SaveChangesAsync();
-
             var password = "123456".HashPassword();
             context.Users.Add(new User(
                 "Administrator",
@@ -134,8 +124,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 "Admin",
                 "",
                 null,
-                null,
-                account.AccountId));
+                null));
 
             await context.SaveChangesAsync();
         }

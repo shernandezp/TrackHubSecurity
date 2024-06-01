@@ -16,8 +16,22 @@
 namespace TrackHubSecurity.Infrastructure.Entities;
 public sealed class UserPolicy
 {
+
+    private Policy? _policy;
+    private User? _user;
+
     public required Guid UserId { get; set; }
     public required int PolicyId { get; set; }
-    public required Policy Policy { get; set; }
-    public required User User { get; set; }
+
+
+    public Policy Policy
+    {
+        get => _policy ?? throw new InvalidOperationException("Policy is not loaded");
+        set => _policy = value;
+    }
+    public User User
+    {
+        get => _user ?? throw new InvalidOperationException("User is not loaded");
+        set => _user = value;
+    }
 }
