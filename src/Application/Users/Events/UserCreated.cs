@@ -23,7 +23,7 @@ public sealed class UserCreated
 
         /*public class EventHandler(ISender sender) : INotificationHandler<Notification> 
         {
-            public async Task Handle(Notification notification, CancellationToken cancellationToken) 
+            public async Task Handle(Notification notification, CancellationToken cancellationToken)
             { 
                 await sender.Send(new ....)
             }

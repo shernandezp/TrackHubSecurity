@@ -22,43 +22,44 @@ namespace TrackHub.Security.Infrastructure.Writers;
 
 public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 {
-    public async Task<UserVm> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken = default)
+    public async Task<UserVm> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken)
     {
         var password = userDto.Password.HashPassword();
         var user = new User(
             userDto.Username,
             password,
-            userDto.Email,
+            userDto.EmailAddress,
             userDto.FirstName,
             userDto.SecondName,
             userDto.LastName,
             userDto.SecondSurname,
-            userDto.DOB);
+            userDto.DOB,
+            userDto.AccountId);
 
         await context.Users.AddAsync(user, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
 
         return new UserVm(
             user.UserId,
-            user.Username,
-            user.Password,
-            user.Email,
+            string.Empty,
+            user.EmailAddress,
             user.FirstName,
             user.SecondName,
             user.LastName,
             user.SecondSurname,
             user.DOB,
+            user.AccountId,
             [],
             []);
     }
 
-    public async Task UpdateUserAsync(UserDto userDto, CancellationToken cancellationToken = default)
+    public async Task UpdateUserAsync(UserDto userDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userDto.UserId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userDto.UserId}");
 
         user.Username = userDto.Username;
-        user.Email = userDto.Email;
+        user.EmailAddress = userDto.EmailAddress;
         user.FirstName = userDto.FirstName;
         user.SecondName = userDto.SecondName;
         user.LastName = userDto.LastName;
@@ -67,16 +68,17 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken = default)
+    public async Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userPasswordDto.UserId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userPasswordDto.UserId}");
 
         user.Password = userPasswordDto.Password;
+        user.Active = true;
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken = default)
+    public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userId}");

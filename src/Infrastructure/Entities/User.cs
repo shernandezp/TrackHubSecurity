@@ -19,26 +19,27 @@ namespace TrackHub.Security.Infrastructure.Entities;
 
 public sealed class User(string username,
     string password,
-    string email,
+    string emailAddress,
     string firstName,
     string? secondName,
     string lastName,
     string? secondSurname,
-    DateTime? dOB) : BaseAuditableEntity
+    DateTime? dOB,
+    Guid accountId) : BaseAuditableEntity
 {
 
     public Guid UserId { get; private set; } = Guid.NewGuid();
     public string Username { get; set; } = username;
     public string Password { get; set; } = password;
-    public string Email { get; set; } = email;
+    public string EmailAddress { get; set; } = emailAddress;
     public string FirstName { get; set; } = firstName;
     public string? SecondName { get; set; } = secondName;
     public string LastName { get; set; } = lastName;
     public string? SecondSurname { get; set; } = secondSurname;
     public DateTime? DOB { get; set; } = dOB;
-    public DateTime? PasswordReset { get; set; }
     public DateTime? Verified { get; set; }
     public bool Active { get; set; } = false;
+    public Guid AccountId { get; set; } = accountId;
     public ICollection<Role> Roles { get; } = [];
     public ICollection<Policy> Policies { get; } = [];
 }

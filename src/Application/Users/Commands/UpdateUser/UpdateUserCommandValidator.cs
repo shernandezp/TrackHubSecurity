@@ -24,7 +24,7 @@ public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCom
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
             .NotEmpty();
 
-        RuleFor(v => v.User.Email)
+        RuleFor(v => v.User.EmailAddress)
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
             .NotEmpty();
     }

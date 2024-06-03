@@ -19,10 +19,10 @@ public record struct UserDto (
     Guid UserId,
     string Username,
     string Password,
-    string Email,
+    string EmailAddress,
     string FirstName,
     string? SecondName,
     string LastName,
     string? SecondSurname,
     DateTime? DOB,
-    DateTime? PasswordReset);
+    Guid AccountId);

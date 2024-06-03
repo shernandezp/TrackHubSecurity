@@ -18,12 +18,12 @@ namespace TrackHub.Security.Domain.Models;
 public readonly record struct UserVm(
     Guid UserId,
     string Username,
-    string Password,
-    string Email,
+    string EmailAddress,
     string FirstName,
     string? SecondName,
     string LastName,
     string? SecondSurname,
     DateTime? DOB,
+    Guid AccountId,
     IEnumerable<RoleVm>? Roles,
     IEnumerable<ProfileVm>? Profiles);

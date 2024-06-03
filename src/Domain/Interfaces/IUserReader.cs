@@ -16,10 +16,10 @@
 namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserReader
 {
-    Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken = default);
-    Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken = default);
+    Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken);
+    Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken);
 }

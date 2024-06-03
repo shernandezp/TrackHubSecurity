@@ -30,9 +30,7 @@ public class CreateUserCommandHandler(IUserWriter writer, IPublisher publisher) 
     public async Task<UserVm> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await writer.CreateUserAsync(request.User, cancellationToken);
-        
         await publisher.Publish(new UserCreated.Notification(user.UserId), cancellationToken);
-
         return user;
     }
 }

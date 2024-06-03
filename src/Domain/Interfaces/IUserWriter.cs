@@ -18,8 +18,8 @@ using TrackHub.Security.Domain.Records;
 namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserWriter
 {
-    Task<UserVm> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken = default);
-    Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken = default);
-    Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken = default);
-    Task UpdateUserAsync(UserDto userDto, CancellationToken cancellationToken = default);
+    Task<UserVm> CreateUserAsync(UserDto userDto, CancellationToken cancellationToken);
+    Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken);
+    Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken);
+    Task UpdateUserAsync(UserDto userDto, CancellationToken cancellationToken);
 }

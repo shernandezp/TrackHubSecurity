@@ -29,7 +29,7 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .MinimumLength(ColumnMetadata.DefaultPasswordLength)
             .NotEmpty();
 
-        RuleFor(v => v.User.Email)
+        RuleFor(v => v.User.EmailAddress)
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
             .NotEmpty();
     }
