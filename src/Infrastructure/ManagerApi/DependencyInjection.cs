@@ -13,10 +13,7 @@
 //  limitations under the License.
 //
 
-using Ardalis.GuardClauses;
-using GraphQL.Client.Abstractions;
-using GraphQL.Client.Http;
-using GraphQL.Client.Serializer.SystemTextJson;
+using Common.Domain.Constants;
 using Microsoft.Extensions.Configuration;
 using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Infrastructure.ManagerApi;
@@ -26,27 +23,11 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddAppManagerContext(this IServiceCollection services, IConfiguration configuration)
     {
-        var url = configuration.GetValue<string>("AppSettings:GraphQLManagerService");
-        Guard.Against.Null(url, message: "Setting 'GraphQLManagerService' not found.");
-
         services.AddHeaderPropagation(o => o.Headers.Add("Authorization"));
 
-        services.AddHttpClient("manager",
+        services.AddHttpClient(Clients.Manager,
             client => client.Timeout = TimeSpan.FromSeconds(30))
             .AddHeaderPropagation();
-
-        //Header propagation for GraphQL client
-        services.AddSingleton<IGraphQLClient>(sp =>
-        {
-            var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = httpClientFactory.CreateClient("manager");
-            var options = new GraphQLHttpClientOptions
-            {
-                EndPoint = new Uri(url)
-            };
-            var jsonSerializer = new SystemTextJsonSerializer();
-            return new GraphQLHttpClient(options, jsonSerializer, httpClient);
-        });
 
         services.AddScoped<IManagerWriter, ManagerWriter>();
 

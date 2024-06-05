@@ -29,7 +29,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationDbContext(builder.Configuration);
 builder.Services.AddAppManagerContext(builder.Configuration);
-builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddInfrastructureServices(builder.Configuration, false);
 builder.Services.AddWebServices("Security API");
 
 // Add HealthChecks

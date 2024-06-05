@@ -7,7 +7,6 @@
   
   <ItemGroup>
     <PackageReference Include="GraphQL.Client" />
-    <PackageReference Include="GraphQL.Client.Serializer.SystemTextJson" />
     <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" />
     <PackageReference Include="TrackHubCommon.Infrastructure" />
   </ItemGroup>
