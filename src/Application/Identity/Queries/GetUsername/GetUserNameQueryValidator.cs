@@ -20,6 +20,6 @@ public sealed class GetUserNameQueryValidator : AbstractValidator<GetUserNameQue
     public GetUserNameQueryValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("User Id is required.");
+            .NotEmpty();
     }
 }

@@ -33,7 +33,7 @@ public sealed class Identity : EndpointGroupBase
     public async Task<string> GetUserName(ISender sender, [AsParameters] GetUserNameQuery query)
         => await sender.Send(query);
 
-    public async Task<bool> IsInRole(ISender sender, [AsParameters] IsInRoleQuey query)
+    public async Task<bool> IsInRole(ISender sender, [AsParameters] IsInRoleQuery query)
         => await sender.Send(query);
 
     public async Task<bool> Authorize(ISender sender, [AsParameters] AuthorizeQuery query)

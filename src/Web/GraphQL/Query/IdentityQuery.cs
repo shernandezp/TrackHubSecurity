@@ -24,7 +24,7 @@ public partial class Query
     public async Task<string> GetUserName([Service] ISender sender, [AsParameters] GetUserNameQuery query)
         => await sender.Send(query);
 
-    public async Task<bool> IsInRole([Service] ISender sender, [AsParameters] IsInRoleQuey query)
+    public async Task<bool> IsInRole([Service] ISender sender, [AsParameters] IsInRoleQuery query)
         => await sender.Send(query);
 
     public async Task<bool> Authorize([Service] ISender sender, [AsParameters] AuthorizeQuery query)

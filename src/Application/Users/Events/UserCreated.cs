@@ -17,16 +17,12 @@ namespace TrackHub.Security.Application.Users.Events;
 
 public sealed class UserCreated
 {
-    public class Notification(Guid id) : INotification 
+    public readonly record struct Notification(ShrankUserDto User) : INotification 
     {
-        public Guid Id { get; } = id;
-
-        /*public class EventHandler(ISender sender) : INotificationHandler<Notification> 
+        public class EventHandler(IManagerWriter managerWriter) : INotificationHandler<Notification> 
         {
             public async Task Handle(Notification notification, CancellationToken cancellationToken)
-            { 
-                await sender.Send(new ....)
-            }
-        }*/
+                => await managerWriter.CreateUserAsync(notification.User, cancellationToken);
+        }
     }
 }

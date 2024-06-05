@@ -38,7 +38,7 @@ internal class UpdateUserTests
     public async Task Handle_ValidCommand_UpdatesUserAndPublishesNotification()
     {
         // Arrange
-        var userDto = new UserDto { UserId = Guid.NewGuid() };
+        var userDto = new UpdateUserDto { UserId = Guid.NewGuid() };
         var userId = userDto.UserId; // Assuming UserDto has a UserId property
         var cancellationToken = new CancellationToken();
 

@@ -15,7 +15,7 @@
 
 using System.Reflection;
 using Microsoft.AspNetCore.HttpOverrides;
-using TrackHub.Security.Infrastructure;
+using TrackHub.Security.Infrastructure.SecurityDB;
 using TrackHub.Security.Web.GraphQL.Mutation;
 using TrackHub.Security.Web.GraphQL.Query;
 
@@ -28,6 +28,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options
 // Add services to the container.
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationDbContext(builder.Configuration);
+builder.Services.AddAppManagerContext(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices("Security API");
 
@@ -43,7 +44,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseForwardedHeaders();
+app.UseHeaderPropagation();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

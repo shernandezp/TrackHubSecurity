@@ -15,9 +15,9 @@
 
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using TrackHub.Security.Domain.Records;
-using TrackHub.Security.Infrastructure.Entities;
-using TrackHub.Security.Infrastructure.Interfaces;
-using TrackHub.Security.Infrastructure.Writers;
+using TrackHub.Security.Infrastructure.SecurityDB.Entities;
+using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
 namespace Infrastructure.UnitTests;
 
@@ -40,7 +40,7 @@ internal class UserWriterTests : Context
     public async Task CreateUserAsync_ValidUserDto_ReturnsUserVm()
     {
         // Arrange
-        var userDto = new UserDto
+        var userDto = new CreateUserDto
         {
             Password = "password"
         };
@@ -62,7 +62,7 @@ internal class UserWriterTests : Context
     public async Task UpdateUserAsync_ValidUserDto_UpdatesUser()
     {
         // Arrange
-        var userDto = new UserDto
+        var userDto = new UpdateUserDto
         {
             // Provide necessary user details
         };

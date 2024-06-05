@@ -14,23 +14,18 @@
 //
 
 using TrackHub.Security.Application.Users.Events;
-using TrackHub.Security.Domain.Interfaces;
-using TrackHub.Security.Domain.Models;
-using TrackHub.Security.Domain.Records;
 
 namespace TrackHub.Security.Application.Users.Commands.CreateUser;
 
-public readonly record struct CreateUserCommand : IRequest<UserVm>
-{
-    public required UserDto User { get; init; }
-}
+public readonly record struct CreateUserCommand(CreateUserDto User) : IRequest<UserVm>;
 
 public class CreateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<CreateUserCommand, UserVm>
 {
     public async Task<UserVm> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await writer.CreateUserAsync(request.User, cancellationToken);
-        await publisher.Publish(new UserCreated.Notification(user.UserId), cancellationToken);
+        var shrankUser = new ShrankUserDto(user.UserId, user.Username, user.AccountId);
+        await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
         return user;
     }
 }

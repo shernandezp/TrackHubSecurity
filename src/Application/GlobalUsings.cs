@@ -13,5 +13,9 @@
 //  limitations under the License.
 //
 
+global using TrackHub.Security.Domain.Interfaces;
+global using TrackHub.Security.Domain.Models;
+global using TrackHub.Security.Domain.Records;
+global using Common.Domain.Constants;
 global using FluentValidation;
 global using MediatR;

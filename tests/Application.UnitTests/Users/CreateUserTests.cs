@@ -30,7 +30,6 @@ internal class Tests
     [SetUp]
     public void Setup()
     {
-        // Initialize the mock and the object under test before each test
         _writerMock = new Mock<IUserWriter>();
         _publisherMock = new Mock<IPublisher>();
     }
@@ -38,10 +37,10 @@ internal class Tests
     [Test]
     public async Task Handle_ValidCommand_ReturnsUserVm()
     {
-        var userId = Guid.NewGuid();
+        var accountId = Guid.NewGuid();
         // Arrange
-        var userDto = new UserDto { UserId = userId };
-        var userVm = new UserVm { UserId = userId };
+        var userDto = new CreateUserDto { AccountId = accountId };
+        var userVm = new UserVm { AccountId = accountId };
 
         _writerMock.Setup(m => m.CreateUserAsync(userDto, It.IsAny<CancellationToken>()))
                   .ReturnsAsync(userVm);
@@ -55,7 +54,7 @@ internal class Tests
 
         // Assert
         result.Should().NotBeNull();
-        result.UserId.Should().Be(userDto.UserId);
+        result.UserId.Should().Be(userDto.AccountId);
 
         // Verify that CreateUserAsync was called with the correct arguments
         _writerMock.Verify(m => m.CreateUserAsync(userDto, cancellationToken), Times.Once);

@@ -335,6 +335,10 @@
             "format": "date-time",
             "nullable": true
           },
+          "accountId": {
+            "type": "string",
+            "format": "guid"
+          },
           "roles": {
             "type": "array",
             "nullable": true,
@@ -374,11 +378,58 @@
         "additionalProperties": false,
         "properties": {
           "user": {
-            "$ref": "#/components/schemas/UserDto"
+            "$ref": "#/components/schemas/CreateUserDto"
           }
         }
       },
-      "UserDto": {
+      "CreateUserDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "emailAddress": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "secondName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "secondSurname": {
+            "type": "string",
+            "nullable": true
+          },
+          "dob": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "accountId": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      },
+      "UpdateUserCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UpdateUserDto"
+          }
+        }
+      },
+      "UpdateUserDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -413,20 +464,6 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
-          },
-          "passwordReset": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          }
-        }
-      },
-      "UpdateUserCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "user": {
-            "$ref": "#/components/schemas/UserDto"
           }
         }
       }

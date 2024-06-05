@@ -13,8 +13,6 @@
 //  limitations under the License.
 //
 
-using Common.Domain.Constants;
-
 namespace TrackHub.Security.Application.Users.Commands.CreateUser;
 public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
@@ -25,8 +23,8 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .NotEmpty();
 
         RuleFor(v => v.User.Password)
-            .MinimumLength(8)
-            .MinimumLength(ColumnMetadata.DefaultPasswordLength)
+            .MinimumLength(ColumnMetadata.MinimumPasswordLength)
+            .MaximumLength(ColumnMetadata.DefaultPasswordLength)
             .NotEmpty();
 
         RuleFor(v => v.User.EmailAddress)

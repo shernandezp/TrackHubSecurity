@@ -11,7 +11,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Infrastructure\ManagerApi\ManagerApi.csproj" />
+    <ProjectReference Include="..\Infrastructure\SecurityDB\SecurityDB.csproj" />
   </ItemGroup>
 
   <ItemGroup>

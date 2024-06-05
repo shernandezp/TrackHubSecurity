@@ -21,10 +21,10 @@ public sealed class AuthorizeQueryValidator : AbstractValidator<AuthorizeQuery>
     public AuthorizeQueryValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("User Id is required.");
+            .NotEmpty();
         RuleFor(x => x.Resource)
-            .NotEmpty().WithMessage("Resource name is required.");
+            .NotEmpty();
         RuleFor(x => x.Action)
-            .NotEmpty().WithMessage("Action name is required.");
+            .NotEmpty();
     }
 }

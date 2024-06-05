@@ -13,8 +13,6 @@
 //  limitations under the License.
 //
 
-using Common.Domain.Constants;
-
 namespace TrackHub.Security.Application.Users.Commands.UpdateUser;
 public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {

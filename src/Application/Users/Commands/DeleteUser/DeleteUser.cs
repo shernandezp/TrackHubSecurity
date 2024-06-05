@@ -14,7 +14,6 @@
 //
 
 using TrackHub.Security.Application.Users.Events;
-using TrackHub.Security.Domain.Interfaces;
 
 namespace TrackHub.Security.Application.Users.Commands.DeleteUser;
 

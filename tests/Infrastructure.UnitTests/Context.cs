@@ -13,14 +13,14 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Infrastructure.Entities;
+using TrackHub.Security.Infrastructure.SecurityDB.Entities;
 
 namespace Infrastructure.UnitTests;
 internal abstract class Context
 {
     // Helper method to generate a mock user for testing purposes
     public static User GetUser() 
-        => new("username", "password", "email@mail.com", "firstName", "secondName", "lastName", "secondSurname", null);
+        => new("username", "password", "email@mail.com", "firstName", "secondName", "lastName", "secondSurname", null, Guid.NewGuid());
 
     public static IEnumerable<User> GetUsers()
         => [GetUser()];

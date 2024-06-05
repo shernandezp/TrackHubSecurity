@@ -14,16 +14,10 @@
 //
 
 using TrackHub.Security.Application.Users.Events;
-using TrackHub.Security.Domain.Interfaces;
-using TrackHub.Security.Domain.Records;
 
 namespace TrackHub.Security.Application.Users.Commands.UpdateUser;
 
-public readonly record struct UpdateUserCommand : IRequest
-{
-    public UserDto User { get; init; }
-}
-
+public readonly record struct UpdateUserCommand(UpdateUserDto User) : IRequest;
 public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<UpdateUserCommand>
 {
 
