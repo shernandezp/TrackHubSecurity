@@ -464,6 +464,9 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "active": {
+            "type": "boolean"
           }
         }
       }

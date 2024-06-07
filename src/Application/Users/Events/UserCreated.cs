@@ -17,7 +17,7 @@ namespace TrackHub.Security.Application.Users.Events;
 
 public sealed class UserCreated
 {
-    public readonly record struct Notification(ShrankUserDto User) : INotification 
+    public readonly record struct Notification(UserShrankDto User) : INotification 
     {
         public class EventHandler(IManagerWriter managerWriter) : INotificationHandler<Notification> 
         {

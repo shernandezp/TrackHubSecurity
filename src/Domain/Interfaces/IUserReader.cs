@@ -22,4 +22,6 @@ public interface IUserReader
     Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken);
+    Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken);
+    Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken);
 }

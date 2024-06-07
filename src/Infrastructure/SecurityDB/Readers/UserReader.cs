@@ -21,16 +21,13 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
 {
 
     public async Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken)
-    {
-        return await context.Users
+        => await context.Users
             .Where(u => u.UserId.Equals(id))
             .Select(u => u.Username)
             .FirstAsync(cancellationToken);
-    }
 
     public async Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken)
-    {
-        return await context.Users
+        => await context.Users
             .Where(u => u.UserId.Equals(id))
             .Include(role => role.Roles)
             .Include(policy => policy.Policies)
@@ -47,7 +44,6 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Roles.Select(r => new RoleVm(r.RoleName)).ToList(),
                 u.Policies.Select(p => new ProfileVm(p.PolicyName)).ToList()))
             .FirstAsync(cancellationToken);
-    }
 
     public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken)
         => await context.UserRoles
@@ -80,4 +76,15 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
             .Where(rap => rap.Resource.ResourceName.Equals(resource) && rap.Action.ActionName.Equals(action))
             .Select(rap => rap.Policy.PolicyName)
             .ToListAsync(cancellationToken);
+
+    public async Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
+        => !await context.Users
+            .Where(u => u.EmailAddress.Equals(emailAddress))
+            .AnyAsync(cancellationToken);
+
+    public async Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken)
+        => !await context.Users
+            .Where(u => u.Username.Equals(username))
+            .AnyAsync(cancellationToken);
+
 }

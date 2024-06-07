@@ -18,5 +18,7 @@ using TrackHub.Security.Domain.Records;
 namespace TrackHub.Security.Domain.Interfaces;
 public interface IManagerWriter
 {
-    Task<ShrankUserVm> CreateUserAsync(ShrankUserDto user, CancellationToken token);
+    Task<UserShrankVm> CreateUserAsync(UserShrankDto user, CancellationToken token);
+    Task<bool> UpdateUserAsync(Guid id, UpdateUserShrankDto user, CancellationToken token);
+    Task<Guid> DeleteUserAsync(Guid id, CancellationToken token);
 }

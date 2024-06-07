@@ -13,15 +13,9 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Application.Users.Events;
-public sealed class UserUpdated
-{
-    public readonly record struct Notification(Guid Id, UpdateUserShrankDto User) : INotification
-    {
-        public class EventHandler(IManagerWriter managerWriter) : INotificationHandler<Notification>
-        {
-            public async Task Handle(Notification notification, CancellationToken cancellationToken)
-                => await managerWriter.UpdateUserAsync(notification.Id, notification.User, cancellationToken);
-        }
-    }
-}
+namespace TrackHub.Security.Domain.Records;
+
+public record struct UserShrankDto(
+    Guid UserId,
+    string Username,
+    Guid AccountId);

@@ -16,8 +16,12 @@
 namespace TrackHub.Security.Application.Users.Events;
 public sealed class UserDeleted
 {
-    public class Notification(Guid id) : INotification 
+    public readonly record struct Notification(Guid Id) : INotification
     {
-        public Guid Id { get; } = id;
+        public class EventHandler(IManagerWriter managerWriter) : INotificationHandler<Notification>
+        {
+            public async Task Handle(Notification notification, CancellationToken cancellationToken)
+                => await managerWriter.DeleteUserAsync(notification.Id, cancellationToken);
+        }
     }
 }

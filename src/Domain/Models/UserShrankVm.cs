@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Records;
+namespace TrackHub.Security.Domain.Models;
 
-public record struct ShrankUserDto(
+public readonly record struct UserShrankVm(
     Guid UserId,
     string Username,
     Guid AccountId);

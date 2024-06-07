@@ -15,6 +15,7 @@
 
 using System.Reflection;
 using Common.Application;
+using TrackHub.Security.Application.Users.Commands.CreateUser;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -25,7 +26,7 @@ public static class DependencyInjection
         var assembly = Assembly.GetExecutingAssembly();
         services.AddApplicationServices(assembly);
         services.AddDistributedMemoryCache();
-
+        services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
         return services;
     }
 }

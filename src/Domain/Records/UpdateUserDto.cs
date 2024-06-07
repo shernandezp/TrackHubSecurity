@@ -24,4 +24,5 @@ public record struct UpdateUserDto(
     string? SecondName,
     string LastName,
     string? SecondSurname,
-    DateTime? DOB);
+    DateTime? DOB,
+    bool Active);

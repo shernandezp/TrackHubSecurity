@@ -24,7 +24,7 @@ public class CreateUserCommandHandler(IUserWriter writer, IPublisher publisher) 
     public async Task<UserVm> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = await writer.CreateUserAsync(request.User, cancellationToken);
-        var shrankUser = new ShrankUserDto(user.UserId, user.Username, user.AccountId);
+        var shrankUser = new UserShrankDto(user.UserId, user.Username, user.AccountId);
         await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
         return user;
     }

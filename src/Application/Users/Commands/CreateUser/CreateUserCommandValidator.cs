@@ -16,11 +16,14 @@
 namespace TrackHub.Security.Application.Users.Commands.CreateUser;
 public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
-    public CreateUserCommandValidator()
+    private readonly IUserReader _userReader;
+    public CreateUserCommandValidator(IUserReader userReader)
     {
+        _userReader = userReader;
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
-            .NotEmpty();
+            .NotEmpty()
+            .MustAsync(ValidateUsername);
 
         RuleFor(v => v.User.Password)
             .MinimumLength(ColumnMetadata.MinimumPasswordLength)
@@ -28,7 +31,16 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .NotEmpty();
 
         RuleFor(v => v.User.EmailAddress)
+            .EmailAddress()
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
-            .NotEmpty();
+            .NotEmpty()
+            .MustAsync(ValidateEmailAddress);
     }
+
+    private async Task<bool> ValidateUsername(string username, CancellationToken cancellationToken)
+        => await _userReader.ValidateUsernameAsync(username, cancellationToken);
+
+    private async Task<bool> ValidateEmailAddress(string emailAddress, CancellationToken cancellationToken)
+        => await _userReader.ValidateEmailAddressAsync(emailAddress, cancellationToken);
+
 }

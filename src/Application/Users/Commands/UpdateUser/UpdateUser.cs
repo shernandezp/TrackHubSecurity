@@ -24,7 +24,7 @@ public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) 
     public async Task Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         await writer.UpdateUserAsync(request.User, cancellationToken);
-
-        await publisher.Publish(new UserUpdated.Notification(request.User.UserId), cancellationToken);
+        var user = new UpdateUserShrankDto(request.User.UserId, request.User.Username, request.User.Active);
+        await publisher.Publish(new UserUpdated.Notification(request.User.UserId, user), cancellationToken);
     }
 }
