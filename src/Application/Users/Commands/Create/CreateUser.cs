@@ -15,7 +15,7 @@
 
 using TrackHub.Security.Application.Users.Events;
 
-namespace TrackHub.Security.Application.Users.Commands.CreateUser;
+namespace TrackHub.Security.Application.Users.Commands.Create;
 
 public readonly record struct CreateUserCommand(CreateUserDto User) : IRequest<UserVm>;
 

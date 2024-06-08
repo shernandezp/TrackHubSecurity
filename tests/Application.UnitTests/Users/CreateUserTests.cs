@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Commands.CreateUser;
+using TrackHub.Security.Application.Users.Commands.Create;
 using TrackHub.Security.Application.Users.Events;
 using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Domain.Models;

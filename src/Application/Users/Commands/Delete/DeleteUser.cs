@@ -13,20 +13,20 @@
 //  limitations under the License.
 //
 
-using System.Reflection;
-using Common.Application;
-using TrackHub.Security.Application.Users.Commands.Create;
+using TrackHub.Security.Application.Users.Events;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace TrackHub.Security.Application.Users.Commands.Delete;
 
-public static class DependencyInjection
+public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
+
+public class DeleteUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<DeleteUserCommand>
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+
+    public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var assembly = Assembly.GetExecutingAssembly();
-        services.AddApplicationServices(assembly);
-        services.AddDistributedMemoryCache();
-        services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
-        return services;
+        await writer.DeleteUserAsync(request.Id, cancellationToken);
+
+        await publisher.Publish(new UserDeleted.Notification(request.Id), cancellationToken);
     }
+
 }

@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Commands.DeleteUser;
+using TrackHub.Security.Application.Users.Commands.Delete;
 using TrackHub.Security.Application.Users.Events;
 using TrackHub.Security.Domain.Interfaces;
 

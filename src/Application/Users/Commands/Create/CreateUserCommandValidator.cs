@@ -13,30 +13,36 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Application.Users.Commands.UpdateUser;
-public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
+namespace TrackHub.Security.Application.Users.Commands.Create;
+public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     private readonly IUserReader _userReader;
-    public UpdateUserCommandValidator(IUserReader userReader)
+    public CreateUserCommandValidator(IUserReader userReader)
     {
         _userReader = userReader;
-
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
             .NotEmpty()
-            .MustAsync((command, username, cancellationToken) => ValidateUsername(command.User.UserId, username, cancellationToken))
+            .MustAsync(ValidateUsername)
             .WithMessage("Username already in use");
 
+        RuleFor(v => v.User.Password)
+            .MinimumLength(ColumnMetadata.MinimumPasswordLength)
+            .MaximumLength(ColumnMetadata.DefaultPasswordLength)
+            .NotEmpty();
+
         RuleFor(v => v.User.EmailAddress)
+            .EmailAddress()
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
             .NotEmpty()
-            .MustAsync((command, emailAddress, cancellationToken) => ValidateEmailAddress(command.User.UserId, emailAddress, cancellationToken))
+            .MustAsync(ValidateEmailAddress)
             .WithMessage("Email address already in use");
     }
 
-    private async Task<bool> ValidateUsername(Guid userId, string username, CancellationToken cancellationToken)
-        => await _userReader.ValidateUsernameAsync(userId, username, cancellationToken);
+    private async Task<bool> ValidateUsername(string username, CancellationToken cancellationToken)
+        => await _userReader.ValidateUsernameAsync(username, cancellationToken);
 
-    private async Task<bool> ValidateEmailAddress(Guid userId, string emailAddress, CancellationToken cancellationToken)
-        => await _userReader.ValidateEmailAddressAsync(userId, emailAddress, cancellationToken);
+    private async Task<bool> ValidateEmailAddress(string emailAddress, CancellationToken cancellationToken)
+        => await _userReader.ValidateEmailAddressAsync(emailAddress, cancellationToken);
+
 }

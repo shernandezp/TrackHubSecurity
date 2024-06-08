@@ -13,20 +13,15 @@
 //  limitations under the License.
 //
 
-using System.Reflection;
-using Common.Application;
-using TrackHub.Security.Application.Users.Commands.Create;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace TrackHub.Security.Application.UserRole.Commands.Delete;
 
-public static class DependencyInjection
+public readonly record struct DeleteUserRoleCommand(Guid UserId, int RoleId) : IRequest;
+
+public class DeleteUserRoleCommandHandler(IUserRoleWriter writer) : IRequestHandler<DeleteUserRoleCommand>
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        services.AddApplicationServices(assembly);
-        services.AddDistributedMemoryCache();
-        services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
-        return services;
-    }
+
+    public async Task Handle(DeleteUserRoleCommand request, CancellationToken cancellationToken)
+        => await writer.DeleteUserRoleAsync(request.UserId, request.RoleId, cancellationToken);
+
 }

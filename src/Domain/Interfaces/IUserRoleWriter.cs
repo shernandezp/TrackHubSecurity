@@ -13,20 +13,11 @@
 //  limitations under the License.
 //
 
-using System.Reflection;
-using Common.Application;
-using TrackHub.Security.Application.Users.Commands.Create;
+using TrackHub.Security.Domain.Records;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static class DependencyInjection
+namespace TrackHub.Security.Domain.Interfaces;
+public interface IUserRoleWriter
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        services.AddApplicationServices(assembly);
-        services.AddDistributedMemoryCache();
-        services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
-        return services;
-    }
+    Task<UserRoleVm> CreateUserRoleAsync(UserRoleDto userRoleDto, CancellationToken cancellationToken);
+    Task DeleteUserRoleAsync(Guid userId, int roleId, CancellationToken cancellationToken);
 }

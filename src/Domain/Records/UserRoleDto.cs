@@ -13,20 +13,5 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Events;
-
-namespace TrackHub.Security.Application.Users.Commands.DeleteUser;
-
-public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
-
-public class DeleteUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<DeleteUserCommand>
-{
-
-    public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
-    {
-        await writer.DeleteUserAsync(request.Id, cancellationToken);
-
-        await publisher.Publish(new UserDeleted.Notification(request.Id), cancellationToken);
-    }
-
-}
+namespace TrackHub.Security.Domain.Records;
+public record struct UserRoleDto(Guid UserId, int RoleId);

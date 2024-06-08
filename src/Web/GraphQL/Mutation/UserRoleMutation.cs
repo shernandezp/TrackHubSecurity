@@ -13,28 +13,20 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Commands.Create;
-using TrackHub.Security.Application.Users.Commands.Delete;
-using TrackHub.Security.Application.Users.Commands.Update;
+using TrackHub.Security.Application.UserRole.Commands.Create;
+using TrackHub.Security.Application.UserRole.Commands.Delete;
 using TrackHub.Security.Domain.Models;
 
 namespace TrackHub.Security.Web.GraphQL.Mutation;
 
 public partial class Mutation
 {
-    public async Task<UserVm> CreateUser([Service] ISender sender, CreateUserCommand command)
+    public async Task<UserRoleVm> CreateUserRole([Service] ISender sender, CreateUserRoleCommand command)
         => await sender.Send(command);
 
-    public async Task<bool> UpdateUser([Service] ISender sender, Guid id, UpdateUserCommand command)
+    public async Task<Guid> DeleteUserRole([Service] ISender sender, Guid userId, int roleId)
     {
-        if (id != command.User.UserId) return false;
-        await sender.Send(command);
-        return true;
-    }
-
-    public async Task<Guid> DeleteUser([Service] ISender sender, Guid id)
-    {
-        await sender.Send(new DeleteUserCommand(id));
-        return id;
+        await sender.Send(new DeleteUserRoleCommand(userId, roleId));
+        return userId;
     }
 }

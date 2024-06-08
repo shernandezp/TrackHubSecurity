@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Commands.CreateUser;
-using TrackHub.Security.Application.Users.Commands.DeleteUser;
-using TrackHub.Security.Application.Users.Commands.UpdateUser;
+using TrackHub.Security.Application.Users.Commands.Create;
+using TrackHub.Security.Application.Users.Commands.Delete;
+using TrackHub.Security.Application.Users.Commands.Update;
 using TrackHub.Security.Application.Users.Queries.GetUser;
 using TrackHub.Security.Domain.Models;
 

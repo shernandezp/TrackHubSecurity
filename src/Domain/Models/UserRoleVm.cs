@@ -13,20 +13,6 @@
 //  limitations under the License.
 //
 
-using System.Reflection;
-using Common.Application;
-using TrackHub.Security.Application.Users.Commands.Create;
 
-namespace Microsoft.Extensions.DependencyInjection;
-
-public static class DependencyInjection
-{
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-        services.AddApplicationServices(assembly);
-        services.AddDistributedMemoryCache();
-        services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
-        return services;
-    }
-}
+namespace TrackHub.Security.Domain.Models;
+public record struct UserRoleVm(Guid UserId, int RoleId);

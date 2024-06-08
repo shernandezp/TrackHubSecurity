@@ -15,7 +15,7 @@
 
 using TrackHub.Security.Application.Users.Events;
 
-namespace TrackHub.Security.Application.Users.Commands.UpdateUser;
+namespace TrackHub.Security.Application.Users.Commands.Update;
 
 public readonly record struct UpdateUserCommand(UpdateUserDto User) : IRequest;
 public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<UpdateUserCommand>
