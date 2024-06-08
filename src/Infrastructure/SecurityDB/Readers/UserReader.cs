@@ -87,4 +87,14 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
             .Where(u => u.Username.Equals(username))
             .AnyAsync(cancellationToken);
 
+    public async Task<bool> ValidateEmailAddressAsync(Guid userId, string emailAddress, CancellationToken cancellationToken)
+        => !await context.Users
+            .Where(u => !u.UserId.Equals(userId) && u.EmailAddress.Equals(emailAddress))
+            .AnyAsync(cancellationToken);
+
+    public async Task<bool> ValidateUsernameAsync(Guid userId, string username, CancellationToken cancellationToken)
+        => !await context.Users
+            .Where(u => !u.UserId.Equals(userId) && u.Username.Equals(username))
+            .AnyAsync(cancellationToken);
+
 }

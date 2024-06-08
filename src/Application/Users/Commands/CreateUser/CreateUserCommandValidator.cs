@@ -23,7 +23,8 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
             .NotEmpty()
-            .MustAsync(ValidateUsername);
+            .MustAsync(ValidateUsername)
+            .WithMessage("Username already in use");
 
         RuleFor(v => v.User.Password)
             .MinimumLength(ColumnMetadata.MinimumPasswordLength)
@@ -34,7 +35,8 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .EmailAddress()
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
             .NotEmpty()
-            .MustAsync(ValidateEmailAddress);
+            .MustAsync(ValidateEmailAddress)
+            .WithMessage("Email address already in use");
     }
 
     private async Task<bool> ValidateUsername(string username, CancellationToken cancellationToken)

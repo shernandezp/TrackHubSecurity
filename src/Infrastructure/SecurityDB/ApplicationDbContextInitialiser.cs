@@ -76,11 +76,12 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         }
         if (!context.Actions.Any())
         {
-            context.Actions.Add(new Action { ActionName = Actions.View, ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = Actions.Read, ResourceId = 1 });
             context.Actions.Add(new Action { ActionName = Actions.Edit, ResourceId = 1 });
             context.Actions.Add(new Action { ActionName = Actions.Export, ResourceId = 1 });
             context.Actions.Add(new Action { ActionName = Actions.Execute, ResourceId = 1 });
             context.Actions.Add(new Action { ActionName = Actions.Write, ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = Actions.Delete, ResourceId = 1 });
             await context.SaveChangesAsync();
         }
         if (!context.Roles.Any())
@@ -96,6 +97,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             context.Policies.Add(new Policy { PolicyName = "CanExport", Description = string.Empty });
             context.Policies.Add(new Policy { PolicyName = "CanExecute", Description = string.Empty });
             context.Policies.Add(new Policy { PolicyName = "CanWrite", Description = string.Empty });
+            context.Policies.Add(new Policy { PolicyName = "CanDelete", Description = string.Empty });
             await context.SaveChangesAsync();
         }
         if (!context.ResourceActionRole.Any())

@@ -16,14 +16,27 @@
 namespace TrackHub.Security.Application.Users.Commands.UpdateUser;
 public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {
-    public UpdateUserCommandValidator()
+    private readonly IUserReader _userReader;
+    public UpdateUserCommandValidator(IUserReader userReader)
     {
+        _userReader = userReader;
+
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
-            .NotEmpty();
+            .NotEmpty()
+            .MustAsync((command, username, cancellationToken) => ValidateUsername(command.User.UserId, username, cancellationToken))
+            .WithMessage("Username already in use");
 
         RuleFor(v => v.User.EmailAddress)
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
-            .NotEmpty();
+            .NotEmpty()
+            .MustAsync((command, emailAddress, cancellationToken) => ValidateEmailAddress(command.User.UserId, emailAddress, cancellationToken))
+            .WithMessage("Email address already in use");
     }
+
+    private async Task<bool> ValidateUsername(Guid userId, string username, CancellationToken cancellationToken)
+        => await _userReader.ValidateUsernameAsync(userId, username, cancellationToken);
+
+    private async Task<bool> ValidateEmailAddress(Guid userId, string emailAddress, CancellationToken cancellationToken)
+        => await _userReader.ValidateEmailAddressAsync(userId, emailAddress, cancellationToken);
 }
