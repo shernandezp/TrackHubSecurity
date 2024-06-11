@@ -27,4 +27,17 @@ public sealed class ResourceActionRoleReader(IApplicationDbContext context) : IR
             .Select(rar => rar.Role.RoleName)
             .ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyCollection<ResourceActionVm>> GetRoleAuthorizedActionsAsync(IReadOnlyCollection<int> roles, CancellationToken cancellationToken)
+        => await context.ResourceActionRole
+            .Include(rar => rar.Resource)
+            .Include(rar => rar.Action)
+            .Where(rar => roles.Contains(rar.RoleId))
+            .Select(rar => new ResourceActionVm(
+                rar.ResourceId,
+                rar.Resource.ResourceName,
+                rar.ActionId,
+                rar.Action.ActionName
+            ))
+            .ToListAsync(cancellationToken);
+
 }

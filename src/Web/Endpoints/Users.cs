@@ -16,7 +16,7 @@
 using TrackHub.Security.Application.Users.Commands.Create;
 using TrackHub.Security.Application.Users.Commands.Delete;
 using TrackHub.Security.Application.Users.Commands.Update;
-using TrackHub.Security.Application.Users.Queries.GetUser;
+using TrackHub.Security.Application.Users.Queries.Get;
 using TrackHub.Security.Domain.Models;
 
 namespace TrackHub.Security.Web.Endpoints;

@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Queries.GetUser;
+using TrackHub.Security.Application.Users.Queries.Get;
 using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Domain.Models;
 

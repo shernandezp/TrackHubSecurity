@@ -13,7 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Queries.GetUser;
+using TrackHub.Security.Application.Users.Queries.Get;
+using TrackHub.Security.Application.Users.Queries.GetAuthorizedActions;
+using TrackHub.Security.Application.Users.Queries.GetByAccount;
 using TrackHub.Security.Domain.Models;
 
 namespace TrackHub.Security.Web.GraphQL.Query;
@@ -21,6 +23,12 @@ namespace TrackHub.Security.Web.GraphQL.Query;
 public partial class Query
 {
     public async Task<UserVm> GetUser([Service] ISender sender, [AsParameters] GetUserQuery query)
+        => await sender.Send(query);
+
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersByAccount([Service] ISender sender, [AsParameters] GetUsersByAccountQuery query)
+        => await sender.Send(query);
+
+    public async Task<IReadOnlyCollection<ResourceActionVm>> GetAuthorizedActions([Service] ISender sender, [AsParameters] GetAuthorizedActionsQuery query)
         => await sender.Send(query);
 
 }

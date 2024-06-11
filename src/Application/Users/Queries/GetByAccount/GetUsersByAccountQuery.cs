@@ -13,13 +13,14 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Application.Users.Queries.GetUser;
+namespace TrackHub.Security.Application.Users.Queries.GetByAccount;
 
-public sealed class GetUserQueryValidator : AbstractValidator<GetUserQuery>
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Read)]
+public readonly record struct GetUsersByAccountQuery(Guid AccountId) : IRequest<IReadOnlyCollection<UserVm>>;
+
+public class GetUsersByAccountQueryHandler(IUserReader reader) : IRequestHandler<GetUsersByAccountQuery, IReadOnlyCollection<UserVm>>
 {
-    public GetUserQueryValidator()
-    {
-        RuleFor(x => x.Id)
-            .NotEmpty();
-    }
+    public async Task<IReadOnlyCollection<UserVm>> Handle(GetUsersByAccountQuery request, CancellationToken cancellationToken)
+        => await reader.GetUsersAsync(request.AccountId, cancellationToken);
+
 }

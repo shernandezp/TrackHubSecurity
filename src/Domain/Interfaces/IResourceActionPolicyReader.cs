@@ -13,8 +13,11 @@
 //  limitations under the License.
 //
 
+namespace TrackHub.Security.Domain.Interfaces;
+
 public interface IResourceActionPolicyReader
 {
     Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<ResourceActionVm>> GetPolicyAuthorizedActionsAsync(IReadOnlyCollection<int> policies, CancellationToken cancellationToken);
 
 }

@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserReader
 {
     Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken);

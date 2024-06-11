@@ -19,11 +19,17 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
 public sealed class UserPolicyReader(IApplicationDbContext context) : IUserPolicyReader
 {
 
-    public async Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<string>> GetUserPolicyNamesAsync(Guid userId, CancellationToken cancellationToken)
         => await context.UserPolicies
             .Include(up => up.Policy)
             .Where(up => up.UserId.Equals(userId))
             .Select(up => up.Policy.PolicyName)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyCollection<int>> GetUserPolicyIdsAsync(Guid userId, CancellationToken cancellationToken)
+        => await context.UserPolicies
+            .Where(up => up.UserId.Equals(userId))
+            .Select(up => up.PolicyId)
             .ToListAsync(cancellationToken);
 
 }

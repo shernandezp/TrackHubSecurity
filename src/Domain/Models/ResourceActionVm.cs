@@ -13,9 +13,10 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Interfaces;
-public interface IResourceActionRoleReader
-{
-    Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<ResourceActionVm>> GetRoleAuthorizedActionsAsync(IReadOnlyCollection<int> roles, CancellationToken cancellationToken);
-}
+namespace TrackHub.Security.Domain.Models;
+public readonly record struct ResourceActionVm(
+    int ResourceId,
+    string ResourceName,
+    int ActionId,
+    string ActionName
+    );

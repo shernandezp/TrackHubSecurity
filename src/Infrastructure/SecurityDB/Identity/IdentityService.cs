@@ -14,6 +14,7 @@
 //
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Domain.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Identity;
 public class IdentityService(IUserReader userReader,
@@ -28,14 +29,14 @@ public class IdentityService(IUserReader userReader,
     public async Task<bool> IsInRoleAsync(Guid userId, string resource, string action, CancellationToken token)
     {
         var resourceActionRoles = await resourceActionRoleReader.GetResourceActionRolesAsync(resource, action, token);
-        var userRoles = await userRoleReader.GetUserRolesAsync(userId, token);
+        var userRoles = await userRoleReader.GetUserRoleNamesAsync(userId, token);
         return resourceActionRoles.Any(role => userRoles.Contains(role));
     }
 
     public async Task<bool> AuthorizeAsync(Guid userId, string resource, string action, CancellationToken token)
     {
         var resourceActionPolicies = await resourceActionPolicyReader.GetResourceActionPoliciesAsync(resource, action, token);
-        var userPolicies = await userPolicyReader.GetUserPoliciesAsync(userId, token);
+        var userPolicies = await userPolicyReader.GetUserPolicyNamesAsync(userId, token);
         return resourceActionPolicies.All(policy => userPolicies.Contains(policy));
     }
 }

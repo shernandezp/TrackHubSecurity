@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
@@ -25,6 +26,19 @@ public sealed class ResourceActionPolicyReader(IApplicationDbContext context) : 
             .Include(rap => rap.Action)
             .Where(rap => rap.Resource.ResourceName.Equals(resource) && rap.Action.ActionName.Equals(action))
             .Select(rap => rap.Policy.PolicyName)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyCollection<ResourceActionVm>> GetPolicyAuthorizedActionsAsync(IReadOnlyCollection<int> policies, CancellationToken cancellationToken)
+        => await context.ResourceActionPolicy
+            .Include(rap => rap.Resource)
+            .Include(rap => rap.Action)
+            .Where(rap => policies.Contains(rap.PolicyId))
+            .Select(rap => new ResourceActionVm(
+                rap.ResourceId,
+                rap.Resource.ResourceName,
+                rap.ActionId,
+                rap.Action.ActionName
+            ))
             .ToListAsync(cancellationToken);
 
 }

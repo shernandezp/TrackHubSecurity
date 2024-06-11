@@ -13,8 +13,10 @@
 //  limitations under the License.
 //
 
+namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserRoleReader
 {
-    Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> GetUserRoleNamesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<int>> GetUserRolesIdsAsync(Guid userId, CancellationToken cancellationToken);
 
 }

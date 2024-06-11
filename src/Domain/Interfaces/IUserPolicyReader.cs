@@ -13,8 +13,10 @@
 //  limitations under the License.
 //
 
+namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserPolicyReader
 {
-    Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<string>> GetUserPolicyNamesAsync(Guid userId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<int>> GetUserPolicyIdsAsync(Guid userId, CancellationToken cancellationToken);
 
 }

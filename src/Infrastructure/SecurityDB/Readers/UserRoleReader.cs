@@ -19,11 +19,17 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
 public sealed class UserRoleReader(IApplicationDbContext context) : IUserRoleReader
 {
 
-    public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<string>> GetUserRoleNamesAsync(Guid userId, CancellationToken cancellationToken)
         => await context.UserRoles
             .Include(ur => ur.Role)
             .Where(ur => ur.UserId.Equals(userId))
             .Select(ur => ur.Role.RoleName)
+            .ToListAsync(cancellationToken);
+
+    public async Task<IReadOnlyCollection<int>> GetUserRolesIdsAsync(Guid userId, CancellationToken cancellationToken) 
+        => await context.UserRoles
+            .Where(ur => ur.UserId.Equals(userId))
+            .Select(ur => ur.RoleId)
             .ToListAsync(cancellationToken);
 
 }

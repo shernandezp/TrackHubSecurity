@@ -350,7 +350,7 @@
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/ProfileVm"
+              "$ref": "#/components/schemas/PolicyVm"
             }
           }
         }
@@ -364,7 +364,7 @@
           }
         }
       },
-      "ProfileVm": {
+      "PolicyVm": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
