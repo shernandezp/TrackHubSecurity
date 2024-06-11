@@ -13,5 +13,16 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+
+namespace TrackHub.Security.Application.UserPolicy.Commands.Delete;
+
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Delete)]
+public readonly record struct DeleteUserPolicyCommand(Guid UserId, int PolicyId) : IRequest;
+
+public class DeleteUserPolicyCommandHandler(IUserPolicyWriter writer) : IRequestHandler<DeleteUserPolicyCommand>
+{
+
+    public async Task Handle(DeleteUserPolicyCommand request, CancellationToken cancellationToken)
+        => await writer.DeleteUserPolicyAsync(request.UserId, request.PolicyId, cancellationToken);
+
+}

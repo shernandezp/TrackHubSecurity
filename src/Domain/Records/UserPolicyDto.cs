@@ -13,5 +13,5 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+namespace TrackHub.Security.Domain.Records;
+public record struct UserPolicyDto(Guid UserId, int PolicyId);

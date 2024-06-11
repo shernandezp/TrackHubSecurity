@@ -13,5 +13,15 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+
+namespace TrackHub.Security.Application.UserPolicy.Commands.Create;
+
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Write)]
+public readonly record struct CreateUserPolicyCommand(UserPolicyDto UserPolicy) : IRequest<UserPolicyVm>;
+
+public class CreateUserPolicyCommandHandler(IUserPolicyWriter writer) : IRequestHandler<CreateUserPolicyCommand, UserPolicyVm>
+{
+    public async Task<UserPolicyVm> Handle(CreateUserPolicyCommand request, CancellationToken cancellationToken)
+        => await writer.CreateUserPolicyAsync(request.UserPolicy, cancellationToken);
+
+}

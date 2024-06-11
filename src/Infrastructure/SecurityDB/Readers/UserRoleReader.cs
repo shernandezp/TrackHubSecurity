@@ -13,5 +13,17 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+
+namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+public sealed class UserRoleReader(IApplicationDbContext context) : IUserRoleReader
+{
+
+    public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken)
+        => await context.UserRoles
+            .Include(ur => ur.Role)
+            .Where(ur => ur.UserId.Equals(userId))
+            .Select(ur => ur.Role.RoleName)
+            .ToListAsync(cancellationToken);
+
+}

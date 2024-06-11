@@ -17,6 +17,7 @@ using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Delete;
 
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Delete)]
 public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
 
 public class DeleteUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<DeleteUserCommand>

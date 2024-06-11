@@ -13,5 +13,20 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+using TrackHub.Security.Application.UserPolicy.Commands.Create;
+using TrackHub.Security.Application.UserPolicy.Commands.Delete;
+using TrackHub.Security.Domain.Models;
+
+namespace TrackHub.Security.Web.GraphQL.Mutation;
+
+public partial class Mutation
+{
+    public async Task<UserPolicyVm> CreateUserPolicy([Service] ISender sender, CreateUserPolicyCommand command)
+        => await sender.Send(command);
+
+    public async Task<Guid> DeleteUserPolicy([Service] ISender sender, Guid userId, int policyId)
+    {
+        await sender.Send(new DeleteUserPolicyCommand(userId, policyId));
+        return userId;
+    }
+}

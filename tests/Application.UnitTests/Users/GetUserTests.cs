@@ -42,7 +42,7 @@ internal class GetUserTests
         _readerMock.Setup(m => m.GetUserAsync(userId, cancellationToken))
                   .ReturnsAsync(userVm);
 
-        var handler = new GetUsersQueryHandler(_readerMock.Object);
+        var handler = new GetUserQueryHandler(_readerMock.Object);
         var query = new GetUserQuery { Id = userId };
 
         // Act

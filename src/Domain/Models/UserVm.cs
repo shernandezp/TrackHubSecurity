@@ -25,5 +25,5 @@ public readonly record struct UserVm(
     string? SecondSurname,
     DateTime? DOB,
     Guid AccountId,
-    IEnumerable<RoleVm>? Roles,
-    IEnumerable<ProfileVm>? Profiles);
+    IReadOnlyCollection<RoleVm>? Roles,
+    IReadOnlyCollection<PolicyVm>? Profiles);

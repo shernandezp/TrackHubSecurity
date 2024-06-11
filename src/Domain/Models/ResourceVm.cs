@@ -13,5 +13,9 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+namespace TrackHub.Security.Domain.Models;
+public readonly record struct ResourceVm(
+    int ResourceId,
+    string ResourceName,
+    IReadOnlyCollection<ActionVm>? Actions
+    );

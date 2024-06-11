@@ -17,6 +17,7 @@ using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
 
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Edit)]
 public readonly record struct UpdateUserCommand(UpdateUserDto User) : IRequest;
 public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<UpdateUserCommand>
 {

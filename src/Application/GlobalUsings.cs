@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+global using Common.Application.Attributes;
 global using TrackHub.Security.Domain.Interfaces;
 global using TrackHub.Security.Domain.Models;
 global using TrackHub.Security.Domain.Records;

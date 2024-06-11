@@ -13,5 +13,16 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+
+namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Delete;
+
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Delete)]
+public readonly record struct DeleteResourceActionPolicyCommand(int ResourceActionPolicyId) : IRequest;
+
+public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer) : IRequestHandler<DeleteResourceActionPolicyCommand>
+{
+
+    public async Task Handle(DeleteResourceActionPolicyCommand request, CancellationToken cancellationToken)
+        => await writer.DeleteResourceActionPolicyAsync(request.ResourceActionPolicyId, cancellationToken);
+
+}

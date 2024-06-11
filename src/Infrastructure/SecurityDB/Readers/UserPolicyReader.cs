@@ -13,5 +13,17 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+
+namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+public sealed class UserPolicyReader(IApplicationDbContext context) : IUserPolicyReader
+{
+
+    public async Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken)
+        => await context.UserPolicies
+            .Include(up => up.Policy)
+            .Where(up => up.UserId.Equals(userId))
+            .Select(up => up.Policy.PolicyName)
+            .ToListAsync(cancellationToken);
+
+}

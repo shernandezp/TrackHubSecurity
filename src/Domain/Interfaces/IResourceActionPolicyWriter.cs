@@ -13,5 +13,10 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+
+namespace TrackHub.Security.Domain.Interfaces;
+public interface IResourceActionPolicyWriter
+{
+    Task<ResourceActionPolicyVm> CreateResourceActionPolicyAsync(ResourceActionPolicyDto resourceActionPolicyDto, CancellationToken cancellationToken);
+    Task DeleteResourceActionPolicyAsync(int resourceActionPolicyId, CancellationToken cancellationToken);
+}

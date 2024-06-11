@@ -13,6 +13,14 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
-public readonly record struct ProfileVm(
-    string Name);
+namespace TrackHub.Security.Application.Users.Queries.GetUsers;
+
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Read)]
+public readonly record struct GetUsersQuery(Guid AccountId) : IRequest<IReadOnlyCollection<UserVm>>;
+
+public class GetUsersQueryHandler(IUserReader reader) : IRequestHandler<GetUsersQuery, IReadOnlyCollection<UserVm>>
+{
+    public async Task<IReadOnlyCollection<UserVm>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
+        => await reader.GetUsersAsync(request.AccountId, cancellationToken);
+
+}

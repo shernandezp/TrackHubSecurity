@@ -13,8 +13,6 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Domain.Records;
-
 namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserRoleWriter
 {

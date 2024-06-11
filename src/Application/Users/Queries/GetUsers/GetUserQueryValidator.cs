@@ -13,5 +13,13 @@
 //  limitations under the License.
 //
 
-global using TrackHub.Security.Domain.Models;
-global using TrackHub.Security.Domain.Records;
+namespace TrackHub.Security.Application.Users.Queries.GetUsers;
+
+public sealed class GetUserQueryValidator : AbstractValidator<GetUsersQuery>
+{
+    public GetUserQueryValidator()
+    {
+        RuleFor(x => x.AccountId)
+            .NotEmpty();
+    }
+}

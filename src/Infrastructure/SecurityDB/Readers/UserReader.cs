@@ -13,7 +13,6 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
@@ -42,39 +41,26 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.DOB,
                 u.AccountId,
                 u.Roles.Select(r => new RoleVm(r.RoleName)).ToList(),
-                u.Policies.Select(p => new ProfileVm(p.PolicyName)).ToList()))
+                u.Policies.Select(p => new PolicyVm(p.PolicyName)).ToList()))
             .FirstAsync(cancellationToken);
 
-    public async Task<IReadOnlyCollection<string>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken)
-        => await context.UserRoles
-            .Include(ur => ur.Role)
-            .Where(ur => ur.UserId.Equals(userId))
-            .Select(ur => ur.Role.RoleName)
-            .ToListAsync(cancellationToken);
-
-    public async Task<IReadOnlyCollection<string>> GetUserPoliciesAsync(Guid userId, CancellationToken cancellationToken)
-        => await context.UserPolicies
-            .Include(up => up.Policy)
-            .Where(up => up.UserId.Equals(userId))
-            .Select(up => up.Policy.PolicyName)
-            .ToListAsync(cancellationToken);
-
-    public async Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken)
-        => await context.ResourceActionRole
-            .Include(rar => rar.Resource)
-            .Include(rar => rar.Action)
-            .Include(rar => rar.Role)
-            .Where(rar => rar.Resource.ResourceName.Equals(resource) && rar.Action.ActionName.Equals(action))
-            .Select(rar => rar.Role.RoleName)
-            .ToListAsync(cancellationToken);
-
-    public async Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken)
-        => await context.ResourceActionPolicy
-            .Include(rap => rap.Policy)
-            .Include(rap => rap.Resource)
-            .Include(rap => rap.Action)
-            .Where(rap => rap.Resource.ResourceName.Equals(resource) && rap.Action.ActionName.Equals(action))
-            .Select(rap => rap.Policy.PolicyName)
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, CancellationToken cancellationToken)
+        => await context.Users
+            .Where(u => u.AccountId.Equals(accountId))
+            .Include(role => role.Roles)
+            .Include(policy => policy.Policies)
+            .Select(u => new UserVm(
+                u.UserId,
+                u.Username,
+                u.EmailAddress,
+                u.FirstName,
+                u.SecondName,
+                u.LastName,
+                u.SecondSurname,
+                u.DOB,
+                u.AccountId,
+                u.Roles.Select(r => new RoleVm(r.RoleName)).ToList(),
+                u.Policies.Select(p => new PolicyVm(p.PolicyName)).ToList()))
             .ToListAsync(cancellationToken);
 
     public async Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)

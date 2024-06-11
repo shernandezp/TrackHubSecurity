@@ -16,6 +16,7 @@
 
 namespace TrackHub.Security.Application.UserRole.Commands.Delete;
 
+[Authorize(Resource = Resources.AccountScreen, Action = Actions.Delete)]
 public readonly record struct DeleteUserRoleCommand(Guid UserId, int RoleId) : IRequest;
 
 public class DeleteUserRoleCommandHandler(IUserRoleWriter writer) : IRequestHandler<DeleteUserRoleCommand>

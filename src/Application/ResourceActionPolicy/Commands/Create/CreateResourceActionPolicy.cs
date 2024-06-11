@@ -14,15 +14,14 @@
 //
 
 
-namespace TrackHub.Security.Application.UserRole.Commands.Create;
+namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Create;
 
 [Authorize(Resource = Resources.AccountScreen, Action = Actions.Write)]
-public readonly record struct CreateUserRoleCommand(UserRoleDto UserRole) : IRequest<UserRoleVm>;
+public readonly record struct CreateResourceActionPolicyCommand(ResourceActionPolicyDto ResourceActionPolicy) : IRequest<ResourceActionPolicyVm>;
 
-public class CreateUserRoleCommandHandler(IUserRoleWriter writer) : IRequestHandler<CreateUserRoleCommand, UserRoleVm>
+public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>
 {
-    public async Task<UserRoleVm> Handle(CreateUserRoleCommand request, CancellationToken cancellationToken)
-        => await writer.CreateUserRoleAsync(request.UserRole, cancellationToken);
+    public async Task<ResourceActionPolicyVm> Handle(CreateResourceActionPolicyCommand request, CancellationToken cancellationToken)
+        => await writer.CreateResourceActionPolicyAsync(request.ResourceActionPolicy, cancellationToken);
 
 }
-
