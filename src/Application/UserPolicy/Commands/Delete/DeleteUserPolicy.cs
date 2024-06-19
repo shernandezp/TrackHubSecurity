@@ -16,7 +16,7 @@
 
 namespace TrackHub.Security.Application.UserPolicy.Commands.Delete;
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Delete)]
+[Authorize(Resource = Resources.Users, Action = Actions.Delete)]
 public readonly record struct DeleteUserPolicyCommand(Guid UserId, int PolicyId) : IRequest;
 
 public class DeleteUserPolicyCommandHandler(IUserPolicyWriter writer) : IRequestHandler<DeleteUserPolicyCommand>

@@ -15,7 +15,7 @@
 
 namespace TrackHub.Security.Application.Users.Queries.Get;
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Read)]
+[Authorize(Resource = Resources.Users, Action = Actions.Read)]
 public readonly record struct GetUserQuery(Guid Id) : IRequest<UserVm>;
 
 public class GetUserQueryHandler(IUserReader reader) : IRequestHandler<GetUserQuery, UserVm>

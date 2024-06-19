@@ -67,11 +67,11 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         // Seed, if necessary
         if (!context.Resources.Any())
         {
-            context.Resources.Add(new Resource { ResourceName = Resources.AccountScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.Accounts });
             context.Resources.Add(new Resource { ResourceName = Resources.MapScreen });
-            context.Resources.Add(new Resource { ResourceName = Resources.PermissionScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.Permissions });
             context.Resources.Add(new Resource { ResourceName = Resources.SettingsScreen });
-            context.Resources.Add(new Resource { ResourceName = Resources.UserScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.Users });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())

@@ -17,7 +17,7 @@ using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Create;
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Write)]
+[Authorize(Resource = Resources.Users, Action = Actions.Write)]
 public readonly record struct CreateUserCommand(CreateUserDto User) : IRequest<UserVm>;
 
 public class CreateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<CreateUserCommand, UserVm>

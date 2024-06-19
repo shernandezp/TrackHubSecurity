@@ -16,7 +16,7 @@
 
 namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Delete;
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Delete)]
+[Authorize(Resource = Resources.Accounts, Action = Actions.Delete)]
 public readonly record struct DeleteResourceActionPolicyCommand(int ResourceActionPolicyId) : IRequest;
 
 public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer) : IRequestHandler<DeleteResourceActionPolicyCommand>

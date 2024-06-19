@@ -14,7 +14,6 @@
 //
 
 using Common.Domain.Extensions;
-using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Domain.Records;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 

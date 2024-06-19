@@ -15,7 +15,7 @@
 
 namespace TrackHub.Security.Application.Users.Queries.GetByAccount;
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Read)]
+[Authorize(Resource = Resources.Users, Action = Actions.Read)]
 public readonly record struct GetUsersByAccountQuery(Guid AccountId) : IRequest<IReadOnlyCollection<UserVm>>;
 
 public class GetUsersByAccountQueryHandler(IUserReader reader) : IRequestHandler<GetUsersByAccountQuery, IReadOnlyCollection<UserVm>>

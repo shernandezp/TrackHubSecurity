@@ -16,7 +16,7 @@
 namespace TrackHub.Security.Application.Users.Queries.GetAuthorizedActions;
 
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Read)]
+[Authorize(Resource = Resources.Accounts, Action = Actions.Read)]
 public readonly record struct GetAuthorizedActionsQuery(Guid UserId) : IRequest<IReadOnlyCollection<ResourceActionVm>>;
 
 public class GetAuthorizedActionsQueryHandler(

@@ -16,7 +16,6 @@
 
 using TrackHub.Security.Domain.Records;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
-using TrackHub.Security.Domain.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 

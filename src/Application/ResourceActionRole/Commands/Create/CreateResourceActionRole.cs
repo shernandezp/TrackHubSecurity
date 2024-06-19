@@ -16,7 +16,7 @@
 
 namespace TrackHub.Security.Application.ResourceActionRole.Commands.Create;
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Write)] 
+[Authorize(Resource = Resources.Accounts, Action = Actions.Write)] 
 public readonly record struct CreateResourceActionRoleCommand(ResourceActionRoleDto ResourceActionRole) : IRequest<ResourceActionRoleVm>;
 
 public class CreateResourceActionRoleCommandHandler(IResourceActionRoleWriter writer) : IRequestHandler<CreateResourceActionRoleCommand, ResourceActionRoleVm>

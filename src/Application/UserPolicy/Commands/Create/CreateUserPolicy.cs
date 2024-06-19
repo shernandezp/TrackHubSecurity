@@ -16,7 +16,7 @@
 
 namespace TrackHub.Security.Application.UserPolicy.Commands.Create;
 
-[Authorize(Resource = Resources.AccountScreen, Action = Actions.Write)]
+[Authorize(Resource = Resources.Users, Action = Actions.Write)]
 public readonly record struct CreateUserPolicyCommand(UserPolicyDto UserPolicy) : IRequest<UserPolicyVm>;
 
 public class CreateUserPolicyCommandHandler(IUserPolicyWriter writer) : IRequestHandler<CreateUserPolicyCommand, UserPolicyVm>
