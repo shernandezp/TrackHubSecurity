@@ -14,14 +14,13 @@
 //
 
 using Common.Domain.Constants;
-using Microsoft.Extensions.Configuration;
 using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Infrastructure.ManagerApi;
 
 namespace Microsoft.Extensions.DependencyInjection;
 public static class DependencyInjection
 {
-    public static IServiceCollection AddAppManagerContext(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddAppManagerContext(this IServiceCollection services)
     {
         services.AddHeaderPropagation(o => o.Headers.Add("Authorization"));
 
