@@ -19,8 +19,10 @@ using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
+// This class represents a writer for the User entity in the security database.
 public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 {
+    // Creates a new user asynchronously.
     public async Task<UserVm> CreateUserAsync(CreateUserDto userDto, CancellationToken cancellationToken)
     {
         var password = userDto.Password.HashPassword();
@@ -52,6 +54,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             []);
     }
 
+    // Updates an existing user asynchronously.
     public async Task UpdateUserAsync(UpdateUserDto userDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userDto.UserId], cancellationToken)
@@ -67,6 +70,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    // Updates the password of an existing user asynchronously.
     public async Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userPasswordDto.UserId], cancellationToken)
@@ -77,6 +81,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         await context.SaveChangesAsync(cancellationToken);
     }
 
+    // Deletes a user asynchronously.
     public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userId], cancellationToken)

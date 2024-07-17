@@ -14,7 +14,7 @@
 //
 
 using Common.Application.Interfaces;
-using TrackHub.Security.Domain.Interfaces;
+
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Identity;
 public class IdentityService(IUserReader userReader,
@@ -23,9 +23,11 @@ public class IdentityService(IUserReader userReader,
     IUserRoleReader userRoleReader,
     IUserPolicyReader userPolicyReader) : IIdentityService
 {
+    // Retrieves the username associated with the given userId asynchronously.
     public async Task<string> GetUserNameAsync(Guid userId, CancellationToken token)
         => await userReader.GetUserNameAsync(userId, token);
 
+    // Checks if the user with the given userId is in the specified role for the given resource and action asynchronously.
     public async Task<bool> IsInRoleAsync(Guid userId, string resource, string action, CancellationToken token)
     {
         var resourceActionRoles = await resourceActionRoleReader.GetResourceActionRolesAsync(resource, action, token);
@@ -33,6 +35,7 @@ public class IdentityService(IUserReader userReader,
         return resourceActionRoles.Any(role => userRoles.Contains(role));
     }
 
+    // Authorizes the user with the given userId for the specified resource and action asynchronously.
     public async Task<bool> AuthorizeAsync(Guid userId, string resource, string action, CancellationToken token)
     {
         var resourceActionPolicies = await resourceActionPolicyReader.GetResourceActionPoliciesAsync(resource, action, token);

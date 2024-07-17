@@ -14,23 +14,29 @@
 //
 
 namespace TrackHub.Security.Application.Users.Commands.Create;
+
 public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
     private readonly IUserReader _userReader;
+
     public CreateUserCommandValidator(IUserReader userReader)
     {
         _userReader = userReader;
+
+        // Validate the maximum length, non-empty, and uniqueness of the username
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
             .NotEmpty()
             .MustAsync(ValidateUsername)
             .WithMessage("Username already in use");
 
+        // Validate the minimum and maximum length, and non-empty of the password
         RuleFor(v => v.User.Password)
             .MinimumLength(ColumnMetadata.MinimumPasswordLength)
             .MaximumLength(ColumnMetadata.DefaultPasswordLength)
             .NotEmpty();
 
+        // Validate the email address format, maximum length, non-empty, and uniqueness
         RuleFor(v => v.User.EmailAddress)
             .EmailAddress()
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
@@ -39,9 +45,11 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .WithMessage("Email address already in use");
     }
 
+    // Asynchronously validate the uniqueness of the username
     private async Task<bool> ValidateUsername(string username, CancellationToken cancellationToken)
         => await _userReader.ValidateUsernameAsync(username, cancellationToken);
 
+    // Asynchronously validate the uniqueness of the email address
     private async Task<bool> ValidateEmailAddress(string emailAddress, CancellationToken cancellationToken)
         => await _userReader.ValidateEmailAddressAsync(emailAddress, cancellationToken);
 

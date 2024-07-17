@@ -21,6 +21,8 @@ public readonly record struct CreateResourceActionRoleCommand(ResourceActionRole
 
 public class CreateResourceActionRoleCommandHandler(IResourceActionRoleWriter writer) : IRequestHandler<CreateResourceActionRoleCommand, ResourceActionRoleVm>
 {
+    // This method handles the CreateResourceActionRoleCommand by calling the writer's CreateResourceActionRoleAsync method.
+    // It returns a ResourceActionRoleVm object.
     public async Task<ResourceActionRoleVm> Handle(CreateResourceActionRoleCommand request, CancellationToken cancellationToken)
         => await writer.CreateResourceActionRoleAsync(request.ResourceActionRole, cancellationToken);
 

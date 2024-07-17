@@ -19,8 +19,10 @@ using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
+// This class represents a writer for the ResourceActionPolicy entity in the security database.
 public sealed class ResourceActionPolicyWriter(IApplicationDbContext context) : IResourceActionPolicyWriter
 {
+    // Creates a new resource action policy asynchronously.
     public async Task<ResourceActionPolicyVm> CreateResourceActionPolicyAsync(ResourceActionPolicyDto resourceActionPolicyDto, CancellationToken cancellationToken)
     {
         var resourceActionPolicy = new ResourceActionPolicy
@@ -40,6 +42,7 @@ public sealed class ResourceActionPolicyWriter(IApplicationDbContext context) : 
             resourceActionPolicy.PolicyId);
     }
 
+    // Deletes a resource action policy asynchronously.
     public async Task DeleteResourceActionPolicyAsync(int resourceActionPolicyId, CancellationToken cancellationToken)
     {
         var resourceActionPolicy = await context.ResourceActionPolicy.FindAsync(resourceActionPolicyId, cancellationToken)

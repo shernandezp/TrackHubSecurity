@@ -14,12 +14,16 @@
 //
 
 namespace TrackHub.Security.Application.Users.Events;
+
 public sealed class UserUpdated
 {
+    // Define a record struct for the UserUpdated notification
     public readonly record struct Notification(Guid Id, UpdateUserShrankDto User) : INotification
     {
+        // Define an event handler for the UserUpdated notification
         public class EventHandler(IManagerWriter managerWriter) : INotificationHandler<Notification>
         {
+            // Handle the UserUpdated notification by updating the user asynchronously
             public async Task Handle(Notification notification, CancellationToken cancellationToken)
                 => await managerWriter.UpdateUserAsync(notification.Id, notification.User, cancellationToken);
         }

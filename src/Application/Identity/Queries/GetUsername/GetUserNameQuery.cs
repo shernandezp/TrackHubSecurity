@@ -17,12 +17,11 @@ using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.Identity.Queries.GetUsername;
 
-public readonly record struct GetUserNameQuery(Guid UserId) : IRequest<string>
-{
-}
+public readonly record struct GetUserNameQuery(Guid UserId) : IRequest<string>;
 
 public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<GetUserNameQuery, string>
 {
+    // Handles the GetUserNameQuery by retrieving the username from the identity service
     public async Task<string> Handle(GetUserNameQuery request, CancellationToken cancellationToken)
         => await service.GetUserNameAsync(request.UserId, cancellationToken);
 

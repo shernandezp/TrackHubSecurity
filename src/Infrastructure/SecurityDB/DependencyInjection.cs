@@ -16,7 +16,6 @@
 using Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using TrackHub.Security.Domain.Interfaces;
 using TrackHub.Security.Infrastructure.SecurityDB;
 using TrackHub.Security.Infrastructure.SecurityDB.Identity;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;

@@ -23,10 +23,10 @@ public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
 public class DeleteUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<DeleteUserCommand>
 {
 
+    // Handle method to delete a user
     public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         await writer.DeleteUserAsync(request.Id, cancellationToken);
-
         await publisher.Publish(new UserDeleted.Notification(request.Id), cancellationToken);
     }
 

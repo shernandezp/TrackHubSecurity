@@ -21,8 +21,8 @@ public readonly record struct DeleteResourceActionRoleCommand(int ResourceAction
 
 public class DeleteResourceActionRoleCommandHandler(IResourceActionRoleWriter writer) : IRequestHandler<DeleteResourceActionRoleCommand>
 {
-
+    // This method handles the DeleteResourceActionRoleCommand by deleting the resource action role.
+    // It calls the DeleteResourceActionRoleAsync method of the writer.
     public async Task Handle(DeleteResourceActionRoleCommand request, CancellationToken cancellationToken)
         => await writer.DeleteResourceActionRoleAsync(request.ResourceActionRoleId, cancellationToken);
-
 }

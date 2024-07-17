@@ -21,7 +21,7 @@ public readonly record struct DeleteUserRoleCommand(Guid UserId, int RoleId) : I
 
 public class DeleteUserRoleCommandHandler(IUserRoleWriter writer) : IRequestHandler<DeleteUserRoleCommand>
 {
-
+    // Implement the Handle method to handle the DeleteUserRoleCommand
     public async Task Handle(DeleteUserRoleCommand request, CancellationToken cancellationToken)
         => await writer.DeleteUserRoleAsync(request.UserId, request.RoleId, cancellationToken);
 

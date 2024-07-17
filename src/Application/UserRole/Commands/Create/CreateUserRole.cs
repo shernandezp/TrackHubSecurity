@@ -21,6 +21,8 @@ public readonly record struct CreateUserRoleCommand(UserRoleDto UserRole) : IReq
 
 public class CreateUserRoleCommandHandler(IUserRoleWriter writer) : IRequestHandler<CreateUserRoleCommand, UserRoleVm>
 {
+    // This method handles the CreateUserRoleCommand by creating a user role using the provided writer.
+    // It returns a UserRoleVm.
     public async Task<UserRoleVm> Handle(CreateUserRoleCommand request, CancellationToken cancellationToken)
         => await writer.CreateUserRoleAsync(request.UserRole, cancellationToken);
 

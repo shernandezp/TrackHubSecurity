@@ -17,10 +17,13 @@ namespace TrackHub.Security.Application.Users.Events;
 
 public sealed class UserCreated
 {
-    public readonly record struct Notification(UserShrankDto User) : INotification 
+    // Represents a notification for when a user is created
+    public readonly record struct Notification(UserShrankDto User) : INotification
     {
-        public class EventHandler(IManagerWriter managerWriter) : INotificationHandler<Notification> 
+        // Handles the UserCreated notification
+        public class EventHandler(IManagerWriter managerWriter) : INotificationHandler<Notification>
         {
+            // Handles the notification by calling the CreateUserAsync method on the manager writer (api)
             public async Task Handle(Notification notification, CancellationToken cancellationToken)
                 => await managerWriter.CreateUserAsync(notification.User, cancellationToken);
         }

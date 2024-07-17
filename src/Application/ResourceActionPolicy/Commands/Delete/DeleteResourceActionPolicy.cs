@@ -21,8 +21,8 @@ public readonly record struct DeleteResourceActionPolicyCommand(int ResourceActi
 
 public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer) : IRequestHandler<DeleteResourceActionPolicyCommand>
 {
-
+    // This method handles the DeleteResourceActionPolicyCommand by deleting the resource action policy
+    // with the specified ID using the provided writer.
     public async Task Handle(DeleteResourceActionPolicyCommand request, CancellationToken cancellationToken)
         => await writer.DeleteResourceActionPolicyAsync(request.ResourceActionPolicyId, cancellationToken);
-
 }

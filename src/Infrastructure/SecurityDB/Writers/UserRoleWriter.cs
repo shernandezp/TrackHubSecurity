@@ -19,8 +19,10 @@ using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
+// This class represents a writer for the UserRole entity in the security database.
 public sealed class UserRoleWriter(IApplicationDbContext context) : IUserRoleWriter
 {
+    // Creates a new UserRole asynchronously and returns the created UserRoleVm.
     public async Task<UserRoleVm> CreateUserRoleAsync(UserRoleDto userRoleDto, CancellationToken cancellationToken)
     {
         var userRole = new UserRole
@@ -37,6 +39,7 @@ public sealed class UserRoleWriter(IApplicationDbContext context) : IUserRoleWri
             userRole.RoleId);
     }
 
+    // Deletes a UserRole asynchronously based on the provided userId and roleId.
     public async Task DeleteUserRoleAsync(Guid userId, int roleId, CancellationToken cancellationToken)
     {
         var userRole = await context.UserRoles.FindAsync([userId, roleId], cancellationToken)

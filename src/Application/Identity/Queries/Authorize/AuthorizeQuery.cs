@@ -17,12 +17,11 @@ using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.Identity.Queries.Authorize;
 
-public readonly record struct AuthorizeQuery(Guid UserId, string Resource, string Action) : IRequest<bool>
-{
-}
+public readonly record struct AuthorizeQuery(Guid UserId, string Resource, string Action) : IRequest<bool>;
 
 public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<AuthorizeQuery, bool>
 {
+    // Handles the authorization query by calling the IIdentityService's AuthorizeAsync method.
     public async Task<bool> Handle(AuthorizeQuery request, CancellationToken cancellationToken)
         => await service.AuthorizeAsync(request.UserId, request.Resource, request.Action, cancellationToken);
 

@@ -22,10 +22,16 @@ public readonly record struct UpdateUserCommand(UpdateUserDto User) : IRequest;
 public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<UpdateUserCommand>
 {
 
+    // Handle the UpdateUserCommand
     public async Task Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
+        // Update the user asynchronously
         await writer.UpdateUserAsync(request.User, cancellationToken);
+
+        // Create a shrank version of the updated user
         var user = new UpdateUserShrankDto(request.User.UserId, request.User.Username, request.User.Active);
+
+        // Publish a notification for the user update
         await publisher.Publish(new UserUpdated.Notification(request.User.UserId, user), cancellationToken);
     }
 }

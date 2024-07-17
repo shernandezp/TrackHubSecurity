@@ -19,30 +19,42 @@ using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
+// The UserPolicyWriter class is a sealed class that implements the IUserPolicyWriter interface.
 public sealed class UserPolicyWriter(IApplicationDbContext context) : IUserPolicyWriter
 {
+    // This method creates a new user policy asynchronously.
     public async Task<UserPolicyVm> CreateUserPolicyAsync(UserPolicyDto userPolicyDto, CancellationToken cancellationToken)
     {
+        // Create a new UserPolicy object with the provided user ID and policy ID.
         var userPolicy = new UserPolicy
         {
             UserId = userPolicyDto.UserId,
             PolicyId = userPolicyDto.PolicyId
         };
 
+        // Add the user policy to the UserPolicies DbSet in the context.
         await context.UserPolicies.AddAsync(userPolicy, cancellationToken);
+
+        // Save the changes to the database.
         await context.SaveChangesAsync(cancellationToken);
 
+        // Return a new UserPolicyVm object with the user ID and policy ID.
         return new UserPolicyVm(
             userPolicy.UserId,
             userPolicy.PolicyId);
     }
 
+    // This method deletes a user policy asynchronously.
     public async Task DeleteUserPolicyAsync(Guid userId, int policyId, CancellationToken cancellationToken)
     {
+        // Find the user policy with the provided user ID and policy ID in the UserPolicies DbSet.
         var userPolicy = await context.UserPolicies.FindAsync([userId, policyId], cancellationToken)
             ?? throw new NotFoundException(nameof(UserPolicy), $"{userId},{policyId}");
 
+        // Remove the user policy from the UserPolicies DbSet.
         context.UserPolicies.Remove(userPolicy);
+
+        // Save the changes to the database.
         await context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -19,8 +19,10 @@ using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
+// This class represents a writer for the ResourceActionRole entity in the security database.
 public sealed class ResourceActionRoleWriter(IApplicationDbContext context) : IResourceActionRoleWriter
 {
+    // Creates a new ResourceActionRole asynchronously and returns the created ResourceActionRoleVm.
     public async Task<ResourceActionRoleVm> CreateResourceActionRoleAsync(ResourceActionRoleDto resourceActionRoleDto, CancellationToken cancellationToken)
     {
         var resourceActionRole = new ResourceActionRole
@@ -40,6 +42,7 @@ public sealed class ResourceActionRoleWriter(IApplicationDbContext context) : IR
             resourceActionRole.RoleId);
     }
 
+    // Deletes a ResourceActionRole asynchronously based on the provided resourceActionRoleId.
     public async Task DeleteResourceActionRoleAsync(int resourceActionRoleId, CancellationToken cancellationToken)
     {
         var resourceActionRole = await context.ResourceActionRole.FindAsync(resourceActionRoleId, cancellationToken)

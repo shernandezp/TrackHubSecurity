@@ -22,11 +22,19 @@ public readonly record struct CreateUserCommand(CreateUserDto User) : IRequest<U
 
 public class CreateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<CreateUserCommand, UserVm>
 {
+    // Handle the Create User command
     public async Task<UserVm> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        // Create the user using the writer
         var user = await writer.CreateUserAsync(request.User, cancellationToken);
+
+        // Create a shrank user DTO
         var shrankUser = new UserShrankDto(user.UserId, user.Username, user.AccountId);
+
+        // Publish a UserCreated notification
         await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
+
+        // Return the created user
         return user;
     }
 }

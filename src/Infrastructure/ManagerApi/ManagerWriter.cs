@@ -8,19 +8,21 @@ using Common.Domain.Constants;
 
 namespace TrackHub.Security.Infrastructure.ManagerApi;
 
-public class ManagerWriter(IGraphQLClientFactory graphQLClient) 
+// This class represents the ManagerWriter responsible for writing operations related to the manager entity.
+public class ManagerWriter(IGraphQLClientFactory graphQLClient)
     : GraphQLService(graphQLClient.CreateClient(Clients.Manager)), IManagerWriter
 {
+    // Creates a new user asynchronously.
     public async Task<UserShrankVm> CreateUserAsync(UserShrankDto user, CancellationToken token)
     {
         var request = new GraphQLRequest
         {
             Query = @"
-                mutation($accountId: UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
-                  createUser(command: { user: { accountId: $accountId, active: $active, userId: $userId, username: $username } }) {
-                    userId
-                  }
-                }",
+                    mutation($accountId: UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
+                      createUser(command: { user: { accountId: $accountId, active: $active, userId: $userId, username: $username } }) {
+                        userId
+                      }
+                    }",
             Variables = new
             {
                 user.AccountId,
@@ -33,15 +35,16 @@ public class ManagerWriter(IGraphQLClientFactory graphQLClient)
         return result;
     }
 
+    // Updates an existing user asynchronously.
     public async Task<bool> UpdateUserAsync(Guid id, UpdateUserShrankDto user, CancellationToken token)
     {
         var request = new GraphQLRequest
         {
             Query = @"
-                mutation($id:UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
-                  updateUser(id: $id,
-                        command: { user: { active: $active, userId: $userId, username: $username } })
-                }",
+                    mutation($id:UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
+                      updateUser(id: $id,
+                            command: { user: { active: $active, userId: $userId, username: $username } })
+                    }",
             Variables = new
             {
                 id,
@@ -54,14 +57,15 @@ public class ManagerWriter(IGraphQLClientFactory graphQLClient)
         return result;
     }
 
+    // Deletes a user asynchronously.
     public async Task<Guid> DeleteUserAsync(Guid id, CancellationToken token)
     {
         var request = new GraphQLRequest
         {
             Query = @"
-                mutation($id:UUID!) {
-                  deleteUser(id: $id)
-                }",
+                    mutation($id:UUID!) {
+                      deleteUser(id: $id)
+                    }",
             Variables = new
             {
                 id

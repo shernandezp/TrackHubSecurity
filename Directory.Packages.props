@@ -11,10 +11,10 @@
     <PackageVersion Include="GraphQL.Client.Serializer.SystemTextJson" Version="6.1.0" />
     <PackageVersion Include="Microsoft.AspNetCore.HeaderPropagation" Version="8.0.7" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7" />
-    <PackageVersion Include="TrackHubCommon.Application" Version="0.1.36" />
-    <PackageVersion Include="TrackHubCommon.Domain" Version="0.1.36" />
-    <PackageVersion Include="TrackHubCommon.Infrastructure" Version="0.1.36" />
-    <PackageVersion Include="TrackHubCommon.Web" Version="0.1.36" />
+    <PackageVersion Include="TrackHubCommon.Application" Version="0.1.39" />
+    <PackageVersion Include="TrackHubCommon.Domain" Version="0.1.39" />
+    <PackageVersion Include="TrackHubCommon.Infrastructure" Version="0.1.39" />
+    <PackageVersion Include="TrackHubCommon.Web" Version="0.1.39" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
     <PackageVersion Include="FluentAssertions" Version="6.12.0" />
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />

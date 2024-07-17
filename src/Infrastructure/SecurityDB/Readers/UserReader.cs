@@ -16,15 +16,19 @@
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+
+// This class represents a reader for retrieving user information from the database
 public sealed class UserReader(IApplicationDbContext context) : IUserReader
 {
 
+    // Retrieves the username of a user with the specified ID
     public async Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.UserId.Equals(id))
             .Select(u => u.Username)
             .FirstAsync(cancellationToken);
 
+    // Retrieves the detailed information of a user with the specified ID, including their roles and policies
     public async Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.UserId.Equals(id))
@@ -44,6 +48,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Policies.Select(p => new PolicyVm(p.PolicyName)).ToList()))
             .FirstAsync(cancellationToken);
 
+    // Retrieves a collection of users associated with the specified account ID, including their roles and policies
     public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.AccountId.Equals(accountId))
@@ -63,21 +68,25 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Policies.Select(p => new PolicyVm(p.PolicyName)).ToList()))
             .ToListAsync(cancellationToken);
 
+    // Validates if the specified email address is unique
     public async Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => u.EmailAddress.Equals(emailAddress))
             .AnyAsync(cancellationToken);
 
+    // Validates if the specified username is unique
     public async Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => u.Username.Equals(username))
             .AnyAsync(cancellationToken);
 
+    // Validates if the specified email address is unique for a user other than the one with the specified ID
     public async Task<bool> ValidateEmailAddressAsync(Guid userId, string emailAddress, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => !u.UserId.Equals(userId) && u.EmailAddress.Equals(emailAddress))
             .AnyAsync(cancellationToken);
 
+    // Validates if the specified username is unique for a user other than the one with the specified ID
     public async Task<bool> ValidateUsernameAsync(Guid userId, string username, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => !u.UserId.Equals(userId) && u.Username.Equals(username))

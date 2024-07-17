@@ -21,6 +21,7 @@ public readonly record struct CreateResourceActionPolicyCommand(ResourceActionPo
 
 public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>
 {
+    // This method handles the CreateResourceActionPolicyCommand and returns a ResourceActionPolicyVm
     public async Task<ResourceActionPolicyVm> Handle(CreateResourceActionPolicyCommand request, CancellationToken cancellationToken)
         => await writer.CreateResourceActionPolicyAsync(request.ResourceActionPolicy, cancellationToken);
 

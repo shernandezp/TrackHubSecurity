@@ -14,19 +14,23 @@
 //
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
+
 public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
 {
     private readonly IUserReader _userReader;
+
     public UpdateUserCommandValidator(IUserReader userReader)
     {
         _userReader = userReader;
 
+        // Rule to validate the maximum length, non-empty, and uniqueness of the username
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
             .NotEmpty()
             .MustAsync((command, username, cancellationToken) => ValidateUsername(command.User.UserId, username, cancellationToken))
             .WithMessage("Username already in use");
 
+        // Rule to validate the maximum length, non-empty, and uniqueness of the email address
         RuleFor(v => v.User.EmailAddress)
             .MaximumLength(ColumnMetadata.DefaultEmailLength)
             .NotEmpty()
@@ -34,9 +38,11 @@ public sealed class UpdateUserCommandValidator : AbstractValidator<UpdateUserCom
             .WithMessage("Email address already in use");
     }
 
+    // Method to asynchronously validate the uniqueness of the username
     private async Task<bool> ValidateUsername(Guid userId, string username, CancellationToken cancellationToken)
         => await _userReader.ValidateUsernameAsync(userId, username, cancellationToken);
 
+    // Method to asynchronously validate the uniqueness of the email address
     private async Task<bool> ValidateEmailAddress(Guid userId, string emailAddress, CancellationToken cancellationToken)
         => await _userReader.ValidateEmailAddressAsync(userId, emailAddress, cancellationToken);
 }

@@ -16,8 +16,11 @@
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+
+
 public sealed class ResourceActionRoleReader(IApplicationDbContext context) : IResourceActionRoleReader
 {
+    // Retrieves the roles associated with a specific resource and action
     public async Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken)
         => await context.ResourceActionRole
             .Include(rar => rar.Resource)
@@ -27,6 +30,7 @@ public sealed class ResourceActionRoleReader(IApplicationDbContext context) : IR
             .Select(rar => rar.Role.RoleName)
             .ToListAsync(cancellationToken);
 
+    // Retrieves the authorized actions for a collection of roles
     public async Task<IReadOnlyCollection<ResourceActionVm>> GetRoleAuthorizedActionsAsync(IReadOnlyCollection<int> roles, CancellationToken cancellationToken)
         => await context.ResourceActionRole
             .Include(rar => rar.Resource)
