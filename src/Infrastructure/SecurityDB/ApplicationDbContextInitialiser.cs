@@ -129,6 +129,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 "",
                 null,
                 null,
+                0,
                 Guid.NewGuid()));
 
             await context.SaveChangesAsync();
