@@ -43,6 +43,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.LastName,
                 u.SecondSurname,
                 u.DOB,
+                u.LoginAttempts,
                 u.AccountId,
                 u.Roles.Select(r => new RoleVm(r.RoleName)).ToList(),
                 u.Policies.Select(p => new PolicyVm(p.PolicyName)).ToList()))
@@ -63,6 +64,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.LastName,
                 u.SecondSurname,
                 u.DOB,
+                u.LoginAttempts,
                 u.AccountId,
                 u.Roles.Select(r => new RoleVm(r.RoleName)).ToList(),
                 u.Policies.Select(p => new PolicyVm(p.PolicyName)).ToList()))

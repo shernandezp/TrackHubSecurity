@@ -25,7 +25,9 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     // Creates a new user asynchronously.
     public async Task<UserVm> CreateUserAsync(CreateUserDto userDto, CancellationToken cancellationToken)
     {
+        // Hash the password
         var password = userDto.Password.HashPassword();
+
         var user = new User(
             userDto.Username,
             password,
@@ -35,9 +37,11 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             userDto.LastName,
             userDto.SecondSurname,
             userDto.DOB,
+            0,
             userDto.AccountId);
 
         await context.Users.AddAsync(user, cancellationToken);
+
         await context.SaveChangesAsync(cancellationToken);
 
         return new UserVm(
@@ -49,6 +53,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             user.LastName,
             user.SecondSurname,
             user.DOB,
+            user.LoginAttempts,
             user.AccountId,
             [],
             []);
@@ -67,6 +72,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         user.LastName = userDto.LastName;
         user.SecondSurname = userDto.SecondSurname;
         user.DOB = userDto.DOB;
+
         await context.SaveChangesAsync(cancellationToken);
     }
 
@@ -78,6 +84,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 
         user.Password = userPasswordDto.Password;
         user.Active = true;
+
         await context.SaveChangesAsync(cancellationToken);
     }
 
@@ -88,6 +95,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             ?? throw new NotFoundException(nameof(User), $"{userId}");
 
         context.Users.Remove(user);
+
         await context.SaveChangesAsync(cancellationToken);
     }
 }

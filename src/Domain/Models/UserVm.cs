@@ -24,6 +24,7 @@ public readonly record struct UserVm(
     string LastName,
     string? SecondSurname,
     DateTime? DOB,
+    int LoginAttempts,
     Guid AccountId,
     IReadOnlyCollection<RoleVm>? Roles,
     IReadOnlyCollection<PolicyVm>? Profiles);
