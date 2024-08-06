@@ -48,6 +48,7 @@ public sealed class ResourceActionRoleWriter(IApplicationDbContext context) : IR
         var resourceActionRole = await context.ResourceActionRole.FindAsync(resourceActionRoleId, cancellationToken)
             ?? throw new NotFoundException(nameof(ResourceActionRole), $"{resourceActionRoleId}");
 
+        context.ResourceActionRole.Attach(resourceActionRole);
         context.ResourceActionRole.Remove(resourceActionRole);
         await context.SaveChangesAsync(cancellationToken);
     }

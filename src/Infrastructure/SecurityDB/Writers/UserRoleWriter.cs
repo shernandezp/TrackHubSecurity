@@ -45,6 +45,7 @@ public sealed class UserRoleWriter(IApplicationDbContext context) : IUserRoleWri
         var userRole = await context.UserRoles.FindAsync([userId, roleId], cancellationToken)
             ?? throw new NotFoundException(nameof(UserRole), $"{userId},{roleId}");
 
+        context.UserRoles.Attach(userRole);
         context.UserRoles.Remove(userRole);
         await context.SaveChangesAsync(cancellationToken);
     }

@@ -52,6 +52,7 @@ public sealed class UserPolicyWriter(IApplicationDbContext context) : IUserPolic
             ?? throw new NotFoundException(nameof(UserPolicy), $"{userId},{policyId}");
 
         // Remove the user policy from the UserPolicies DbSet.
+        context.UserPolicies.Attach(userPolicy);
         context.UserPolicies.Remove(userPolicy);
 
         // Save the changes to the database.

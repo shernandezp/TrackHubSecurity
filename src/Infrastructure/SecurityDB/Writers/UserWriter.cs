@@ -65,6 +65,8 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         var user = await context.Users.FindAsync([userDto.UserId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userDto.UserId}");
 
+        context.Users.Attach(user);
+
         user.Username = userDto.Username;
         user.EmailAddress = userDto.EmailAddress;
         user.FirstName = userDto.FirstName;
@@ -82,6 +84,8 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         var user = await context.Users.FindAsync([userPasswordDto.UserId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userPasswordDto.UserId}");
 
+        context.Users.Attach(user);
+
         user.Password = userPasswordDto.Password;
         user.Active = true;
 
@@ -94,6 +98,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         var user = await context.Users.FindAsync([userId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userId}");
 
+        context.Users.Attach(user);
         context.Users.Remove(user);
 
         await context.SaveChangesAsync(cancellationToken);

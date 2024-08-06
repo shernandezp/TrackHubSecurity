@@ -48,6 +48,7 @@ public sealed class ResourceActionPolicyWriter(IApplicationDbContext context) : 
         var resourceActionPolicy = await context.ResourceActionPolicy.FindAsync(resourceActionPolicyId, cancellationToken)
             ?? throw new NotFoundException(nameof(ResourceActionPolicy), $"{resourceActionPolicyId}");
 
+        context.ResourceActionPolicy.Attach(resourceActionPolicy);
         context.ResourceActionPolicy.Remove(resourceActionPolicy);
         await context.SaveChangesAsync(cancellationToken);
     }
