@@ -27,7 +27,7 @@ public sealed class ResourceActionPolicyReader(IApplicationDbContext context) : 
             .Include(rap => rap.Resource)
             .Include(rap => rap.Action)
             .Where(rap => rap.Resource.ResourceName.Equals(resource) && rap.Action.ActionName.Equals(action))
-            .Select(rap => rap.Policy.PolicyName)
+            .Select(rap => rap.Policy.Name)
             .ToListAsync(cancellationToken);
 
     // Retrieves the authorized actions for a collection of policies.

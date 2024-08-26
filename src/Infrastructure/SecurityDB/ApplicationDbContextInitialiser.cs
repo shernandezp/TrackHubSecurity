@@ -86,18 +86,18 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         }
         if (!context.Roles.Any())
         {
-            context.Roles.Add(new Role { RoleName = "Manager", Description = string.Empty });
-            context.Roles.Add(new Role { RoleName = "User", Description = string.Empty });
+            context.Roles.Add(new Role { Name = "Manager", Description = string.Empty });
+            context.Roles.Add(new Role { Name = "User", Description = string.Empty });
             await context.SaveChangesAsync();
         }
         if (!context.Policies.Any())
         {
-            context.Policies.Add(new Policy { PolicyName = "CanView", Description = string.Empty });
-            context.Policies.Add(new Policy { PolicyName = "CanEdit", Description = string.Empty });
-            context.Policies.Add(new Policy { PolicyName = "CanExport", Description = string.Empty });
-            context.Policies.Add(new Policy { PolicyName = "CanExecute", Description = string.Empty });
-            context.Policies.Add(new Policy { PolicyName = "CanWrite", Description = string.Empty });
-            context.Policies.Add(new Policy { PolicyName = "CanDelete", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "CanView", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "CanEdit", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "CanExport", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "CanExecute", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "CanWrite", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "CanDelete", Description = string.Empty });
             await context.SaveChangesAsync();
         }
         if (!context.ResourceActionRole.Any())

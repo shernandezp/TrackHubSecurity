@@ -52,7 +52,7 @@ internal class UserWriterTests : Context
                       .ReturnsAsync(1);
 
         // Act
-        var result = await _userWriter.CreateUserAsync(userDto, new CancellationToken());
+        var result = await _userWriter.CreateUserAsync(userDto, Guid.NewGuid(), new CancellationToken());
 
         // Assert
         result.Should().NotBeNull(); // Ensure that a non-null result is returned

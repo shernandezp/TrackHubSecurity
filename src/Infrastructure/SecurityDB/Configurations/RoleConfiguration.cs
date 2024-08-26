@@ -27,16 +27,23 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         //Column names
         builder.Property(x => x.RoleId).HasColumnName("id");
-        builder.Property(x => x.RoleName).HasColumnName("name");
+        builder.Property(x => x.Name).HasColumnName("name");
         builder.Property(x => x.Description).HasColumnName("description");
+        builder.Property(x => x.ParentRoleId).HasColumnName("parentroleid");
 
-        builder.Property(t => t.RoleName)
+        builder.Property(t => t.Name)
             .HasMaxLength(ColumnMetadata.DefaultNameLength)
             .IsRequired();
 
         builder.Property(t => t.Description)
             .HasMaxLength(ColumnMetadata.DefaultDescriptionLength)
             .IsRequired();
+
+        builder
+            .HasOne(r => r.ParentRole)
+            .WithMany(r => r.ChildRoles)
+            .HasForeignKey(r => r.ParentRoleId)
+            .OnDelete(DeleteBehavior.Restrict);
 
     }
 }

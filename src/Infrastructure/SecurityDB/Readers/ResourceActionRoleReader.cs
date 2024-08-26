@@ -27,7 +27,7 @@ public sealed class ResourceActionRoleReader(IApplicationDbContext context) : IR
             .Include(rar => rar.Action)
             .Include(rar => rar.Role)
             .Where(rar => rar.Resource.ResourceName.Equals(resource) && rar.Action.ActionName.Equals(action))
-            .Select(rar => rar.Role.RoleName)
+            .Select(rar => rar.Role.Name)
             .ToListAsync(cancellationToken);
 
     // Retrieves the authorized actions for a collection of roles

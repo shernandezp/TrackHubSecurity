@@ -26,7 +26,7 @@ public sealed class UserPolicyReader(IApplicationDbContext context) : IUserPolic
         => await context.UserPolicies
             .Include(up => up.Policy)
             .Where(up => up.UserId.Equals(userId))
-            .Select(up => up.Policy.PolicyName)
+            .Select(up => up.Policy.Name)
             .ToListAsync(cancellationToken);
 
     // Retrieves the IDs of the policies associated with a user.

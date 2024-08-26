@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Create;
@@ -20,20 +21,21 @@ namespace TrackHub.Security.Application.Users.Commands.Create;
 [Authorize(Resource = Resources.Users, Action = Actions.Write)]
 public readonly record struct CreateUserCommand(CreateUserDto User) : IRequest<UserVm>;
 
-public class CreateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<CreateUserCommand, UserVm>
+public class CreateUserCommandHandler(IUserWriter writer, IUserReader reader, IUser user, IPublisher publisher) : IRequestHandler<CreateUserCommand, UserVm>
 {
+    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+
     // Handle the Create User command
     public async Task<UserVm> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        // User can be created only within the same account
+        var currentUser = await reader.GetUserAsync(UserId, cancellationToken);
         // Create the user using the writer
-        var user = await writer.CreateUserAsync(request.User, cancellationToken);
-
+        var user = await writer.CreateUserAsync(request.User, currentUser.AccountId, cancellationToken);
         // Create a shrank user DTO
-        var shrankUser = new UserShrankDto(user.UserId, user.Username, user.AccountId);
-
+        var shrankUser = new UserShrankDto(user.UserId, user.Username, currentUser.AccountId);
         // Publish a UserCreated notification
         await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
-
         // Return the created user
         return user;
     }

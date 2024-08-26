@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using TrackHub.Security.Application.Users.Commands.Create;
 using TrackHub.Security.Application.Users.Events;
 
@@ -21,19 +22,58 @@ namespace Application.UnitTests.Users;
 public class CreateUserCommandHandlerTests
 {
     private Mock<IUserWriter> _mockUserWriter;
+    private Mock<IUserReader> _mockUserReader;
     private Mock<IPublisher> _mockPublisher;
-    private CreateUserCommandHandler _handler;
+    private Mock<IUser> _mockUser;
 
     [SetUp]
     public void SetUp()
     {
         _mockUserWriter = new Mock<IUserWriter>();
+        _mockUserReader = new Mock<IUserReader>();
         _mockPublisher = new Mock<IPublisher>();
-        _handler = new CreateUserCommandHandler(_mockUserWriter.Object, _mockPublisher.Object);
+        _mockUser = new Mock<IUser>();
     }
 
     [Test]
     public async Task Handle_ValidCommand_ReturnsUserVm()
+    {
+        // Arrange
+        var createUserDto = new CreateUserDto
+        {
+            // Set up the properties of the CreateUserDto object
+        };
+        var createUserCommand = new CreateUserCommand(createUserDto);
+        var accountId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var user = new UserVm
+        {
+            UserId = userId,
+            Username = "username",
+            AccountId = accountId
+        };
+        var shrankUser = new UserShrankDto(user.UserId, user.Username, user.AccountId);
+
+        _mockUserReader.Setup(x => x.GetUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new UserVm { AccountId = accountId });
+        _mockUserWriter.Setup(x => x.CreateUserAsync(createUserDto, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+        _mockPublisher.Setup(x => x.Publish(It.IsAny<UserCreated.Notification>(), It.IsAny<CancellationToken>()))
+            .Verifiable();
+        _mockUser.Setup(x => x.Id).Returns(userId.ToString());
+
+        var handler = new CreateUserCommandHandler(_mockUserWriter.Object, _mockUserReader.Object, _mockUser.Object, _mockPublisher.Object);
+
+        // Act
+        var result = await handler.Handle(createUserCommand, CancellationToken.None);
+
+        // Assert
+        result.Should().BeEquivalentTo(user);
+        _mockPublisher.Verify(x => x.Publish(It.Is<UserCreated.Notification>(n => n.User == shrankUser), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public void Handle_InvalidCommand_ThrowsUnauthorizedAccessException()
     {
         // Arrange
         var createUserDto = new CreateUserDto
@@ -49,16 +89,19 @@ public class CreateUserCommandHandlerTests
         };
         var shrankUser = new UserShrankDto(user.UserId, user.Username, user.AccountId);
 
-        _mockUserWriter.Setup(x => x.CreateUserAsync(createUserDto, It.IsAny<CancellationToken>()))
+        _mockUserReader.Setup(x => x.GetUserAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new UserVm { AccountId = Guid.NewGuid() });
+        _mockUserWriter.Setup(x => x.CreateUserAsync(createUserDto, It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
         _mockPublisher.Setup(x => x.Publish(It.IsAny<UserCreated.Notification>(), It.IsAny<CancellationToken>()))
             .Verifiable();
 
-        // Act
-        var result = await _handler.Handle(createUserCommand, CancellationToken.None);
-
-        // Assert
-        result.Should().BeEquivalentTo(user);
-        _mockPublisher.Verify(x => x.Publish(It.Is<UserCreated.Notification>(n => n.User == shrankUser), It.IsAny<CancellationToken>()), Times.Once);
+        // Act & Assert
+        FluentActions.Invoking(() => new CreateUserCommandHandler(
+            _mockUserWriter.Object,
+            _mockUserReader.Object,
+            _mockUser.Object,
+            _mockPublisher.Object))
+            .Should().Throw<UnauthorizedAccessException>();
     }
 }

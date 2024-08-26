@@ -27,10 +27,10 @@ public class PolicyConfiguration : IEntityTypeConfiguration<Policy>
 
         //Column names
         builder.Property(x => x.PolicyId).HasColumnName("id");
-        builder.Property(x => x.PolicyName).HasColumnName("name");
+        builder.Property(x => x.Name).HasColumnName("name");
         builder.Property(x => x.Description).HasColumnName("description");
 
-        builder.Property(t => t.PolicyName)
+        builder.Property(t => t.Name)
             .HasMaxLength(ColumnMetadata.DefaultNameLength)
             .IsRequired();
 

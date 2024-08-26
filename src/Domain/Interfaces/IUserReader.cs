@@ -23,4 +23,6 @@ public interface IUserReader
     Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken);
     Task<bool> ValidateEmailAddressAsync(Guid userId, string emailAddress, CancellationToken cancellationToken);
     Task<bool> ValidateUsernameAsync(Guid userId, string username, CancellationToken cancellationToken);
+    Task<bool> IsAdminAsync(Guid userId, CancellationToken cancellationToken);
+    Task<bool> IsParentAsync(Guid userId, Guid possibleParentUserId, CancellationToken cancellationToken);
 }

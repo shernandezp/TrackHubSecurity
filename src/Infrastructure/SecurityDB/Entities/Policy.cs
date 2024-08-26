@@ -17,7 +17,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Entities;
 public sealed class Policy
 {
     public int PolicyId { get; set; }
-    public required string PolicyName { get; set; }
+    public required string Name { get; set; }
     public string? Description { get; set; }
     public ICollection<User> Users { get; set; } = [];
 }

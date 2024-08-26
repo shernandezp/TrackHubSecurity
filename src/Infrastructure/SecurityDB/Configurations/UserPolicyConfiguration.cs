@@ -18,7 +18,7 @@ using Common.Domain.Constants;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Configurations;
 
-public class UserProfileConfiguration : IEntityTypeConfiguration<UserPolicy>
+public class UserPolicyConfiguration : IEntityTypeConfiguration<UserPolicy>
 {
     public void Configure(EntityTypeBuilder<UserPolicy> builder)
     {

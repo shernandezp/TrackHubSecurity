@@ -17,7 +17,10 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Entities;
 public sealed class Role
 {
     public int RoleId { get; set; }
-    public required string RoleName { get; set; }
+    public required string Name { get; set; }
     public string? Description { get; set; }
+    public int? ParentRoleId { get; set; }
+    public Role? ParentRole { get; set; }
+    public ICollection<Role> ChildRoles { get; set; } = [];
     public ICollection<User> Users { get; set; } = [];
 }

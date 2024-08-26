@@ -13,11 +13,13 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Interfaces;
-public interface IUserWriter
+namespace TrackHub.Security.Application.Roles.GetResources;
+
+public sealed class GetResourcesByRoleValidation : AbstractValidator<GetResourcesByRoleQuery>
 {
-    Task<UserVm> CreateUserAsync(CreateUserDto userDto, Guid accountId, CancellationToken cancellationToken);
-    Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken);
-    Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken);
-    Task UpdateUserAsync(UpdateUserDto userDto, CancellationToken cancellationToken);
+    public GetResourcesByRoleValidation()
+    {
+        RuleFor(x => x.RoleId)
+            .NotEmpty();
+    }
 }

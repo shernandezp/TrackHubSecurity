@@ -23,7 +23,13 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 {
     // Creates a new user asynchronously.
-    public async Task<UserVm> CreateUserAsync(CreateUserDto userDto, CancellationToken cancellationToken)
+    // -Parameters:
+    //  - userDto: The user data transfer object.
+    //  - accountId: The account identifier.
+    //  - cancellationToken: The cancellation token.
+    // -Returns:
+    //  - The created user view model.
+    public async Task<UserVm> CreateUserAsync(CreateUserDto userDto, Guid accountId, CancellationToken cancellationToken)
     {
         // Hash the password
         var password = userDto.Password.HashPassword();
@@ -38,7 +44,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             userDto.SecondSurname,
             userDto.DOB,
             0,
-            userDto.AccountId);
+            accountId);
 
         await context.Users.AddAsync(user, cancellationToken);
 
@@ -60,6 +66,9 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     }
 
     // Updates an existing user asynchronously.
+    // -Parameters:
+    //  - userDto: The user data transfer object.
+    //  - cancellationToken: The cancellation token.
     public async Task UpdateUserAsync(UpdateUserDto userDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userDto.UserId], cancellationToken)
@@ -79,6 +88,9 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     }
 
     // Updates the password of an existing user asynchronously.
+    // -Parameters:
+    //  - userPasswordDto: The user password data transfer object.
+    //  - cancellationToken: The cancellation token.
     public async Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userPasswordDto.UserId], cancellationToken)
@@ -86,13 +98,18 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 
         context.Users.Attach(user);
 
-        user.Password = userPasswordDto.Password;
+        var password = userPasswordDto.Password.HashPassword();
+
+        user.Password = password;
         user.Active = true;
 
         await context.SaveChangesAsync(cancellationToken);
     }
 
     // Deletes a user asynchronously.
+    // -Parameters:
+    //  - userId: The user identifier.
+    //  - cancellationToken: The cancellation token.
     public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userId], cancellationToken)

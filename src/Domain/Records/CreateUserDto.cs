@@ -23,5 +23,4 @@ public record struct CreateUserDto (
     string? SecondName,
     string LastName,
     string? SecondSurname,
-    DateTime? DOB,
-    Guid AccountId);
+    DateTime? DOB);

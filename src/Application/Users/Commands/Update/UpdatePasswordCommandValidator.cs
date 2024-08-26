@@ -13,13 +13,22 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Application.Users.Queries.GetByAccount;
+namespace TrackHub.Security.Application.Users.Commands.Update;
 
-public sealed class GetUserByAccountQueryValidator : AbstractValidator<GetUsersByAccountQuery>
+public sealed class UpdatePasswordCommandValidator : AbstractValidator<UpdatePasswordCommand>
 {
-    public GetUserByAccountQueryValidator()
+    public UpdatePasswordCommandValidator()
     {
-        RuleFor(x => x.AccountId)
+
+        RuleFor(v => v.User)
+            .NotEmpty();
+
+        RuleFor(v => v.User.UserId)
+            .NotEmpty();
+
+        RuleFor(v => v.User.Password)
+            .MinimumLength(ColumnMetadata.MinimumPasswordLength)
+            .MaximumLength(ColumnMetadata.DefaultPasswordLength)
             .NotEmpty();
     }
 }

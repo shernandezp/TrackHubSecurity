@@ -14,16 +14,26 @@
 //
 
 
+using Common.Application.Interfaces;
+
 namespace TrackHub.Security.Application.ResourceActionRole.Commands.Create;
 
 [Authorize(Resource = Resources.Accounts, Action = Actions.Write)] 
 public readonly record struct CreateResourceActionRoleCommand(ResourceActionRoleDto ResourceActionRole) : IRequest<ResourceActionRoleVm>;
 
-public class CreateResourceActionRoleCommandHandler(IResourceActionRoleWriter writer) : IRequestHandler<CreateResourceActionRoleCommand, ResourceActionRoleVm>
+public class CreateResourceActionRoleCommandHandler(IResourceActionRoleWriter writer, IUserReader userReader, IUser user) : IRequestHandler<CreateResourceActionRoleCommand, ResourceActionRoleVm>
 {
+    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+
     // This method handles the CreateResourceActionRoleCommand by calling the writer's CreateResourceActionRoleAsync method.
     // It returns a ResourceActionRoleVm object.
+    // It throws an UnauthorizedAccessException if the user is not an admin.
     public async Task<ResourceActionRoleVm> Handle(CreateResourceActionRoleCommand request, CancellationToken cancellationToken)
-        => await writer.CreateResourceActionRoleAsync(request.ResourceActionRole, cancellationToken);
+    { 
+        var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
+        return !isAdmin
+            ? throw new UnauthorizedAccessException()
+            : await writer.CreateResourceActionRoleAsync(request.ResourceActionRole, cancellationToken);
+    }
 
 }

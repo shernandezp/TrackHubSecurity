@@ -15,4 +15,5 @@
 
 namespace TrackHub.Security.Domain.Models;
 public readonly record struct RoleVm(
+    int RoleId,
     string Name);

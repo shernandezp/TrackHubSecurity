@@ -30,7 +30,7 @@ public sealed class UserRoleReader(IApplicationDbContext context) : IUserRoleRea
         => await context.UserRoles
             .Include(ur => ur.Role)
             .Where(ur => ur.UserId.Equals(userId))
-            .Select(ur => ur.Role.RoleName)
+            .Select(ur => ur.Role.Name)
             .ToListAsync(cancellationToken);
 
     // Retrieves the role IDs associated with a given user ID asynchronously.

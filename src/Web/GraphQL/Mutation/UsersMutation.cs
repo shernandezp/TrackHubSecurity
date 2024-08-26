@@ -32,6 +32,13 @@ public partial class Mutation
         return true;
     }
 
+    public async Task<bool> UpdatePassword([Service] ISender sender, Guid id, UpdatePasswordCommand command)
+    {
+        if (id != command.User.UserId) return false;
+        await sender.Send(command);
+        return true;
+    }
+
     public async Task<Guid> DeleteUser([Service] ISender sender, Guid id)
     {
         await sender.Send(new DeleteUserCommand(id));
