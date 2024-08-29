@@ -88,7 +88,7 @@ internal class UserWriterTests : Context
         // Arrange
         var userPasswordDto = new UserPasswordDto
         {
-            // Provide necessary user password details
+            Password = "newPassword"
         };
         var cancellationToken = new CancellationToken();
 

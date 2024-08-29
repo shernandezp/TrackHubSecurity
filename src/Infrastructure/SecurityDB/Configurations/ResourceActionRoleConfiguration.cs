@@ -37,9 +37,9 @@ public class ResourceActionRoleConfiguration : IEntityTypeConfiguration<Resource
             .HasForeignKey(rar => rar.ResourceId);
 
         builder
-            .HasOne(rar => rar.Action)
+            .HasOne(rar => rar.ResourceAction)
             .WithMany()
-            .HasForeignKey(rar => rar.ActionId);
+            .HasForeignKey(rap => new { rap.ResourceId, rap.ActionId });
 
         builder
             .HasOne(rar => rar.Role)

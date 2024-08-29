@@ -17,30 +17,33 @@ using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
 
-
 public sealed class ResourceActionRoleReader(IApplicationDbContext context) : IResourceActionRoleReader
 {
     // Retrieves the roles associated with a specific resource and action
     public async Task<IReadOnlyCollection<string>> GetResourceActionRolesAsync(string resource, string action, CancellationToken cancellationToken)
         => await context.ResourceActionRole
-            .Include(rar => rar.Resource)
-            .Include(rar => rar.Action)
+            .Include(rar => rar.ResourceAction)
+                .ThenInclude(ra => ra.Resource)
+            .Include(rar => rar.ResourceAction)
+                .ThenInclude(ra => ra.Action)
             .Include(rar => rar.Role)
-            .Where(rar => rar.Resource.ResourceName.Equals(resource) && rar.Action.ActionName.Equals(action))
+            .Where(rar => rar.ResourceAction.Resource.ResourceName.Equals(resource) && rar.ResourceAction.Action.ActionName.Equals(action))
             .Select(rar => rar.Role.Name)
             .ToListAsync(cancellationToken);
 
     // Retrieves the authorized actions for a collection of roles
     public async Task<IReadOnlyCollection<ResourceActionVm>> GetRoleAuthorizedActionsAsync(IReadOnlyCollection<int> roles, CancellationToken cancellationToken)
         => await context.ResourceActionRole
-            .Include(rar => rar.Resource)
-            .Include(rar => rar.Action)
+            .Include(rar => rar.ResourceAction)
+                .ThenInclude(ra => ra.Resource)
+            .Include(rar => rar.ResourceAction)
+                .ThenInclude(ra => ra.Action)
             .Where(rar => roles.Contains(rar.RoleId))
             .Select(rar => new ResourceActionVm(
-                rar.ResourceId,
-                rar.Resource.ResourceName,
-                rar.ActionId,
-                rar.Action.ActionName
+                rar.ResourceAction.ResourceId,
+                rar.ResourceAction.Resource.ResourceName,
+                rar.ResourceAction.ActionId,
+                rar.ResourceAction.Action.ActionName
             ))
             .ToListAsync(cancellationToken);
 

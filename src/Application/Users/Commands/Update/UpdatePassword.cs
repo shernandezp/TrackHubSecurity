@@ -13,7 +13,6 @@
 //  limitations under the License.
 //
 
-
 using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
@@ -24,12 +23,16 @@ public class UpdatePasswordCommandHandler(IUserWriter writer, IUserReader reader
     private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
 
     // Handle the UpdateUserCommand
-    // Update the user password if the user is the same user or the requesting user belongs to a parent role whiting the same account
+    // Update the user password if the user is the same user or the requesting user ia a manager
     public async Task Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
-        // Check if the requesting user belongs to a parent role whiting the same account
-        var isParent = await reader.IsParentAsync(request.User.UserId, UserId, cancellationToken);
-        if (request.User.UserId == UserId || isParent)
+        var isManager = false;
+        if (request.User.UserId != UserId)
+        {
+            // Check if the requesting user is a manager of the user to update
+            isManager = await reader.IsManagerAsync(request.User.UserId, UserId, cancellationToken);
+        }
+        if (request.User.UserId == UserId || isManager)
         {
             // Update the user asynchronously
             await writer.UpdatePasswordAsync(request.User, cancellationToken);

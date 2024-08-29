@@ -13,7 +13,6 @@
 //  limitations under the License.
 //
 
-
 using TrackHub.Security.Domain.Records;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 

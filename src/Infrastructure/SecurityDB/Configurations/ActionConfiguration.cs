@@ -29,10 +29,14 @@ public class ActionConfiguration : IEntityTypeConfiguration<Action>
         //Column names
         builder.Property(x => x.ActionId).HasColumnName("id");
         builder.Property(x => x.ActionName).HasColumnName("name");
+        builder.Property(x => x.Description).HasColumnName("description");
 
         builder.Property(t => t.ActionName)
             .HasMaxLength(ColumnMetadata.DefaultNameLength)
             .IsRequired();
+
+        builder.Property(t => t.Description)
+            .HasMaxLength(ColumnMetadata.DefaultDescriptionLength);
 
     }
 }

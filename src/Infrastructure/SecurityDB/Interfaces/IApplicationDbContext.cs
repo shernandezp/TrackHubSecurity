@@ -22,6 +22,7 @@ public interface IApplicationDbContext
     public DbSet<Action> Actions { get; set; }
     public DbSet<Policy> Policies { get; set; }
     public DbSet<Resource> Resources { get; set; }
+    public DbSet<ResourceAction> ResourceActions { get; set; }
     public DbSet<ResourceActionPolicy> ResourceActionPolicy { get; set; }
     public DbSet<ResourceActionRole> ResourceActionRole { get; set; }
     public DbSet<Role> Roles { get; set; }

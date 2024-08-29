@@ -18,5 +18,5 @@ public sealed class Resource
 {
     public int ResourceId { get; set; }
     public required string ResourceName { get; set; }
-    public ICollection<Action> Actions { get; set; } = [];
+    public ICollection<ResourceAction> ResourceActions { get; set; } = [];
 }

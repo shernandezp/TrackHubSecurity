@@ -24,7 +24,8 @@ public sealed class User(string username,
     string? secondName,
     string lastName,
     string? secondSurname,
-    DateTime? dOB,
+    DateOnly? dOB,
+    bool active,
     int loginAttempts,
     Guid accountId) : BaseAuditableEntity
 {
@@ -37,9 +38,9 @@ public sealed class User(string username,
     public string? SecondName { get; set; } = secondName;
     public string LastName { get; set; } = lastName;
     public string? SecondSurname { get; set; } = secondSurname;
-    public DateTime? DOB { get; set; } = dOB;
+    public DateOnly? DOB { get; set; } = dOB;
     public DateTime? Verified { get; set; }
-    public bool Active { get; set; } = false;
+    public bool Active { get; set; } = active;
     public int LoginAttempts { get; set; } = loginAttempts;
     public Guid AccountId { get; set; } = accountId;
     public ICollection<Role> Roles { get; } = [];

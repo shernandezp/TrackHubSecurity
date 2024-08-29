@@ -35,18 +35,20 @@ public sealed class RoleReader(IApplicationDbContext context) : IRoleReader
                 Name = r.Name,
                 Resources = context.ResourceActionRole
                     .Where(rar => rar.RoleId == r.RoleId)
-                    .Select(rar => rar.Resource)
+                    .Select(rar => rar.ResourceAction.Resource)
                     .Distinct()
                     .Select(res => new ResourceVm
                     {
                         ResourceId = res.ResourceId,
                         ResourceName = res.ResourceName,
-                        Actions = res.Actions.Select(a => new ActionVm
-                        {
-                            ActionId = a.ActionId,
-                            ActionName = a.ActionName
-                        }).ToList()
-                    })
+                        Actions = res.ResourceActions
+                            .Select(ra => ra.Action)
+                            .Select(a => new ActionVm
+                            {
+                                ActionId = a.ActionId,
+                                ActionName = a.ActionName
+                            }).ToList()
+                    }).ToList()
             })
             .FirstOrDefaultAsync(cancellationToken);
 

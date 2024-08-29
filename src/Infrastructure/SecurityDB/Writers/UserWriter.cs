@@ -43,6 +43,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             userDto.LastName,
             userDto.SecondSurname,
             userDto.DOB,
+            userDto.Active,
             0,
             accountId);
 
@@ -61,6 +62,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             user.DOB,
             user.LoginAttempts,
             user.AccountId,
+            user.Active,
             [],
             []);
     }
@@ -83,6 +85,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         user.LastName = userDto.LastName;
         user.SecondSurname = userDto.SecondSurname;
         user.DOB = userDto.DOB;
+        user.Active = userDto.Active;
 
         await context.SaveChangesAsync(cancellationToken);
     }

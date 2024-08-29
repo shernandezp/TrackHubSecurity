@@ -18,6 +18,6 @@ public sealed class Action
 {
     public int ActionId { get; set; }
     public required string ActionName { get; set; }
-    public int ResourceId { get; set; }
-    public Resource? Resource { get; set; }
+    public string? Description { get; set; }
+    public ICollection<ResourceAction> ResourceActions { get; set; } = [];
 }

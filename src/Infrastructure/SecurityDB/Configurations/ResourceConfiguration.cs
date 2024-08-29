@@ -35,7 +35,7 @@ public class ResourceConfiguration : IEntityTypeConfiguration<Resource>
 
         //Constraints
         builder
-            .HasMany(e => e.Actions)
+            .HasMany(e => e.ResourceActions)
             .WithOne(e => e.Resource)
             .HasForeignKey(e => e.ResourceId);
 

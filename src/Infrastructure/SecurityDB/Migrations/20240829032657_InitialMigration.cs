@@ -7,13 +7,28 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "security");
+
+            migrationBuilder.CreateTable(
+                name: "actions",
+                schema: "security",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_actions", x => x.id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "policies",
@@ -52,11 +67,19 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    parentroleid = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_roles", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_roles_roles_parentroleid",
+                        column: x => x.parentroleid,
+                        principalSchema: "security",
+                        principalTable: "roles",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,15 +90,16 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     username = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     password = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    emailaddress = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     firstname = table.Column<string>(type: "text", nullable: false),
                     secondname = table.Column<string>(type: "text", nullable: true),
                     lastname = table.Column<string>(type: "text", nullable: false),
                     secondsurname = table.Column<string>(type: "text", nullable: true),
-                    dob = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    passwordreset = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    dob = table.Column<DateOnly>(type: "date", nullable: true),
                     verified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     active = table.Column<bool>(type: "boolean", nullable: false),
+                    loginattempts = table.Column<int>(type: "integer", nullable: false),
+                    accountid = table.Column<Guid>(type: "uuid", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -87,21 +111,26 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "actions",
+                name: "resource_action",
                 schema: "security",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    ResourceId = table.Column<int>(type: "integer", nullable: false)
+                    actionid = table.Column<int>(type: "integer", nullable: false),
+                    resourceid = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_actions", x => x.id);
+                    table.PrimaryKey("PK_resource_action", x => new { x.resourceid, x.actionid });
                     table.ForeignKey(
-                        name: "FK_actions_resources_ResourceId",
-                        column: x => x.ResourceId,
+                        name: "FK_resource_action_actions_actionid",
+                        column: x => x.actionid,
+                        principalSchema: "security",
+                        principalTable: "actions",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_resource_action_resources_resourceid",
+                        column: x => x.resourceid,
                         principalSchema: "security",
                         principalTable: "resources",
                         principalColumn: "id",
@@ -177,18 +206,18 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 {
                     table.PrimaryKey("PK_resource_action_policy", x => x.id);
                     table.ForeignKey(
-                        name: "FK_resource_action_policy_actions_actionid",
-                        column: x => x.actionid,
-                        principalSchema: "security",
-                        principalTable: "actions",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_resource_action_policy_policies_policyid",
                         column: x => x.policyid,
                         principalSchema: "security",
                         principalTable: "policies",
                         principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_resource_action_policy_resource_action_resourceid_actionid",
+                        columns: x => new { x.resourceid, x.actionid },
+                        principalSchema: "security",
+                        principalTable: "resource_action",
+                        principalColumns: new[] { "resourceid", "actionid" },
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_resource_action_policy_resources_resourceid",
@@ -214,11 +243,11 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 {
                     table.PrimaryKey("PK_resource_action_role", x => x.id);
                     table.ForeignKey(
-                        name: "FK_resource_action_role_actions_actionid",
-                        column: x => x.actionid,
+                        name: "FK_resource_action_role_resource_action_resourceid_actionid",
+                        columns: x => new { x.resourceid, x.actionid },
                         principalSchema: "security",
-                        principalTable: "actions",
-                        principalColumn: "id",
+                        principalTable: "resource_action",
+                        principalColumns: new[] { "resourceid", "actionid" },
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_resource_action_role_resources_resourceid",
@@ -237,15 +266,9 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_actions_ResourceId",
+                name: "IX_resource_action_actionid",
                 schema: "security",
-                table: "actions",
-                column: "ResourceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_resource_action_policy_actionid",
-                schema: "security",
-                table: "resource_action_policy",
+                table: "resource_action",
                 column: "actionid");
 
             migrationBuilder.CreateIndex(
@@ -255,28 +278,28 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 column: "policyid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_resource_action_policy_resourceid",
+                name: "IX_resource_action_policy_resourceid_actionid",
                 schema: "security",
                 table: "resource_action_policy",
-                column: "resourceid");
+                columns: new[] { "resourceid", "actionid" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_resource_action_role_actionid",
+                name: "IX_resource_action_role_resourceid_actionid",
                 schema: "security",
                 table: "resource_action_role",
-                column: "actionid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_resource_action_role_resourceid",
-                schema: "security",
-                table: "resource_action_role",
-                column: "resourceid");
+                columns: new[] { "resourceid", "actionid" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_resource_action_role_roleid",
                 schema: "security",
                 table: "resource_action_role",
                 column: "roleid");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_roles_parentroleid",
+                schema: "security",
+                table: "roles",
+                column: "parentroleid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_user_policy_userid",
@@ -311,7 +334,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 schema: "security");
 
             migrationBuilder.DropTable(
-                name: "actions",
+                name: "resource_action",
                 schema: "security");
 
             migrationBuilder.DropTable(
@@ -324,6 +347,10 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 
             migrationBuilder.DropTable(
                 name: "users",
+                schema: "security");
+
+            migrationBuilder.DropTable(
+                name: "actions",
                 schema: "security");
 
             migrationBuilder.DropTable(

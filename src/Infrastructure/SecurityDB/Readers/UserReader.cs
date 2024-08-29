@@ -55,6 +55,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.DOB,
                 u.LoginAttempts,
                 u.AccountId,
+                u.Active,
                 u.Roles.Select(r => new RoleVm(r.RoleId, r.Name)).ToList(),
                 u.Policies.Select(p => new PolicyVm(p.Name)).ToList()))
             .FirstAsync(cancellationToken);
@@ -81,6 +82,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.DOB,
                 u.LoginAttempts,
                 u.AccountId,
+                u.Active,
                 u.Roles.Select(r => new RoleVm(r.RoleId, r.Name)).ToList(),
                 u.Policies.Select(p => new PolicyVm(p.Name)).ToList()))
             .ToListAsync(cancellationToken);
@@ -134,18 +136,26 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
             .SelectMany(u => u.Roles)
             .AnyAsync(r => r.ParentRoleId == null, cancellationToken);
 
-    // Validates whether the specified user is a parent of another user
+    // Validates whether a user is a manager of the specified user
     // -Parameters-
     // userId: The ID of the user to validate
-    // possibleParentUserId: The ID of the user to validate as a parent
+    // managerId: The ID of the manager to validate
+    // cancellationToken: A token to monitor for cancellation requests
     // -Returns-
-    // A boolean indicating whether the specified user is a parent of another user
-    public async Task<bool> IsParentAsync(Guid userId, Guid possibleParentUserId, CancellationToken cancellationToken)
-        => await context.Users
-            .Where(u => u.UserId == userId)
+    // A boolean indicating whether the specified user is a manager
+    public async Task<bool> IsManagerAsync(Guid userId, Guid managerId, CancellationToken cancellationToken)
+    {
+        // Retrieve the account ID of the user
+        var user = await context.Users.FindAsync(userId, cancellationToken)
+            ?? throw new NotFoundException(nameof(User), $"{userId}");
+
+        // Check if the manager is part of the same account and if a role parent of the manager is top level
+        return await context.Users
+            .Where(u => u.UserId == managerId && u.AccountId == user.AccountId)
             .SelectMany(u => u.Roles)
             .SelectMany(r => context.Roles
-                .Where(pr => pr.RoleId == r.ParentRoleId))
-            .AnyAsync(pr => pr.Users.Any(u => u.UserId == possibleParentUserId), cancellationToken);
+                .Where(pr => pr.RoleId == r.ParentRoleId && pr.ParentRoleId == null))
+            .AnyAsync(cancellationToken);
+    }
 
 }

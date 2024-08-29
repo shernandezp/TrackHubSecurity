@@ -23,4 +23,5 @@ public record struct CreateUserDto (
     string? SecondName,
     string LastName,
     string? SecondSurname,
-    DateTime? DOB);
+    DateOnly? DOB,
+    bool Active);

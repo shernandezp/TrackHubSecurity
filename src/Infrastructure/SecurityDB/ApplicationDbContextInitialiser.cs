@@ -72,24 +72,44 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             context.Resources.Add(new Resource { ResourceName = Resources.Permissions });
             context.Resources.Add(new Resource { ResourceName = Resources.SettingsScreen });
             context.Resources.Add(new Resource { ResourceName = Resources.Users });
+            context.Resources.Add(new Resource { ResourceName = Resources.Credentials });
+            context.Resources.Add(new Resource { ResourceName = Resources.Devices });
+            context.Resources.Add(new Resource { ResourceName = Resources.Operators });
+            context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())
         {
-            context.Actions.Add(new Action { ActionName = Actions.Read, ResourceId = 1 });
-            context.Actions.Add(new Action { ActionName = Actions.Edit, ResourceId = 1 });
-            context.Actions.Add(new Action { ActionName = Actions.Export, ResourceId = 1 });
-            context.Actions.Add(new Action { ActionName = Actions.Execute, ResourceId = 1 });
-            context.Actions.Add(new Action { ActionName = Actions.Write, ResourceId = 1 });
-            context.Actions.Add(new Action { ActionName = Actions.Delete, ResourceId = 1 });
+            context.Actions.Add(new Action { ActionName = Actions.Read });
+            context.Actions.Add(new Action { ActionName = Actions.Edit });
+            context.Actions.Add(new Action { ActionName = Actions.Export });
+            context.Actions.Add(new Action { ActionName = Actions.Execute });
+            context.Actions.Add(new Action { ActionName = Actions.Write });
+            context.Actions.Add(new Action { ActionName = Actions.Delete });
+            context.Actions.Add(new Action { ActionName = Actions.UpdatePassword });
+            context.Actions.Add(new Action { ActionName = Actions.RefreshToken });
+            context.Actions.Add(new Action { ActionName = Actions.ConnectivityTest });
+            await context.SaveChangesAsync();
+        }
+        if (!context.ResourceActions.Any())
+        {
+            for (int resource = 1; resource <= 9; resource++)
+            {
+                for (int action = 1; action <= 6; action++)
+                {
+                    context.ResourceActions.Add(new ResourceAction { ResourceId = resource, ActionId = action });
+                }
+            }
             await context.SaveChangesAsync();
         }
         if (!context.Roles.Any())
         {
+            context.Roles.Add(new Role { Name = "Admin", Description = string.Empty });
             context.Roles.Add(new Role { Name = "Manager", Description = string.Empty });
             context.Roles.Add(new Role { Name = "User", Description = string.Empty });
             await context.SaveChangesAsync();
         }
+        
         if (!context.Policies.Any())
         {
             context.Policies.Add(new Policy { Name = "CanView", Description = string.Empty });
@@ -102,21 +122,28 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         }
         if (!context.ResourceActionRole.Any())
         {
-            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 1, RoleId = 2 });    //View Map: User
-            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 1, RoleId = 1 });    //View Map: Manager
-            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 2, RoleId = 1 });    //Edit Map: Manager
-            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 3, RoleId = 1 });    //Export Map: Manager
-            context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = 1, ActionId = 3, RoleId = 2 });    //Export Map: User
+            for (int resource = 1; resource <= 9; resource++)
+            {
+                for (int action = 1; action <= 6; action++)
+                {
+                    context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = resource, ActionId = action, RoleId = 1 });
+                }
+            }
             await context.SaveChangesAsync();
         }
         if (!context.ResourceActionPolicy.Any())
         {
-            context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = 1, ActionId = 1, PolicyId = 1 });  //View Map: CanView
-            context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = 1, ActionId = 2, PolicyId = 2 });  //Edit Map: CanEdit
-            context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = 1, ActionId = 3, PolicyId = 3 });  //Export Map: CanExport
+            for (int resource = 1; resource <= 9; resource++)
+            {
+                for (int action = 1; action <= 6; action++)
+                {
+                    context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 1 });
+                    context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 2 });
+                    context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 3 });
+                }
+            }
             await context.SaveChangesAsync();
         }
-
         if (!context.Users.Any())
         {
             var password = "123456".HashPassword();
@@ -129,6 +156,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 "",
                 null,
                 null,
+                true,
                 0,
                 Guid.NewGuid()));
 

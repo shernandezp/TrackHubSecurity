@@ -14,34 +14,22 @@
 //
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Entities;
-
-public sealed class ResourceActionRole
+public sealed class ResourceAction
 {
+    private Action? _action;
     private Resource? _resource;
-    private ResourceAction? _resourceAction;
-    private Role? _role;
 
-    public int ResourceActionRoleId { get; set; }
-    public int ResourceId { get; set; }
-    public int ActionId { get; set; }
-    public int RoleId { get; set; }
+    public required int ActionId { get; set; }
+    public required int ResourceId { get; set; }
 
-    // Navigation properties
+    public Action Action
+    {
+        get => _action ?? throw new InvalidOperationException("Action is not loaded");
+        set => _action = value;
+    }
     public Resource Resource
     {
         get => _resource ?? throw new InvalidOperationException("Resource is not loaded");
         set => _resource = value;
-    }
-
-    public ResourceAction ResourceAction
-    {
-        get => _resourceAction ?? throw new InvalidOperationException("ResourceAction is not loaded");
-        set => _resourceAction = value;
-    }
-
-    public Role Role
-    {
-        get => _role ?? throw new InvalidOperationException("Role is not loaded");
-        set => _role = value;
     }
 }

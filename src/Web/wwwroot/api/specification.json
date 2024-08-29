@@ -332,7 +332,7 @@
           },
           "dob": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "nullable": true
           },
           "loginAttempts": {
@@ -342,6 +342,9 @@
           "accountId": {
             "type": "string",
             "format": "guid"
+          },
+          "active": {
+            "type": "boolean"
           },
           "roles": {
             "type": "array",
@@ -419,8 +422,11 @@
           },
           "dob": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "nullable": true
+          },
+          "active": {
+            "type": "boolean"
           }
         }
       },
@@ -466,7 +472,7 @@
           },
           "dob": {
             "type": "string",
-            "format": "date-time",
+            "format": "date",
             "nullable": true
           },
           "active": {

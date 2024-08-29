@@ -18,33 +18,30 @@ using Common.Domain.Constants;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Configurations;
 
-public class ResourceActionPolicyConfiguration : IEntityTypeConfiguration<ResourceActionPolicy>
+public class ResourceActionConfiguration : IEntityTypeConfiguration<ResourceAction>
 {
-    public void Configure(EntityTypeBuilder<ResourceActionPolicy> builder)
+    public void Configure(EntityTypeBuilder<ResourceAction> builder)
     {
         //Table name
-        builder.ToTable(name: TableMetadata.ResourceActionPolicy, schema: SchemaMetadata.Security);
+        builder.ToTable(name: TableMetadata.ResourceAction, schema: SchemaMetadata.Security);
 
         //Column names
-        builder.Property(x => x.ResourceActionPolicyId).HasColumnName("id");
         builder.Property(x => x.ResourceId).HasColumnName("resourceid");
         builder.Property(x => x.ActionId).HasColumnName("actionid");
-        builder.Property(x => x.PolicyId).HasColumnName("policyid");
+
+        //Constraints
+        builder
+            .HasKey(ra => new { ra.ResourceId, ra.ActionId });
+
+        // Configure relationships
+        builder
+            .HasOne(ra => ra.Resource)
+            .WithMany(r => r.ResourceActions)
+            .HasForeignKey(ra => ra.ResourceId);
 
         builder
-            .HasOne(rap => rap.Resource)
-            .WithMany()
-            .HasForeignKey(rap => new { rap.ResourceId });
-
-        builder
-            .HasOne(rap => rap.ResourceAction)
-            .WithMany()
-            .HasForeignKey(rap => new { rap.ResourceId, rap.ActionId });
-
-        builder
-            .HasOne(rap => rap.Policy)
-            .WithMany()
-            .HasForeignKey(rap => rap.PolicyId);
-
+            .HasOne(ra => ra.Action)
+            .WithMany(a => a.ResourceActions)
+            .HasForeignKey(ra => ra.ActionId);
     }
 }

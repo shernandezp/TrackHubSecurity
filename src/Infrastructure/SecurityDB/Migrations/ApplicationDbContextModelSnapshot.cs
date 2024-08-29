@@ -37,12 +37,12 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
-                    b.Property<int>("ResourceId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
 
                     b.HasKey("ActionId");
-
-                    b.HasIndex("ResourceId");
 
                     b.ToTable("actions", "security");
                 });
@@ -62,7 +62,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
-                    b.Property<string>("PolicyName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
@@ -93,6 +93,23 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     b.ToTable("resources", "security");
                 });
 
+            modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.ResourceAction", b =>
+                {
+                    b.Property<int>("ResourceId")
+                        .HasColumnType("integer")
+                        .HasColumnName("resourceid");
+
+                    b.Property<int>("ActionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("actionid");
+
+                    b.HasKey("ResourceId", "ActionId");
+
+                    b.HasIndex("ActionId");
+
+                    b.ToTable("resource_action", "security");
+                });
+
             modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.ResourceActionPolicy", b =>
                 {
                     b.Property<int>("ResourceActionPolicyId")
@@ -116,11 +133,9 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 
                     b.HasKey("ResourceActionPolicyId");
 
-                    b.HasIndex("ActionId");
-
                     b.HasIndex("PolicyId");
 
-                    b.HasIndex("ResourceId");
+                    b.HasIndex("ResourceId", "ActionId");
 
                     b.ToTable("resource_action_policy", "security");
                 });
@@ -148,11 +163,9 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 
                     b.HasKey("ResourceActionRoleId");
 
-                    b.HasIndex("ActionId");
-
-                    b.HasIndex("ResourceId");
-
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("ResourceId", "ActionId");
 
                     b.ToTable("resource_action_role", "security");
                 });
@@ -172,15 +185,15 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("description");
 
-                    b.Property<int?>("ParentRoleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("parentroleid");
-
-                    b.Property<string>("RoleName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
+
+                    b.Property<int?>("ParentRoleId")
+                        .HasColumnType("integer")
+                        .HasColumnName("parentroleid");
 
                     b.HasKey("RoleId");
 
@@ -210,8 +223,8 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("DOB")
-                        .HasColumnType("timestamp without time zone")
+                    b.Property<DateOnly?>("DOB")
+                        .HasColumnType("date")
                         .HasColumnName("dob");
 
                     b.Property<string>("EmailAddress")
@@ -303,25 +316,27 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     b.ToTable("user_role", "security");
                 });
 
-            modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.Action", b =>
+            modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.ResourceAction", b =>
                 {
+                    b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.Action", "Action")
+                        .WithMany("ResourceActions")
+                        .HasForeignKey("ActionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.Resource", "Resource")
-                        .WithMany("Actions")
+                        .WithMany("ResourceActions")
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Action");
 
                     b.Navigation("Resource");
                 });
 
             modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.ResourceActionPolicy", b =>
                 {
-                    b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.Action", "Action")
-                        .WithMany()
-                        .HasForeignKey("ActionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.Policy", "Policy")
                         .WithMany()
                         .HasForeignKey("PolicyId")
@@ -334,21 +349,21 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Action");
+                    b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.ResourceAction", "ResourceAction")
+                        .WithMany()
+                        .HasForeignKey("ResourceId", "ActionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Policy");
 
                     b.Navigation("Resource");
+
+                    b.Navigation("ResourceAction");
                 });
 
             modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.ResourceActionRole", b =>
                 {
-                    b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.Action", "Action")
-                        .WithMany()
-                        .HasForeignKey("ActionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.Resource", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceId")
@@ -361,9 +376,15 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Action");
+                    b.HasOne("TrackHub.Security.Infrastructure.SecurityDB.Entities.ResourceAction", "ResourceAction")
+                        .WithMany()
+                        .HasForeignKey("ResourceId", "ActionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Resource");
+
+                    b.Navigation("ResourceAction");
 
                     b.Navigation("Role");
                 });
@@ -416,9 +437,14 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.Action", b =>
+                {
+                    b.Navigation("ResourceActions");
+                });
+
             modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.Resource", b =>
                 {
-                    b.Navigation("Actions");
+                    b.Navigation("ResourceActions");
                 });
 
             modelBuilder.Entity("TrackHub.Security.Infrastructure.SecurityDB.Entities.Role", b =>

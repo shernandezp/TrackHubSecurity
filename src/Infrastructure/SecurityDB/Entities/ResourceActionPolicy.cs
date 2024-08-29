@@ -17,7 +17,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Entities;
 public sealed class ResourceActionPolicy
 {
     private Resource? _resource;
-    private Action? _action;
+    private ResourceAction? _resourceAction;
     private Policy? _policy;
 
     public int ResourceActionPolicyId { get; set; }
@@ -30,10 +30,10 @@ public sealed class ResourceActionPolicy
         get => _resource ?? throw new InvalidOperationException("Resource is not loaded");
         set => _resource = value;
     }
-    public Action Action
+    public ResourceAction ResourceAction
     {
-        get => _action ?? throw new InvalidOperationException("Action is not loaded");
-        set => _action = value;
+        get => _resourceAction ?? throw new InvalidOperationException("ResourceAction is not loaded");
+        set => _resourceAction = value;
     }
     public Policy Policy
     {

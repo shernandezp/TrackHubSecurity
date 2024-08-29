@@ -23,24 +23,28 @@ public sealed class ResourceActionPolicyReader(IApplicationDbContext context) : 
     // Retrieves the names of policies associated with a specific resource and action.
     public async Task<IReadOnlyCollection<string>> GetResourceActionPoliciesAsync(string resource, string action, CancellationToken cancellationToken)
         => await context.ResourceActionPolicy
-            .Include(rap => rap.Policy)
-            .Include(rap => rap.Resource)
-            .Include(rap => rap.Action)
-            .Where(rap => rap.Resource.ResourceName.Equals(resource) && rap.Action.ActionName.Equals(action))
-            .Select(rap => rap.Policy.Name)
-            .ToListAsync(cancellationToken);
+        .Include(rap => rap.Policy)
+        .Include(rap => rap.ResourceAction)
+            .ThenInclude(ra => ra.Resource)
+        .Include(rap => rap.ResourceAction)
+            .ThenInclude(ra => ra.Action)
+        .Where(rap => rap.ResourceAction.Resource.ResourceName.Equals(resource) && rap.ResourceAction.Action.ActionName.Equals(action))
+        .Select(rap => rap.Policy.Name)
+        .ToListAsync(cancellationToken);
 
     // Retrieves the authorized actions for a collection of policies.
     public async Task<IReadOnlyCollection<ResourceActionVm>> GetPolicyAuthorizedActionsAsync(IReadOnlyCollection<int> policies, CancellationToken cancellationToken)
         => await context.ResourceActionPolicy
-            .Include(rap => rap.Resource)
-            .Include(rap => rap.Action)
+            .Include(rap => rap.ResourceAction)
+                .ThenInclude(ra => ra.Resource)
+            .Include(rap => rap.ResourceAction)
+                .ThenInclude(ra => ra.Action)
             .Where(rap => policies.Contains(rap.PolicyId))
             .Select(rap => new ResourceActionVm(
-                rap.ResourceId,
-                rap.Resource.ResourceName,
-                rap.ActionId,
-                rap.Action.ActionName
+                rap.ResourceAction.ResourceId,
+                rap.ResourceAction.Resource.ResourceName,
+                rap.ResourceAction.ActionId,
+                rap.ResourceAction.Action.ActionName
             ))
             .ToListAsync(cancellationToken);
 }
