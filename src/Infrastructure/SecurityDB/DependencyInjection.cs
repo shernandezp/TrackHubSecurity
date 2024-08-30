@@ -53,7 +53,7 @@ public static class DependencyInjection
         services.AddScoped<IResourceActionRoleWriter, ResourceActionRoleWriter>();
         services.AddScoped<IResourceActionRoleReader, ResourceActionRoleReader>();
 
-        services.AddScoped<ApplicationDbContextInitialiser>();
+        services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
     }

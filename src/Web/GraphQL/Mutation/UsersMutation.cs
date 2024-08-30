@@ -14,6 +14,7 @@
 //
 
 using TrackHub.Security.Application.Users.Commands.Create;
+using TrackHub.Security.Application.Users.Commands.CreateManager;
 using TrackHub.Security.Application.Users.Commands.Delete;
 using TrackHub.Security.Application.Users.Commands.Update;
 using TrackHub.Security.Domain.Models;
@@ -23,6 +24,9 @@ namespace TrackHub.Security.Web.GraphQL.Mutation;
 public partial class Mutation
 {
     public async Task<UserVm> CreateUser([Service] ISender sender, CreateUserCommand command)
+        => await sender.Send(command);
+
+    public async Task<UserVm> CreateManager([Service] ISender sender, CreateManagerCommand command)
         => await sender.Send(command);
 
     public async Task<bool> UpdateUser([Service] ISender sender, Guid id, UpdateUserCommand command)

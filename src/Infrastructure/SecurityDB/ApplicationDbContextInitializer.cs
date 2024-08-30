@@ -22,20 +22,20 @@ using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB;
 
-public static class InitialiserExtensions
+public static class InitializerExtensions
 {
-    public static async Task InitialiseDatabaseAsync(this WebApplication app)
+    public static async Task InitializeDatabaseAsync(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
-        var initialiser = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitialiser>();
-        await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
+        var initializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
+        await initializer.InitializeAsync();
+        await initializer.SeedAsync();
     }
 }
 
-public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitialiser> logger, ApplicationDbContext context)
+public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
 {
-    public async Task InitialiseAsync()
+    public async Task InitializeAsync()
     {
         try
         {
@@ -43,7 +43,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "An error occurred while initialising the database.");
+            logger.LogError(ex, "An error occurred while initializing the database.");
             throw;
         }
     }
@@ -104,22 +104,22 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
         }
         if (!context.Roles.Any())
         {
-            context.Roles.Add(new Role { Name = "Admin", Description = string.Empty });
-            context.Roles.Add(new Role { Name = "Manager", Description = string.Empty });
-            context.Roles.Add(new Role { Name = "User", Description = string.Empty });
+            context.Roles.Add(new Role { Name = Roles.Administrator, Description = string.Empty });
+            context.Roles.Add(new Role { Name = Roles.Manager, Description = string.Empty });
+            context.Roles.Add(new Role { Name = Roles.User, Description = string.Empty });
             await context.SaveChangesAsync();
         }
         
         if (!context.Policies.Any())
         {
-            context.Policies.Add(new Policy { Name = "CanView", Description = string.Empty });
-            context.Policies.Add(new Policy { Name = "CanEdit", Description = string.Empty });
-            context.Policies.Add(new Policy { Name = "CanExport", Description = string.Empty });
-            context.Policies.Add(new Policy { Name = "CanExecute", Description = string.Empty });
-            context.Policies.Add(new Policy { Name = "CanWrite", Description = string.Empty });
-            context.Policies.Add(new Policy { Name = "CanDelete", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "FullAccess", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "ManageUsers", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "ReadOnly", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "LimitedUpdate", Description = string.Empty });
+            context.Policies.Add(new Policy { Name = "Audit", Description = string.Empty });
             await context.SaveChangesAsync();
         }
+
         if (!context.ResourceActionRole.Any())
         {
             for (int resource = 1; resource <= 9; resource++)
@@ -131,11 +131,12 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
             }
             await context.SaveChangesAsync();
         }
-        if (!context.ResourceActionPolicy.Any())
+
+        /*if (!context.ResourceActionPolicy.Any())
         {
             for (int resource = 1; resource <= 9; resource++)
             {
-                for (int action = 1; action <= 6; action++)
+                for (int action = 1; action <= 5; action++)
                 {
                     context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 1 });
                     context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 2 });
@@ -143,7 +144,7 @@ public class ApplicationDbContextInitialiser(ILogger<ApplicationDbContextInitial
                 }
             }
             await context.SaveChangesAsync();
-        }
+        }*/
         if (!context.Users.Any())
         {
             var password = "123456".HashPassword();

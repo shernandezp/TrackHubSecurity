@@ -19,6 +19,12 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
 
 public sealed class RoleReader(IApplicationDbContext context) : IRoleReader
 {
+    public async Task<RoleVm> GetRoleAsync(string name, CancellationToken cancellationToken)
+        => await context.Roles
+            .Where(r => r.Name == name)
+            .Select(r => new RoleVm(r.RoleId, r.Name))
+            .FirstAsync(cancellationToken);
+
     // Get all roles
     public async Task<IReadOnlyCollection<RoleVm>> GetRolesAsync(CancellationToken cancellationToken)
         => await context.Roles
