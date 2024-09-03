@@ -18,7 +18,6 @@ namespace TrackHub.Security.Domain.Records;
 public record struct UpdateUserDto(
     Guid UserId,
     string Username,
-    string Password,
     string EmailAddress,
     string FirstName,
     string? SecondName,

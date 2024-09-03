@@ -450,9 +450,6 @@
           "username": {
             "type": "string"
           },
-          "password": {
-            "type": "string"
-          },
           "emailAddress": {
             "type": "string"
           },

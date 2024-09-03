@@ -76,6 +76,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
             context.Resources.Add(new Resource { ResourceName = Resources.Devices });
             context.Resources.Add(new Resource { ResourceName = Resources.Operators });
             context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
+            context.Resources.Add(new Resource { ResourceName = Resources.ManageUsers });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())
@@ -122,7 +123,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
 
         if (!context.ResourceActionRole.Any())
         {
-            for (int resource = 1; resource <= 9; resource++)
+            for (int resource = 1; resource <= 10; resource++)
             {
                 for (int action = 1; action <= 6; action++)
                 {
@@ -134,7 +135,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
 
         /*if (!context.ResourceActionPolicy.Any())
         {
-            for (int resource = 1; resource <= 9; resource++)
+            for (int resource = 1; resource <= 10; resource++)
             {
                 for (int action = 1; action <= 5; action++)
                 {
