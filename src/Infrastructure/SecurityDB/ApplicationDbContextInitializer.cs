@@ -76,7 +76,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
             context.Resources.Add(new Resource { ResourceName = Resources.Devices });
             context.Resources.Add(new Resource { ResourceName = Resources.Operators });
             context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
-            context.Resources.Add(new Resource { ResourceName = Resources.ManageUsers });
+            context.Resources.Add(new Resource { ResourceName = Resources.Administrative });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())

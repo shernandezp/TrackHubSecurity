@@ -50,10 +50,11 @@ public sealed class RoleReader(IApplicationDbContext context) : IRoleReader
                         Actions = res.ResourceActions
                             .Select(ra => ra.Action)
                             .Select(a => new ActionVm
-                            {
-                                ActionId = a.ActionId,
-                                ActionName = a.ActionName
-                            }).ToList()
+                            (
+                                a.ActionId,
+                                a.ActionName,
+                                res.ResourceId
+                            )).ToList()
                     }).ToList()
             })
             .FirstOrDefaultAsync(cancellationToken);

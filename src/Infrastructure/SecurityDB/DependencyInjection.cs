@@ -42,6 +42,8 @@ public static class DependencyInjection
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IRoleReader, RoleReader>();
+        services.AddScoped<IActionReader, ActionReader>();
+        services.AddScoped<IResourceReader, ResourceReader>();
         services.AddScoped<IUserWriter, UserWriter>();
         services.AddScoped<IUserReader, UserReader>();
         services.AddScoped<IUserRoleWriter, UserRoleWriter>();
