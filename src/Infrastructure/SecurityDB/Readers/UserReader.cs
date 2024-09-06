@@ -57,7 +57,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.AccountId,
                 u.Active,
                 u.Roles.Select(r => new RoleVm(r.RoleId, r.Name)).ToList(),
-                u.Policies.Select(p => new PolicyVm(p.Name)).ToList()))
+                u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .FirstAsync(cancellationToken);
 
     // Retrieves a collection of users associated with the specified account ID, including their roles and policies
@@ -84,7 +84,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.AccountId,
                 u.Active,
                 u.Roles.Select(r => new RoleVm(r.RoleId, r.Name)).ToList(),
-                u.Policies.Select(p => new PolicyVm(p.Name)).ToList()))
+                u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .ToListAsync(cancellationToken);
 
     // Validates if the specified email address is unique

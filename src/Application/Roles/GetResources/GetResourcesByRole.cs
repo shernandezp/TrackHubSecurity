@@ -14,6 +14,7 @@
 //
 
 namespace TrackHub.Security.Application.Roles.GetResources;
+
 [Authorize(Resource = Resources.Permissions, Action = Actions.Read)]
 public readonly record struct GetResourcesByRoleQuery(int RoleId) : IRequest<RoleResourceVm>;
 

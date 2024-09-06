@@ -18,5 +18,5 @@ namespace TrackHub.Security.Domain.Interfaces;
 public interface IResourceActionRoleWriter
 {
     Task<ResourceActionRoleVm> CreateResourceActionRoleAsync(ResourceActionRoleDto resourceActionRoleDto, CancellationToken cancellationToken);
-    Task DeleteResourceActionRoleAsync(int resourceActionRoleId, CancellationToken cancellationToken);
+    Task DeleteResourceActionRoleAsync(int resourceId, int actionId, int roleId, CancellationToken cancellationToken);
 }

@@ -14,4 +14,8 @@
 //
 
 namespace TrackHub.Security.Domain.Models;
-public readonly record struct PolicyVm(int PolicyId, string Name);
+public readonly record struct PolicyResourceVm(
+    int PolicyId,
+    string Name,
+    IEnumerable<ResourceVm> Resources
+    );

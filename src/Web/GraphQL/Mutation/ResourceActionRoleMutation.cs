@@ -24,9 +24,9 @@ public partial class Mutation
     public async Task<ResourceActionRoleVm> CreateResourceActionRole([Service] ISender sender, CreateResourceActionRoleCommand command)
         => await sender.Send(command);
 
-    public async Task<int> DeleteResourceActionRole([Service] ISender sender, int resourceActionRoleId)
+    public async Task<int> DeleteResourceActionRole([Service] ISender sender, int resourceId, int actionId, int roleId)
     {
-        await sender.Send(new DeleteResourceActionRoleCommand(resourceActionRoleId));
-        return resourceActionRoleId;
+        await sender.Send(new DeleteResourceActionRoleCommand(resourceId, actionId, roleId));
+        return roleId;
     }
 }

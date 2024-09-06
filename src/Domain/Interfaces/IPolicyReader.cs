@@ -13,5 +13,10 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
-public readonly record struct PolicyVm(int PolicyId, string Name);
+namespace TrackHub.Security.Domain.Interfaces;
+
+public interface IPolicyReader
+{
+    Task<IReadOnlyCollection<PolicyVm>> GetPoliciesAsync(CancellationToken cancellationToken);
+    Task<PolicyResourceVm> GetResourcesAsync(int policyId, CancellationToken cancellationToken);
+}

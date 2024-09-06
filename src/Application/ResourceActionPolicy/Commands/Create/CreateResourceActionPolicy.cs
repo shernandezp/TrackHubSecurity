@@ -14,15 +14,24 @@
 //
 
 
+using Common.Application.Interfaces;
+
 namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Create;
 
 [Authorize(Resource = Resources.Accounts, Action = Actions.Write)]
 public readonly record struct CreateResourceActionPolicyCommand(ResourceActionPolicyDto ResourceActionPolicy) : IRequest<ResourceActionPolicyVm>;
 
-public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>
+public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>
 {
+    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+
     // This method handles the CreateResourceActionPolicyCommand and returns a ResourceActionPolicyVm
     public async Task<ResourceActionPolicyVm> Handle(CreateResourceActionPolicyCommand request, CancellationToken cancellationToken)
-        => await writer.CreateResourceActionPolicyAsync(request.ResourceActionPolicy, cancellationToken);
+    {
+        var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
+        return !isAdmin
+            ? throw new UnauthorizedAccessException()
+            : await writer.CreateResourceActionPolicyAsync(request.ResourceActionPolicy, cancellationToken); 
+    }
 
 }

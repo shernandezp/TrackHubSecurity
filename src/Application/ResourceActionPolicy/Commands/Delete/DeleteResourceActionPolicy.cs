@@ -14,15 +14,23 @@
 //
 
 
+using Common.Application.Interfaces;
+
 namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Delete;
 
-[Authorize(Resource = Resources.Accounts, Action = Actions.Delete)]
-public readonly record struct DeleteResourceActionPolicyCommand(int ResourceActionPolicyId) : IRequest;
+[Authorize(Resource = Resources.Permissions, Action = Actions.Delete)]
+public readonly record struct DeleteResourceActionPolicyCommand(int ResourceId, int ActionId, int PolicyId) : IRequest;
 
-public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer) : IRequestHandler<DeleteResourceActionPolicyCommand>
+public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user) : IRequestHandler<DeleteResourceActionPolicyCommand>
 {
+    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+
     // This method handles the DeleteResourceActionPolicyCommand by deleting the resource action policy
     // with the specified ID using the provided writer.
     public async Task Handle(DeleteResourceActionPolicyCommand request, CancellationToken cancellationToken)
-        => await writer.DeleteResourceActionPolicyAsync(request.ResourceActionPolicyId, cancellationToken);
+    {
+        var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
+        if (!isAdmin) throw new UnauthorizedAccessException();
+        await writer.DeleteResourceActionPolicyAsync(request.ResourceId, request.ActionId, request.PolicyId, cancellationToken);
+    }
 }

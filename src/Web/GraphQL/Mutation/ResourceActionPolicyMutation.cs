@@ -24,9 +24,9 @@ public partial class Mutation
     public async Task<ResourceActionPolicyVm> CreateResourceActionPolicy([Service] ISender sender, CreateResourceActionPolicyCommand command)
         => await sender.Send(command);
 
-    public async Task<int> DeleteResourceActionPolicy([Service] ISender sender, int resourceActionPolicyId)
+    public async Task<int> DeleteResourceActionPolicy([Service] ISender sender, int resourceId, int actionId, int policyId)
     {
-        await sender.Send(new DeleteResourceActionPolicyCommand(resourceActionPolicyId));
-        return resourceActionPolicyId;
+        await sender.Send(new DeleteResourceActionPolicyCommand(resourceId, actionId, policyId));
+        return policyId;
     }
 }

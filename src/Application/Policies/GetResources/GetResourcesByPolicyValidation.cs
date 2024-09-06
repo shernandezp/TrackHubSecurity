@@ -13,5 +13,13 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
-public readonly record struct PolicyVm(int PolicyId, string Name);
+namespace TrackHub.Security.Application.Policies.GetResources;
+
+public sealed class GetResourcesByPolicyValidation : AbstractValidator<GetResourcesByPolicyQuery>
+{
+    public GetResourcesByPolicyValidation()
+    {
+        RuleFor(x => x.PolicyId)
+            .NotEmpty();
+    }
+}

@@ -18,5 +18,5 @@ namespace TrackHub.Security.Domain.Interfaces;
 public interface IResourceActionPolicyWriter
 {
     Task<ResourceActionPolicyVm> CreateResourceActionPolicyAsync(ResourceActionPolicyDto resourceActionPolicyDto, CancellationToken cancellationToken);
-    Task DeleteResourceActionPolicyAsync(int resourceActionPolicyId, CancellationToken cancellationToken);
+    Task DeleteResourceActionPolicyAsync(int resourceId, int actionId, int policyId, CancellationToken cancellationToken);
 }

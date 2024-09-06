@@ -13,5 +13,19 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
-public readonly record struct PolicyVm(int PolicyId, string Name);
+using TrackHub.Security.Application.Policies.GetAll;
+using TrackHub.Security.Application.Policies.GetResources;
+using TrackHub.Security.Domain.Models;
+
+namespace TrackHub.Security.Web.GraphQL.Query;
+
+public partial class Query
+{
+
+    public async Task<IReadOnlyCollection<PolicyVm>> GetPolicies([Service] ISender sender)
+        => await sender.Send(new GetPoliciesQuery());
+
+    public async Task<PolicyResourceVm> GetResourcesByPolicy([Service] ISender sender, [AsParameters] GetResourcesByPolicyQuery query)
+        => await sender.Send(query);
+
+}

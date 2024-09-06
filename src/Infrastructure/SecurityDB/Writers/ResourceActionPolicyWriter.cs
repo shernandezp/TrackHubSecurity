@@ -22,6 +22,9 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 public sealed class ResourceActionPolicyWriter(IApplicationDbContext context) : IResourceActionPolicyWriter
 {
     // Creates a new resource action policy asynchronously.
+    // param name="resourceActionPolicyDto": The resource action policy data transfer object.
+    // param name="cancellationToken": The cancellation token.
+    // returns: The created resource action policy view model.
     public async Task<ResourceActionPolicyVm> CreateResourceActionPolicyAsync(ResourceActionPolicyDto resourceActionPolicyDto, CancellationToken cancellationToken)
     {
         var resourceActionPolicy = new ResourceActionPolicy
@@ -42,10 +45,14 @@ public sealed class ResourceActionPolicyWriter(IApplicationDbContext context) : 
     }
 
     // Deletes a resource action policy asynchronously.
-    public async Task DeleteResourceActionPolicyAsync(int resourceActionPolicyId, CancellationToken cancellationToken)
+    // param name="resourceId": The resource ID.
+    // param name="actionId": The action ID.
+    // param name="policyId": The policy ID.
+    public async Task DeleteResourceActionPolicyAsync(int resourceId, int actionId, int policyId, CancellationToken cancellationToken)
     {
-        var resourceActionPolicy = await context.ResourceActionPolicy.FindAsync(resourceActionPolicyId, cancellationToken)
-            ?? throw new NotFoundException(nameof(ResourceActionPolicy), $"{resourceActionPolicyId}");
+        var resourceActionPolicy = await context.ResourceActionPolicy
+            .FirstOrDefaultAsync(r => r.ResourceId == resourceId && r.ActionId == actionId && r.PolicyId == policyId, cancellationToken)
+            ?? throw new NotFoundException(nameof(ResourceActionPolicy), $"{resourceId}-{actionId}-{policyId}");
 
         context.ResourceActionPolicy.Attach(resourceActionPolicy);
         context.ResourceActionPolicy.Remove(resourceActionPolicy);
