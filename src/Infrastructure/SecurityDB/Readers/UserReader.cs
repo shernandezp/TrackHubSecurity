@@ -87,6 +87,64 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .ToListAsync(cancellationToken);
 
+    // Retrieves a collection of users associated with the specified account ID and role ID
+    // -Parameters-
+    // accountId: The ID of the account to retrieve users for
+    // roleId: The ID of the role to retrieve users for
+    // cancellationToken: A token to monitor for cancellation requests
+    // -Returns-
+    // A collection of user view models
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersByRoleAsync(Guid accountId, int roleId, CancellationToken cancellationToken)
+    {
+        return await context.Users
+            .Where(u => u.AccountId == accountId && u.Roles.Any(r => r.RoleId == roleId))
+            .Include(u => u.Roles)
+            .Select(u => new UserVm(
+                u.UserId,
+                u.Username,
+                u.EmailAddress,
+                u.FirstName,
+                u.SecondName,
+                u.LastName,
+                u.SecondSurname,
+                u.DOB,
+                u.LoginAttempts,
+                u.AccountId,
+                u.Active,
+                null,
+                null))
+            .ToListAsync(cancellationToken);
+    }
+
+    // Retrieves a collection of users associated with the specified account ID and policy ID
+    // -Parameters-
+    // accountId: The ID of the account to retrieve users for
+    // policyId: The ID of the policy to retrieve users for
+    // cancellationToken: A token to monitor for cancellation requests
+    // -Returns-
+    // A collection of user view models
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersByPolicyAsync(Guid accountId, int policyId, CancellationToken cancellationToken)
+    {
+        return await context.Users
+            .Where(u => u.AccountId == accountId && u.Policies.Any(r => r.PolicyId == policyId))
+            .Include(u => u.Policies)
+            .Select(u => new UserVm(
+                u.UserId,
+                u.Username,
+                u.EmailAddress,
+                u.FirstName,
+                u.SecondName,
+                u.LastName,
+                u.SecondSurname,
+                u.DOB,
+                u.LoginAttempts,
+                u.AccountId,
+                u.Active,
+                null,
+                null))
+            .ToListAsync(cancellationToken);
+    }
+
     // Validates if the specified email address is unique
     public async Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
         => !await context.Users

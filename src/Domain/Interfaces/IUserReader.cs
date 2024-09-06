@@ -19,6 +19,8 @@ public interface IUserReader
     Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken);
     Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserVm>> GetUsersByRoleAsync(Guid accountId, int roleId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserVm>> GetUsersByPolicyAsync(Guid accountId, int policyId, CancellationToken cancellationToken);
     Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken);
     Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken);
     Task<bool> ValidateEmailAddressAsync(Guid userId, string emailAddress, CancellationToken cancellationToken);
