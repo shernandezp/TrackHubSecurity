@@ -24,7 +24,12 @@ public class GetAuthorizedActionsQueryHandler(
     IResourceActionRoleReader resourceActionRoleReader,
     IResourceActionPolicyReader resourceActionPolicyReader) : IRequestHandler<GetAuthorizedActionsQuery, IReadOnlyCollection<ResourceActionVm>>
 {
-    // Handle method to process the GetAuthorizedActionsQuery request
+    /// <summary>
+    /// Handle method to process the GetAuthorizedActionsQuery request
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>a list of ResourceActionVm objects</returns>
     public async Task<IReadOnlyCollection<ResourceActionVm>> Handle(GetAuthorizedActionsQuery request, CancellationToken cancellationToken)
     {
         // Get the user roles for the specified user ID

@@ -77,6 +77,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
             context.Resources.Add(new Resource { ResourceName = Resources.Operators });
             context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
             context.Resources.Add(new Resource { ResourceName = Resources.Administrative });
+            context.Resources.Add(new Resource { ResourceName = Resources.Groups });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())
@@ -94,7 +95,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
         }
         if (!context.ResourceActions.Any())
         {
-            for (int resource = 1; resource <= 9; resource++)
+            for (int resource = 1; resource <= 11; resource++)
             {
                 for (int action = 1; action <= 6; action++)
                 {
@@ -106,8 +107,8 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
         if (!context.Roles.Any())
         {
             context.Roles.Add(new Role { Name = Roles.Administrator, Description = string.Empty });
-            context.Roles.Add(new Role { Name = Roles.Manager, Description = string.Empty });
-            context.Roles.Add(new Role { Name = Roles.User, Description = string.Empty });
+            context.Roles.Add(new Role { Name = Roles.Manager, Description = string.Empty, ParentRoleId = 1 });
+            context.Roles.Add(new Role { Name = Roles.User, Description = string.Empty, ParentRoleId = 2 });
             await context.SaveChangesAsync();
         }
         

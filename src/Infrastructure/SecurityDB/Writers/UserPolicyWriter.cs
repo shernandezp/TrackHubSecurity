@@ -48,7 +48,7 @@ public sealed class UserPolicyWriter(IApplicationDbContext context) : IUserPolic
     public async Task DeleteUserPolicyAsync(Guid userId, int policyId, CancellationToken cancellationToken)
     {
         // Find the user policy with the provided user ID and policy ID in the UserPolicies DbSet.
-        var userPolicy = await context.UserPolicies.FindAsync([userId, policyId], cancellationToken)
+        var userPolicy = await context.UserPolicies.FindAsync([policyId, userId], cancellationToken)
             ?? throw new NotFoundException(nameof(UserPolicy), $"{userId},{policyId}");
 
         // Remove the user policy from the UserPolicies DbSet.

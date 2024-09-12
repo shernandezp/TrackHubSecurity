@@ -18,6 +18,7 @@ using TrackHub.Security.Application.Users.Queries.GetAuthorizedActions;
 using TrackHub.Security.Application.Users.Queries.GetByAccount;
 using TrackHub.Security.Application.Users.Queries.GetByPolicy;
 using TrackHub.Security.Application.Users.Queries.GetByRole;
+using TrackHub.Security.Application.Users.Queries.GetPermission;
 using TrackHub.Security.Domain.Models;
 
 namespace TrackHub.Security.Web.GraphQL.Query;
@@ -39,4 +40,9 @@ public partial class Query
     public async Task<IReadOnlyCollection<ResourceActionVm>> GetAuthorizedActions([Service] ISender sender, [AsParameters] GetAuthorizedActionsQuery query)
         => await sender.Send(query);
 
+    public async Task<bool> UserIsAdmin([Service] ISender sender)
+        => await sender.Send(new UserIsAdminQuery());
+
+    public async Task<bool> UserIsManager([Service] ISender sender)
+        => await sender.Send(new UserIsManagerQuery());
 }

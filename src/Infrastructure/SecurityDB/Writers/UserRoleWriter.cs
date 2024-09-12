@@ -42,7 +42,7 @@ public sealed class UserRoleWriter(IApplicationDbContext context) : IUserRoleWri
     // Deletes a UserRole asynchronously based on the provided userId and roleId.
     public async Task DeleteUserRoleAsync(Guid userId, int roleId, CancellationToken cancellationToken)
     {
-        var userRole = await context.UserRoles.FindAsync([userId, roleId], cancellationToken)
+        var userRole = await context.UserRoles.FindAsync([roleId, userId], cancellationToken)
             ?? throw new NotFoundException(nameof(UserRole), $"{userId},{roleId}");
 
         context.UserRoles.Attach(userRole);

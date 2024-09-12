@@ -17,28 +17,31 @@ using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
 
-// This class represents a reader for retrieving user information from the database
+/// <summary>
+/// This class represents a reader for retrieving user information from the database
+/// </summary>
+/// <param name="context"></param>
 public sealed class UserReader(IApplicationDbContext context) : IUserReader
 {
 
-    // Retrieves the username of a user with the specified ID
-    // -Parameters-
-    // id: The ID of the user to retrieve the username for
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // The username of the user with the specified ID
+    /// <summary>
+    /// Retrieves the username of a user with the specified ID
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The username of the user with the specified ID</returns>
     public async Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.UserId.Equals(id))
             .Select(u => u.Username)
             .FirstAsync(cancellationToken);
 
-    // Retrieves the detailed information of a user with the specified ID, including their roles and policies
-    // -Parameters-
-    // id: The ID of the user to retrieve
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // A user view model
+    /// <summary>
+    /// Retrieves the detailed information of a user with the specified ID, including their roles and policies
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A user view model</returns>
     public async Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.UserId.Equals(id))
@@ -60,12 +63,12 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .FirstAsync(cancellationToken);
 
-    // Retrieves a collection of users associated with the specified account ID, including their roles and policies
-    // -Parameters-
-    // accountId: The ID of the account to retrieve users for
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // A collection of user view models
+    /// <summary>
+    /// Retrieves a collection of users associated with the specified account ID, including their roles and policies
+    /// </summary>
+    /// <param name="accountId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A collection of user view models</returns>
     public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.AccountId.Equals(accountId))
@@ -87,13 +90,13 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .ToListAsync(cancellationToken);
 
-    // Retrieves a collection of users associated with the specified account ID and role ID
-    // -Parameters-
-    // accountId: The ID of the account to retrieve users for
-    // roleId: The ID of the role to retrieve users for
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // A collection of user view models
+    /// <summary>
+    /// Retrieves a collection of users associated with the specified account ID and role ID
+    /// </summary>
+    /// <param name="accountId"></param>
+    /// <param name="roleId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A collection of user view models</returns>
     public async Task<IReadOnlyCollection<UserVm>> GetUsersByRoleAsync(Guid accountId, int roleId, CancellationToken cancellationToken)
     {
         return await context.Users
@@ -116,13 +119,13 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
             .ToListAsync(cancellationToken);
     }
 
-    // Retrieves a collection of users associated with the specified account ID and policy ID
-    // -Parameters-
-    // accountId: The ID of the account to retrieve users for
-    // policyId: The ID of the policy to retrieve users for
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // A collection of user view models
+    /// <summary>
+    /// Retrieves a collection of users associated with the specified account ID and policy ID
+    /// </summary>
+    /// <param name="accountId"></param>
+    /// <param name="policyId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A collection of user view models</returns>
     public async Task<IReadOnlyCollection<UserVm>> GetUsersByPolicyAsync(Guid accountId, int policyId, CancellationToken cancellationToken)
     {
         return await context.Users
@@ -145,62 +148,88 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
             .ToListAsync(cancellationToken);
     }
 
-    // Validates if the specified email address is unique
+    /// <summary>
+    /// Validates if the specified email address is unique 
+    /// </summary>
+    /// <param name="emailAddress"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A boolean indicating whether the specified email address is unique</returns>
     public async Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => u.EmailAddress.Equals(emailAddress))
             .AnyAsync(cancellationToken);
 
-    // Validates if the specified username is unique
-    // -Parameters-
-    // username: The username to validate
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // A boolean indicating whether the specified username is unique
+    /// <summary>
+    /// Validates if the specified username is unique 
+    /// </summary>
+    /// <param name="username"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A boolean indicating whether the specified username is unique</returns>
     public async Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => u.Username.Equals(username))
             .AnyAsync(cancellationToken);
 
-    // Validates if the specified email address is unique for a user other than the one with the specified ID
-    // -Parameters-
-    // userId: The ID of the user to validate
-    // emailAddress: The email address to validate
-    // cancellationToken: A token to monitor for cancellation requests
+    /// <summary>
+    /// Validates if the specified email address is unique for a user other than the one with the specified ID 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="emailAddress"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A boolean indicating whether the specified email address is unique</returns>
     public async Task<bool> ValidateEmailAddressAsync(Guid userId, string emailAddress, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => !u.UserId.Equals(userId) && u.EmailAddress.Equals(emailAddress))
             .AnyAsync(cancellationToken);
 
-    // Validates if the specified username is unique for a user other than the one with the specified ID
-    // -Parameters-
-    // userId: The ID of the user to validate
-    // username: The username to validate
-    // cancellationToken: A token to monitor for cancellation requests
+    /// <summary>
+    /// Validates if the specified username is unique for a user other than the one with the specified ID
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="username"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A boolean indicating whether the specified username is unique</returns>
     public async Task<bool> ValidateUsernameAsync(Guid userId, string username, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => !u.UserId.Equals(userId) && u.Username.Equals(username))
             .AnyAsync(cancellationToken);
 
-    // Validates whether the specified user is an administrator
-    // -Parameters-
-    // userId: The ID of the user to validate
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // A boolean indicating whether the specified user is an administrator
+    /// <summary>
+    /// Validates whether the specified user is an administrator 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A boolean indicating whether the specified user is an administrator</returns>
     public async Task<bool> IsAdminAsync(Guid userId, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.UserId == userId)
             .SelectMany(u => u.Roles)
             .AnyAsync(r => r.ParentRoleId == null, cancellationToken);
 
-    // Validates whether a user is a manager of the specified user
-    // -Parameters-
-    // userId: The ID of the user to validate
-    // managerId: The ID of the manager to validate
-    // cancellationToken: A token to monitor for cancellation requests
-    // -Returns-
-    // A boolean indicating whether the specified user is a manager
+    /// <summary>
+    /// Validates whether the specified user is a manager
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A boolean indicating whether the specified user is a manager</returns>
+    public async Task<bool> IsManagerAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await context.Users
+            .Where(u => u.UserId == userId)
+            .SelectMany(u => u.Roles)
+            .AnyAsync(r => context.Roles
+                .Where(pr => pr.RoleId == r.ParentRoleId && pr.ParentRoleId == null)
+                .Any(), cancellationToken);
+    }
+
+    /// <summary>
+    /// Validates whether a user is a manager of the specified user 
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="managerId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A boolean indicating whether the specified user is a manager</returns>
+    /// <exception cref="NotFoundException"></exception>
     public async Task<bool> IsManagerAsync(Guid userId, Guid managerId, CancellationToken cancellationToken)
     {
         // Retrieve the account ID of the user
