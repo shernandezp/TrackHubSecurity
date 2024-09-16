@@ -28,6 +28,9 @@ public partial class Query
     public async Task<UserVm> GetUser([Service] ISender sender, [AsParameters] GetUserQuery query)
         => await sender.Send(query);
 
+    public async Task<UserVm> GetCurrentUser([Service] ISender sender)
+        => await sender.Send(new GetCurrentUserQuery());
+
     public async Task<IReadOnlyCollection<UserVm>> GetUsersByAccount([Service] ISender sender)
         => await sender.Send(new GetUsersByAccountQuery());
 
@@ -45,4 +48,5 @@ public partial class Query
 
     public async Task<bool> UserIsManager([Service] ISender sender)
         => await sender.Send(new UserIsManagerQuery());
+
 }

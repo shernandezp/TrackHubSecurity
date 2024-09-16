@@ -36,6 +36,12 @@ public partial class Mutation
         return true;
     }
 
+    public async Task<bool> UpdateCurrentUser([Service] ISender sender, UpdateCurrentUserCommand command)
+    {
+        await sender.Send(command);
+        return true;
+    }
+
     public async Task<bool> UpdatePassword([Service] ISender sender, Guid id, UpdatePasswordCommand command)
     {
         if (id != command.User.UserId) return false;

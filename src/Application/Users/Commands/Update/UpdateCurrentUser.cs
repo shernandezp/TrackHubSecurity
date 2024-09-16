@@ -13,14 +13,15 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Application.Users.Events;
+using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
 
-[Authorize(Resource = Resources.Users, Action = Actions.Edit)]
-public readonly record struct UpdateUserCommand(UpdateUserDto User) : IRequest;
-public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<UpdateUserCommand>
+[Authorize(Resource = Resources.Profile, Action = Actions.Edit)]
+public readonly record struct UpdateCurrentUserCommand(UpdateCurrentUserDto User) : IRequest;
+public class UpdateCurrentUserCommandHandler(IUserWriter writer, IUser user) : IRequestHandler<UpdateCurrentUserCommand>
 {
+    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
 
     /// <summary>
     /// Handle the UpdateUserCommand
@@ -28,15 +29,9 @@ public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) 
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>The task result</returns>
-    public async Task Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+    public async Task Handle(UpdateCurrentUserCommand request, CancellationToken cancellationToken)
     {
         // Update the user asynchronously
-        await writer.UpdateUserAsync(request.User, cancellationToken);
-
-        // Create a shrank version of the updated user
-        var user = new UpdateUserShrankDto(request.User.UserId, request.User.Username, request.User.Active);
-
-        // Publish a notification for the user update
-        await publisher.Publish(new UserUpdated.Notification(request.User.UserId, user), cancellationToken);
+        await writer.UpdateUserAsync(request.User, UserId, cancellationToken);
     }
 }

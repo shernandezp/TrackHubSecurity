@@ -13,13 +13,17 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Interfaces;
-public interface IUserWriter
-{
-    Task<UserVm> CreateUserAsync(CreateUserDto userDto, Guid accountId, CancellationToken cancellationToken);
-    Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken);
-    Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken);
-    Task UpdateUserAsync(UpdateUserDto userDto, CancellationToken cancellationToken);
-    Task UpdateUserAsync(UpdateCurrentUserDto userDto, Guid userId, CancellationToken cancellationToken);
+namespace TrackHub.Security.Application.Users.Commands.Update;
 
+public sealed class UpdateCurrentUserCommandValidator : AbstractValidator<UpdateCurrentUserCommand>
+{
+
+    public UpdateCurrentUserCommandValidator()
+    {
+        RuleFor(v => v.User.FirstName)
+            .NotEmpty();
+
+        RuleFor(v => v.User.LastName)
+            .NotEmpty();
+    }
 }

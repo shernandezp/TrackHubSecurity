@@ -22,13 +22,13 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
 // This class represents a writer for the User entity in the security database.
 public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 {
-    // Creates a new user asynchronously.
-    // -Parameters:
-    //  - userDto: The user data transfer object.
-    //  - accountId: The account identifier.
-    //  - cancellationToken: The cancellation token.
-    // -Returns:
-    //  - The created user view model.
+    /// <summary>
+    /// Creates a new user asynchronously
+    /// </summary>
+    /// <param name="userDto"></param>
+    /// <param name="accountId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The created user view model</returns>
     public async Task<UserVm> CreateUserAsync(CreateUserDto userDto, Guid accountId, CancellationToken cancellationToken)
     {
         // Hash the password
@@ -67,10 +67,13 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             []);
     }
 
-    // Updates an existing user asynchronously.
-    // -Parameters:
-    //  - userDto: The user data transfer object.
-    //  - cancellationToken: The cancellation token.
+    /// <summary>
+    /// Updates an existing user asynchronously.
+    /// </summary>
+    /// <param name="userDto"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The task result.</returns>
+    /// <exception cref="NotFoundException">If the user does not exist</exception>
     public async Task UpdateUserAsync(UpdateUserDto userDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userDto.UserId], cancellationToken)
@@ -86,14 +89,42 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         user.SecondSurname = userDto.SecondSurname;
         user.DOB = userDto.DOB;
         user.Active = userDto.Active;
+        user.LoginAttempts = 0;
 
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    // Updates the password of an existing user asynchronously.
-    // -Parameters:
-    //  - userPasswordDto: The user password data transfer object.
-    //  - cancellationToken: The cancellation token.
+    /// <summary>
+    /// This method is used to update the user's information
+    /// </summary>
+    /// <param name="userDto"></param>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The task result</returns>
+    /// <exception cref="NotFoundException">If the user does not exist</exception>
+    public async Task UpdateUserAsync(UpdateCurrentUserDto userDto, Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.FindAsync([userId], cancellationToken)
+            ?? throw new NotFoundException(nameof(User), $"{userId}");
+
+        context.Users.Attach(user);
+
+        user.FirstName = userDto.FirstName;
+        user.SecondName = userDto.SecondName;
+        user.LastName = userDto.LastName;
+        user.SecondSurname = userDto.SecondSurname;
+        user.DOB = userDto.DOB;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Updates the password of an existing user asynchronously
+    /// </summary>
+    /// <param name="userPasswordDto"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The task result</returns>
+    /// <exception cref="NotFoundException">If the user does not exist</exception>
     public async Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userPasswordDto.UserId], cancellationToken)
@@ -109,10 +140,13 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    // Deletes a user asynchronously.
-    // -Parameters:
-    //  - userId: The user identifier.
-    //  - cancellationToken: The cancellation token.
+    /// <summary>
+    /// Deletes a user asynchronously
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The task result</returns>
+    /// <exception cref="NotFoundException">If the user does not exist</exception>
     public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
     {
         var user = await context.Users.FindAsync([userId], cancellationToken)

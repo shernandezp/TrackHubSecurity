@@ -23,6 +23,12 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
     {
         _userReader = userReader;
 
+        RuleFor(v => v.User.FirstName)
+            .NotEmpty();
+
+        RuleFor(v => v.User.LastName)
+            .NotEmpty();
+
         // Validate the maximum length, non-empty, and uniqueness of the username
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)

@@ -26,6 +26,12 @@ public sealed class CreateManagerCommandValidator : AbstractValidator<CreateMana
         RuleFor(v => v.AccountId)
             .NotEmpty();
 
+        RuleFor(v => v.User.FirstName)
+            .NotEmpty();
+
+        RuleFor(v => v.User.LastName)
+            .NotEmpty();
+
         // Validate the maximum length, non-empty, and uniqueness of the username
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)

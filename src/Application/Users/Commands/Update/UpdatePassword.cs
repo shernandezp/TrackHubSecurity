@@ -16,7 +16,7 @@
 using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
-[Authorize(Resource = Resources.Users, Action = Actions.Edit)]
+[Authorize(Resource = Resources.Users, Action = Actions.UpdatePassword)]
 public readonly record struct UpdatePasswordCommand(UserPasswordDto User) : IRequest;
 public class UpdatePasswordCommandHandler(IUserWriter writer, IUserReader reader, IUser user) : IRequestHandler<UpdatePasswordCommand>
 {

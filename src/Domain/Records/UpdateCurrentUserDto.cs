@@ -13,13 +13,11 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Interfaces;
-public interface IUserWriter
-{
-    Task<UserVm> CreateUserAsync(CreateUserDto userDto, Guid accountId, CancellationToken cancellationToken);
-    Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken);
-    Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken);
-    Task UpdateUserAsync(UpdateUserDto userDto, CancellationToken cancellationToken);
-    Task UpdateUserAsync(UpdateCurrentUserDto userDto, Guid userId, CancellationToken cancellationToken);
+namespace TrackHub.Security.Domain.Records;
 
-}
+public record struct UpdateCurrentUserDto(
+    string FirstName,
+    string? SecondName,
+    string LastName,
+    string? SecondSurname,
+    DateOnly? DOB);
