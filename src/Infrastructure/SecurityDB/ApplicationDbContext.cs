@@ -27,6 +27,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     }
 
     public DbSet<Action> Actions { get; set; }
+    public DbSet<Client> Clients { get; set; }
     public DbSet<Policy> Policies { get; set; }
     public DbSet<Resource> Resources { get; set; }
     public DbSet<ResourceAction> ResourceActions { get; set; }

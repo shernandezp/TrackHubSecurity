@@ -21,7 +21,8 @@ public class IdentityService(IUserReader userReader,
     IResourceActionRoleReader resourceActionRoleReader,
     IResourceActionPolicyReader resourceActionPolicyReader,
     IUserRoleReader userRoleReader,
-    IUserPolicyReader userPolicyReader) : IIdentityService
+    IUserPolicyReader userPolicyReader,
+    IClientReader clientReader) : IIdentityService
 {
     // Retrieves the username associated with the given userId asynchronously.
     public async Task<string> GetUserNameAsync(Guid userId, CancellationToken token)
@@ -42,4 +43,9 @@ public class IdentityService(IUserReader userReader,
         var userPolicies = await userPolicyReader.GetUserPolicyNamesAsync(userId, token);
         return resourceActionPolicies.All(policy => userPolicies.Contains(policy));
     }
+
+    // Checks if the given client is valid asynchronously.
+    public async Task<bool> IsValidServiceAsync(string? client, CancellationToken token)
+        => client != null && await clientReader.IsValidClientAsync(client, token);
+
 }

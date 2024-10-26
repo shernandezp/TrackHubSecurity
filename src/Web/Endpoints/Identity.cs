@@ -16,6 +16,7 @@
 using TrackHub.Security.Application.Identity.Queries.Authorize;
 using TrackHub.Security.Application.Identity.Queries.GetUsername;
 using TrackHub.Security.Application.Identity.Queries.IsInRole;
+using TrackHub.Security.Application.Identity.Queries.IsValidService;
 
 namespace TrackHub.Security.Web.Endpoints;
 
@@ -27,7 +28,8 @@ public sealed class Identity : EndpointGroupBase
             .RequireAuthorization()
             .MapGet(GetUserName, "UserName")
             .MapGet(IsInRole, "IsInRole")
-            .MapGet(Authorize, "Authorize");
+            .MapGet(Authorize, "Authorize")
+            .MapGet(IsValidService, "IsValidService");
     }
 
     public async Task<string> GetUserName(ISender sender, [AsParameters] GetUserNameQuery query)
@@ -37,5 +39,8 @@ public sealed class Identity : EndpointGroupBase
         => await sender.Send(query);
 
     public async Task<bool> Authorize(ISender sender, [AsParameters] AuthorizeQuery query)
+        => await sender.Send(query);
+
+    public async Task<bool> IsValidService(ISender sender, [AsParameters] IsValidServiceQuery query)
         => await sender.Send(query);
 }
