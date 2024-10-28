@@ -30,7 +30,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddApplicationDbContext(builder.Configuration);
 builder.Services.AddAppManagerContext();
 builder.Services.AddInfrastructureServices(builder.Configuration, false);
-builder.Services.AddWebServices("Security API");
+builder.Services.AddWebServices();
 
 // Add HealthChecks
 builder.Services.AddHealthChecks()

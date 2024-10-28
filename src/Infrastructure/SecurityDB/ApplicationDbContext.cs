@@ -19,13 +19,8 @@ using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-    }
-
     public DbSet<Action> Actions { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<Policy> Policies { get; set; }
