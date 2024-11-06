@@ -1,11 +1,11 @@
-﻿# Security API
+﻿# Security API for TrackHub
 
-REST + GraphQL Web API with Clean Architecture.
+[English](README.en.md) | [Español](README.es.md)
 
-Common Libraries - [Common](https://github.com/shernandezp/Common)
+TrackHub is an innovative open-source application designed to unify multiple monitoring platforms into a cohesive system. Imagine having all your monitoring needs met in one place—this is the vision behind TrackHub.
 
-Identity Server - [Identity](https://github.com/shernandezp/Identity)
+Currently in development, our project aims to foster collaboration among diverse companies and developers, promoting continuous improvement and growth. TrackHub empowers organizations to centralize information about their assets and personnel, regardless of their vendors.
 
-## License
+We believe in the strength of community collaboration to create effective and accessible tools for everyone. Contribute to TrackHub to help shape the future of monitoring solutions!
 
-This project is licensed under the Apache 2.0 License. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
+![Image](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/wwwroot/images/logo.png)
