@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>
@@ -20,14 +19,11 @@
     </PackageReference>
     <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
     <ProjectReference Include="..\..\src\Infrastructure\SecurityDB\SecurityDB.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>
-
 </Project>
