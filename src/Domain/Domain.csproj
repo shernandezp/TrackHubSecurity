@@ -1,13 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <RootNamespace>TrackHub.Security.Domain</RootNamespace>
     <AssemblyName>TrackHub.Security.Domain</AssemblyName>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="TrackHubCommon.Domain" />
     <PackageReference Include="MediatR" />
   </ItemGroup>
-
 </Project>

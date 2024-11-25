@@ -2,7 +2,7 @@
 | Componente                | Descripción                                             | Documentación                                                                 |
 |---------------------------|---------------------------------------------------------|-------------------------------------------------------------------------------|
 | Hot Chocolate             | Servidor GraphQL para .Net        | [Documentación Hot Chocolate](https://chillicream.com/docs/hotchocolate/v13)                           |
-| .NET Core 8               | Plataforma de desarrollo para aplicaciones modernas     | [Documentación .NET Core 8](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8/overview) |
+| .NET Core                 | Plataforma de desarrollo para aplicaciones modernas     | [Documentación .NET Core](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview) |
 | Postgres                  | Sistema de gestión de bases de datos relacional         | [Documentación Postgres](https://www.postgresql.org/)                         |
 
 # API de Seguridad para TrackHub
