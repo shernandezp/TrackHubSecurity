@@ -15,25 +15,14 @@
 
 using Common.Domain.Constants;
 using Common.Domain.Extensions;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TrackHub.Security.Infrastructure.SecurityDB.Entities;
+using TrackHub.Security.Infrastructure.SecurityDB;
+using Microsoft.EntityFrameworkCore;
 using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB;
-
-public static class InitializerExtensions
-{
-    public static async Task InitializeDatabaseAsync(this WebApplication app)
-    {
-        using var scope = app.Services.CreateScope();
-        var initializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
-        await initializer.InitializeAsync();
-        await initializer.SeedAsync();
-    }
-}
-
-public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
+namespace DBInitializer;
+internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
 {
     public async Task InitializeAsync()
     {
@@ -78,6 +67,9 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
             context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
             context.Resources.Add(new Resource { ResourceName = Resources.Administrative });
             context.Resources.Add(new Resource { ResourceName = Resources.Groups });
+            context.Resources.Add(new Resource { ResourceName = Resources.Profile });
+            context.Resources.Add(new Resource { ResourceName = Resources.Geofences });
+            context.Resources.Add(new Resource { ResourceName = Resources.Geofencing });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())
@@ -95,7 +87,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
         }
         if (!context.ResourceActions.Any())
         {
-            for (int resource = 1; resource <= 11; resource++)
+            for (int resource = 1; resource <= 14; resource++)
             {
                 for (int action = 1; action <= 6; action++)
                 {
@@ -111,7 +103,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
             context.Roles.Add(new Role { Name = Roles.User, Description = string.Empty, ParentRoleId = 2 });
             await context.SaveChangesAsync();
         }
-        
+
         if (!context.Policies.Any())
         {
             context.Policies.Add(new Policy { Name = "FullAccess", Description = string.Empty });
@@ -124,7 +116,7 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
 
         if (!context.ResourceActionRole.Any())
         {
-            for (int resource = 1; resource <= 10; resource++)
+            for (int resource = 1; resource <= 14; resource++)
             {
                 for (int action = 1; action <= 6; action++)
                 {
@@ -162,6 +154,10 @@ public class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitial
                 true,
                 0,
                 Guid.NewGuid()));
+
+            var user = context.Users.First();
+            var role = context.Roles.First(x => x.Name == Roles.Administrator);
+            context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = role.RoleId });
 
             await context.SaveChangesAsync();
         }

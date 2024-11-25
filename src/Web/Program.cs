@@ -14,12 +14,16 @@
 //
 
 using System.Reflection;
+using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.HttpOverrides;
 using TrackHub.Security.Infrastructure.SecurityDB;
 using TrackHub.Security.Web.GraphQL.Mutation;
 using TrackHub.Security.Web.GraphQL.Query;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var allowedCORSOrigins = builder.Configuration.GetSection("AllowedCorsOrigins").Get<string>();
+Guard.Against.Null(allowedCORSOrigins, message: $"Allowed Origins configuration for CORS not loaded");
 
 builder.Services.Configure<ForwardedHeadersOptions>(options 
     => options.ForwardedHeaders =
@@ -45,10 +49,18 @@ builder.Services
 builder.Services.AddCors(options => options
     .AddPolicy("AllowFrontend",
         builder => builder
-                    .WithOrigins("https://localhost:3000")
+                    .WithOrigins(allowedCORSOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials()));
+
+// Configure HSTS
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365 * 2);
+    options.IncludeSubDomains = true;
+    options.Preload = true;
+});
 
 var app = builder.Build();
 
@@ -58,13 +70,8 @@ app.UseHeaderPropagation();
 app.UseCors("AllowFrontend");
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    await app.InitializeDatabaseAsync();
-}
-else
-{
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -78,5 +85,3 @@ app.MapEndpoints(Assembly.GetExecutingAssembly());
 app.MapGraphQL();
 
 app.Run();
-
-public partial class Program { }
