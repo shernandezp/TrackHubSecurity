@@ -155,6 +155,8 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 0,
                 Guid.NewGuid()));
 
+            await context.SaveChangesAsync();
+
             var user = context.Users.First();
             var role = context.Roles.First(x => x.Name == Roles.Administrator);
             context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = role.RoleId });

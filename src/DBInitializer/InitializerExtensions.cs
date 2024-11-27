@@ -23,7 +23,6 @@ internal static class InitializerExtensions
     {
         using var scope = serviceProvider.CreateScope();
         var initializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
-        await initializer.InitializeAsync();
         await initializer.SeedAsync();
     }
 }
