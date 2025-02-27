@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -94,6 +94,10 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                     context.ResourceActions.Add(new ResourceAction { ResourceId = resource, ActionId = action });
                 }
             }
+            var userResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Users);
+            var passwordAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.UpdatePassword);
+            context.ResourceActions.Add(new ResourceAction { ResourceId = userResource.ResourceId, ActionId = passwordAction.ActionId });
+
             await context.SaveChangesAsync();
         }
         if (!context.Roles.Any())
@@ -158,8 +162,10 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             await context.SaveChangesAsync();
 
             var user = context.Users.First();
-            var role = context.Roles.First(x => x.Name == Roles.Administrator);
-            context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = role.RoleId });
+            var admin = context.Roles.First(x => x.Name == Roles.Administrator);
+            var manager = context.Roles.First(x => x.Name == Roles.Manager);
+            context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = admin.RoleId });
+            context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = manager.RoleId });
 
             await context.SaveChangesAsync();
         }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ public class CreateManagerCommandHandler(IUserWriter writer, IPublisher publishe
     {
         var user = await writer.CreateUserAsync(request.User, request.AccountId, cancellationToken);
         await publisher.Publish(new ManagerCreated.Notification(user.UserId), cancellationToken);
+        // Replicate the user in the management service
+        var shrankUser = new UserShrankDto(user.UserId, user.Username, request.AccountId);
+        await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
         return user;
     }
 }

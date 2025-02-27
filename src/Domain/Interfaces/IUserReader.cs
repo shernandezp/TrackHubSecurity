@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ public interface IUserReader
     Task<IReadOnlyCollection<UserVm>> GetUsersByRoleAsync(Guid accountId, int roleId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<UserVm>> GetUsersByPolicyAsync(Guid accountId, int policyId, CancellationToken cancellationToken);
     Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken);
-    Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken);
     Task<bool> ValidateEmailAddressAsync(Guid userId, string emailAddress, CancellationToken cancellationToken);
     Task<bool> ValidateUsernameAsync(Guid userId, string username, CancellationToken cancellationToken);
     Task<bool> IsAdminAsync(Guid userId, CancellationToken cancellationToken);

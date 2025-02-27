@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using System.Reflection.Metadata;
 using Common.Application.Interfaces;
 using TrackHub.Security.Application.Users.Commands.Create;
 using TrackHub.Security.Application.Users.Events;
@@ -68,7 +69,7 @@ public class CreateUserCommandHandlerTests
         var result = await handler.Handle(createUserCommand, CancellationToken.None);
 
         // Assert
-        result.Should().BeEquivalentTo(user);
+        Assert.That(result, Is.EqualTo(user));
         _mockPublisher.Verify(x => x.Publish(It.Is<UserCreated.Notification>(n => n.User == shrankUser), It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -97,11 +98,11 @@ public class CreateUserCommandHandlerTests
             .Verifiable();
 
         // Act & Assert
-        FluentActions.Invoking(() => new CreateUserCommandHandler(
+        Assert.Throws<UnauthorizedAccessException>(() =>
+            new CreateUserCommandHandler(
             _mockUserWriter.Object,
             _mockUserReader.Object,
             _mockUser.Object,
-            _mockPublisher.Object))
-            .Should().Throw<UnauthorizedAccessException>();
+            _mockPublisher.Object));
     }
 }

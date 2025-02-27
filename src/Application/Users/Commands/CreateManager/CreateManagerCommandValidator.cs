@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -32,12 +32,9 @@ public sealed class CreateManagerCommandValidator : AbstractValidator<CreateMana
         RuleFor(v => v.User.LastName)
             .NotEmpty();
 
-        // Validate the maximum length, non-empty, and uniqueness of the username
         RuleFor(v => v.User.Username)
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
-            .NotEmpty()
-            .MustAsync(ValidateUsername)
-            .WithMessage("Username already in use");
+            .NotEmpty();
 
         // Validate the minimum and maximum length, and non-empty of the password
         RuleFor(v => v.User.Password)
@@ -53,10 +50,6 @@ public sealed class CreateManagerCommandValidator : AbstractValidator<CreateMana
             .MustAsync(ValidateEmailAddress)
             .WithMessage("Email address already in use");
     }
-
-    // Asynchronously validate the uniqueness of the username
-    private async Task<bool> ValidateUsername(string username, CancellationToken cancellationToken)
-        => await _userReader.ValidateUsernameAsync(username, cancellationToken);
 
     // Asynchronously validate the uniqueness of the email address
     private async Task<bool> ValidateEmailAddress(string emailAddress, CancellationToken cancellationToken)

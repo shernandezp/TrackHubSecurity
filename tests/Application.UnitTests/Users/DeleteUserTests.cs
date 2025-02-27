@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using System.Reflection.Metadata;
 using Common.Application.Interfaces;
 using TrackHub.Security.Application.Users.Commands.Create;
 using TrackHub.Security.Application.Users.Commands.Delete;
@@ -62,7 +63,7 @@ internal class DeleteUserTests
     }
 
     [Test]
-    public async Task Handle_InvalidCommand_ThrowsUnauthorizedAccessException()
+    public void Handle_InvalidCommand_ThrowsUnauthorizedAccessException()
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -76,8 +77,8 @@ internal class DeleteUserTests
         var command = new DeleteUserCommand(userId);
 
         // Act & Assert
-        await FluentActions.Awaiting(() => handler.Handle(command, CancellationToken.None))
-            .Should().ThrowAsync<UnauthorizedAccessException>();
+        Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
+            await handler.Handle(command, CancellationToken.None));
 
         // Assert
         // Verify that DeleteUserAsync was called with the correct arguments

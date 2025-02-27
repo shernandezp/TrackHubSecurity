@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 
 using Common.Application.Interfaces;
 
-
 namespace TrackHub.Security.Infrastructure.SecurityDB.Identity;
+
 public class IdentityService(IUserReader userReader,
     IResourceActionRoleReader resourceActionRoleReader,
     IResourceActionPolicyReader resourceActionPolicyReader,

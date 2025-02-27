@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ internal class GetUserTests
         var userId = Guid.NewGuid();
         var cancellationToken = new CancellationToken();
 
-        var userVm = new UserVm { /* initialize with mock data */ };
+        var userVm = new UserVm { AccountId = Guid.NewGuid() };
         _readerMock.Setup(m => m.GetUserAsync(userId, cancellationToken))
                   .ReturnsAsync(userVm);
 
@@ -49,8 +49,8 @@ internal class GetUserTests
         var result = await handler.Handle(query, cancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().Be(userVm);
+        Assert.That(result, Is.Not.Default);
+        Assert.That(result, Is.EqualTo(userVm));
 
         // Verify that GetUserAsync was called with the correct arguments
         _readerMock.Verify(m => m.GetUserAsync(userId, cancellationToken), Times.Once);
