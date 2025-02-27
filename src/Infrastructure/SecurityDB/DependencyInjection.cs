@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -39,23 +39,27 @@ public static class DependencyInjection
             options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         });
 
+        //This is required to call user defined methods in the Management api
+        services.AddSingleton<IGraphQLClientFactory, Common.Infrastructure.GraphQLClientFactory>();
+        //This is required to use the local Identity implementation
         services.AddScoped<IIdentityService, IdentityService>();
+
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-        services.AddScoped<IClientReader, ClientReader>();
-        services.AddScoped<IRoleReader, RoleReader>();
-        services.AddScoped<IPolicyReader, PolicyReader>();
         services.AddScoped<IActionReader, ActionReader>();
+        services.AddScoped<IClientReader, ClientReader>();
+        services.AddScoped<IPolicyReader, PolicyReader>();
         services.AddScoped<IResourceReader, ResourceReader>();
-        services.AddScoped<IUserWriter, UserWriter>();
-        services.AddScoped<IUserReader, UserReader>();
-        services.AddScoped<IUserRoleWriter, UserRoleWriter>();
-        services.AddScoped<IUserRoleReader, UserRoleReader>();
-        services.AddScoped<IUserPolicyWriter, UserPolicyWriter>();
-        services.AddScoped<IUserPolicyReader, UserPolicyReader>();
         services.AddScoped<IResourceActionPolicyWriter, ResourceActionPolicyWriter>();
         services.AddScoped<IResourceActionPolicyReader, ResourceActionPolicyReader>();
         services.AddScoped<IResourceActionRoleWriter, ResourceActionRoleWriter>();
         services.AddScoped<IResourceActionRoleReader, ResourceActionRoleReader>();
+        services.AddScoped<IRoleReader, RoleReader>();
+        services.AddScoped<IUserPolicyWriter, UserPolicyWriter>();
+        services.AddScoped<IUserPolicyReader, UserPolicyReader>();
+        services.AddScoped<IUserWriter, UserWriter>();
+        services.AddScoped<IUserReader, UserReader>();
+        services.AddScoped<IUserRoleWriter, UserRoleWriter>();
+        services.AddScoped<IUserRoleReader, UserRoleReader>();
 
         return services;
     }

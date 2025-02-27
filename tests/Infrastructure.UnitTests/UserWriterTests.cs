@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ internal class UserWriterTests : Context
         var result = await _userWriter.CreateUserAsync(userDto, Guid.NewGuid(), new CancellationToken());
 
         // Assert
-        result.Should().NotBeNull(); // Ensure that a non-null result is returned
+        Assert.That(result, Is.Not.Default); // Ensure that a non-null result is returned
     }
 
     [Test]

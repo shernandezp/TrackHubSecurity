@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -157,17 +157,6 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     public async Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
         => !await context.Users
             .Where(u => u.EmailAddress.Equals(emailAddress))
-            .AnyAsync(cancellationToken);
-
-    /// <summary>
-    /// Validates if the specified username is unique 
-    /// </summary>
-    /// <param name="username"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns>A boolean indicating whether the specified username is unique</returns>
-    public async Task<bool> ValidateUsernameAsync(string username, CancellationToken cancellationToken)
-        => !await context.Users
-            .Where(u => u.Username.Equals(username))
             .AnyAsync(cancellationToken);
 
     /// <summary>

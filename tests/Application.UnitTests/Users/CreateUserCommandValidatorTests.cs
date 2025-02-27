@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 
 using TrackHub.Security.Application.Users.Commands.Create;
 using FluentValidation.TestHelper;
+using Common.Domain.Constants;
 
 namespace Application.UnitTests.Users;
 [TestFixture]
@@ -55,7 +56,9 @@ public class CreateUserCommandValidatorTests
         {
             User = new CreateUserDto
             {
-                Username = "verylongusername",
+                FirstName = "First",
+                LastName = "Last",
+                Username = new string('a', ColumnMetadata.DefaultUserNameLength + 1),
                 Password = "password",
                 EmailAddress = "test@example.com"
             }
@@ -64,30 +67,6 @@ public class CreateUserCommandValidatorTests
         var result = await _validator.TestValidateAsync(command);
 
         result.ShouldHaveValidationErrorFor(v => v.User.Username);
-    }
-
-    [Test]
-    public async Task ShouldHaveError_WhenUsernameAlreadyExists()
-    {
-        var command = new CreateUserCommand
-        {
-            User = new CreateUserDto
-            {
-                Username = "existinguser",
-                Password = "password",
-                EmailAddress = "test@example.com"
-            }
-        };
-
-        _userReaderMock.Setup(x => x.ValidateUsernameAsync(command.User.Username, CancellationToken.None))
-            .ReturnsAsync(false);
-        _userReaderMock.Setup(x => x.ValidateEmailAddressAsync(command.User.EmailAddress, CancellationToken.None))
-            .ReturnsAsync(true);
-
-        var result = await _validator.ValidateAsync(command);
-
-        result.IsValid.Should().BeFalse();
-        result.Errors[0].ErrorMessage.Should().Be("Username already in use");
     }
 
     [Test]
@@ -169,21 +148,24 @@ public class CreateUserCommandValidatorTests
         {
             User = new CreateUserDto
             {
+                FirstName = "First",
+                LastName = "Last",
                 Username = "username",
                 Password = "password",
                 EmailAddress = "existing@example.com"
             }
         };
 
-        _userReaderMock.Setup(x => x.ValidateUsernameAsync(command.User.Username, CancellationToken.None))
-            .ReturnsAsync(true);
         _userReaderMock.Setup(x => x.ValidateEmailAddressAsync(command.User.EmailAddress, CancellationToken.None))
             .ReturnsAsync(false);
 
         var result = await _validator.ValidateAsync(command);
 
-        result.IsValid.Should().BeFalse();
-        result.Errors[0].ErrorMessage.Should().Be("Email address already in use");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors[0].ErrorMessage, Is.EqualTo("Email address already in use"));
+        }
     }
 
     [Test]
@@ -193,21 +175,20 @@ public class CreateUserCommandValidatorTests
         {
             User = new CreateUserDto
             {
+                FirstName = "first",
+                LastName = "last",
                 Username = "username",
                 Password = "password",
                 EmailAddress = "test@example.com"
             }
         };
 
-        _userReaderMock.Setup(x => x.ValidateUsernameAsync(command.User.Username, CancellationToken.None))
-            .ReturnsAsync(true);
-
         _userReaderMock.Setup(x => x.ValidateEmailAddressAsync(command.User.EmailAddress, CancellationToken.None))
             .ReturnsAsync(true);
 
         var result = await _validator.ValidateAsync(command);
 
-        result.IsValid.Should().BeTrue();
+        Assert.That(result.IsValid, Is.True);
     }
 
     [Test]
@@ -217,20 +198,20 @@ public class CreateUserCommandValidatorTests
         {
             User = new CreateUserDto
             {
-                Username = "username",
                 Password = "pass",
                 EmailAddress = "existing@example.com"
             }
         };
 
-        _userReaderMock.Setup(x => x.ValidateUsernameAsync(command.User.Username, CancellationToken.None))
-            .ReturnsAsync(false);
         _userReaderMock.Setup(x => x.ValidateEmailAddressAsync(command.User.EmailAddress, CancellationToken.None))
             .ReturnsAsync(false);
 
         var result = await _validator.ValidateAsync(command);
 
-        result.IsValid.Should().BeFalse();
-        result.Errors.Count.Should().Be(3);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsValid, Is.False);
+            Assert.That(result.Errors, Has.Count.EqualTo(5));
+        }
     }
 }

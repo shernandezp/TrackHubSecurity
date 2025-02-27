@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Sergio Hernandez. All rights reserved.
+﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ public class CreateUserCommandHandler(IUserWriter writer, IUserReader reader, IU
         var shrankUser = new UserShrankDto(user.UserId, user.Username, currentUser.AccountId);
         // Publish a UserCreated notification
         await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
-        // Return the created user
         return user;
     }
 }
