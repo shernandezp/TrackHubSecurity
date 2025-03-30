@@ -27,14 +27,22 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
 
         //Column names
         builder.Property(x => x.ClientId).HasColumnName("id");
+        builder.Property(x => x.UserId).HasColumnName("userid");
         builder.Property(x => x.Name).HasColumnName("name");
         builder.Property(x => x.Description).HasColumnName("description");
         builder.Property(x => x.Secret).HasColumnName("secret");
         builder.Property(x => x.Salt).HasColumnName("salt");
+        builder.Property(x => x.Processed).HasColumnName("processed");
 
         builder.Property(t => t.Secret)
             .HasMaxLength(ColumnMetadata.DefaultPasswordLength)
             .IsRequired();
+
+        builder
+            .HasOne(d => d.User)
+            .WithOne(d => d.Client)
+            .HasForeignKey<Client>(d => d.UserId)
+            .IsRequired(false);
 
     }
 }
