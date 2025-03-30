@@ -43,6 +43,7 @@ public sealed class User(string username,
     public bool Active { get; set; } = active;
     public int LoginAttempts { get; set; } = loginAttempts;
     public Guid AccountId { get; set; } = accountId;
+    public Client? Client { get; set; }
     public ICollection<Role> Roles { get; } = [];
     public ICollection<Policy> Policies { get; } = [];
 }

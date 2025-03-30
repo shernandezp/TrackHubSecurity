@@ -57,19 +57,21 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         if (!context.Resources.Any())
         {
             context.Resources.Add(new Resource { ResourceName = Resources.Accounts });
-            context.Resources.Add(new Resource { ResourceName = Resources.Positions });
-            context.Resources.Add(new Resource { ResourceName = Resources.Permissions });
-            context.Resources.Add(new Resource { ResourceName = Resources.SettingsScreen });
-            context.Resources.Add(new Resource { ResourceName = Resources.Users });
+            context.Resources.Add(new Resource { ResourceName = Resources.Administrative });
             context.Resources.Add(new Resource { ResourceName = Resources.Credentials });
             context.Resources.Add(new Resource { ResourceName = Resources.Devices });
-            context.Resources.Add(new Resource { ResourceName = Resources.Operators });
-            context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
-            context.Resources.Add(new Resource { ResourceName = Resources.Administrative });
-            context.Resources.Add(new Resource { ResourceName = Resources.Groups });
-            context.Resources.Add(new Resource { ResourceName = Resources.Profile });
             context.Resources.Add(new Resource { ResourceName = Resources.Geofences });
             context.Resources.Add(new Resource { ResourceName = Resources.Geofencing });
+            context.Resources.Add(new Resource { ResourceName = Resources.Groups });
+            context.Resources.Add(new Resource { ResourceName = Resources.Operators });
+            context.Resources.Add(new Resource { ResourceName = Resources.Permissions });
+            context.Resources.Add(new Resource { ResourceName = Resources.Positions });
+            context.Resources.Add(new Resource { ResourceName = Resources.Profile });
+            context.Resources.Add(new Resource { ResourceName = Resources.Reports });
+            context.Resources.Add(new Resource { ResourceName = Resources.SettingsScreen });
+            context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
+            context.Resources.Add(new Resource { ResourceName = Resources.TransporterType });
+            context.Resources.Add(new Resource { ResourceName = Resources.Users });
             await context.SaveChangesAsync();
         }
         if (!context.Actions.Any())
@@ -80,14 +82,12 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             context.Actions.Add(new Action { ActionName = Actions.Execute });
             context.Actions.Add(new Action { ActionName = Actions.Write });
             context.Actions.Add(new Action { ActionName = Actions.Delete });
-            context.Actions.Add(new Action { ActionName = Actions.UpdatePassword });
-            context.Actions.Add(new Action { ActionName = Actions.RefreshToken });
-            context.Actions.Add(new Action { ActionName = Actions.ConnectivityTest });
+            context.Actions.Add(new Action { ActionName = Actions.Custom });
             await context.SaveChangesAsync();
         }
         if (!context.ResourceActions.Any())
         {
-            for (int resource = 1; resource <= 14; resource++)
+            for (int resource = 1; resource <= 16; resource++)
             {
                 for (int action = 1; action <= 6; action++)
                 {
@@ -95,7 +95,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 }
             }
             var userResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Users);
-            var passwordAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.UpdatePassword);
+            var passwordAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
             context.ResourceActions.Add(new ResourceAction { ResourceId = userResource.ResourceId, ActionId = passwordAction.ActionId });
 
             await context.SaveChangesAsync();

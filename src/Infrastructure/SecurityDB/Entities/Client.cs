@@ -18,14 +18,25 @@ using Common.Infrastructure;
 namespace TrackHub.Security.Infrastructure.SecurityDB.Entities;
 
 public sealed class Client(string name,
+    Guid? userId,
     string description,
     string secret,
-    string salt) : BaseAuditableEntity
+    string salt,
+    bool processed) : BaseAuditableEntity
 {
+    private User? _user;
 
     public Guid ClientId { get; private set; } = Guid.NewGuid();
+    public Guid? UserId { get; private set; } = userId;
     public string Name { get; set; } = name;
     public string Description { get; set; } = description;
     public string Secret { get; set; } = secret;
     public string Salt { get; set; } = salt;
+    public bool Processed { get; set; } = processed;
+
+    public User User
+    {
+        get => _user ?? throw new InvalidOperationException("User is not loaded");
+        set => _user = value;
+    }
 }

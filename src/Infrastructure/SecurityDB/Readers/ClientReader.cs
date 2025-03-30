@@ -27,7 +27,7 @@ public sealed class ClientReader(IApplicationDbContext context) : IClientReader
     /// <summary>
     /// Validates if the specified client exists in the database
     /// </summary>
-    /// <param name="emailAddress"></param>
+    /// <param name="client"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>A boolean indicating whether the client exists or not</returns>
     public async Task<bool> IsValidClientAsync(string client, CancellationToken cancellationToken)
