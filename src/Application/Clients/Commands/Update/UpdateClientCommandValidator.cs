@@ -13,20 +13,21 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
 
-public readonly record struct UserVm(
-    Guid UserId,
-    string Username,
-    string EmailAddress,
-    string FirstName,
-    string? SecondName,
-    string LastName,
-    string? SecondSurname,
-    DateOnly? DOB,
-    int LoginAttempts,
-    Guid AccountId,
-    bool Active,
-    bool IntegrationUser,
-    IReadOnlyCollection<RoleVm>? Roles,
-    IReadOnlyCollection<PolicyVm>? Profiles);
+namespace TrackHub.Security.Application.Clients.Commands.Update;
+
+public sealed class UpdateClientCommandValidator : AbstractValidator<UpdateClientCommand>
+{
+
+    public UpdateClientCommandValidator()
+    {
+        RuleFor(v => v.Client)
+            .NotEmpty();
+
+        RuleFor(v => v.Client.UserId)
+            .NotEmpty();
+
+        RuleFor(v => v.Client.ClientId)
+            .NotEmpty();
+    }
+}

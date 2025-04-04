@@ -80,7 +80,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseExceptionHandler(options => { });
-app.MapEndpoints(Assembly.GetExecutingAssembly());
 
 app.MapGraphQL();
 

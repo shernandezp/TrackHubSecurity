@@ -27,7 +27,8 @@ public sealed class User(string username,
     DateOnly? dOB,
     bool active,
     int loginAttempts,
-    Guid accountId) : BaseAuditableEntity
+    Guid accountId,
+    bool integrationUser = false) : BaseAuditableEntity
 {
 
     public Guid UserId { get; private set; } = Guid.NewGuid();
@@ -43,6 +44,7 @@ public sealed class User(string username,
     public bool Active { get; set; } = active;
     public int LoginAttempts { get; set; } = loginAttempts;
     public Guid AccountId { get; set; } = accountId;
+    public bool IntegrationUser { get; set; } = integrationUser;
     public Client? Client { get; set; }
     public ICollection<Role> Roles { get; } = [];
     public ICollection<Policy> Policies { get; } = [];

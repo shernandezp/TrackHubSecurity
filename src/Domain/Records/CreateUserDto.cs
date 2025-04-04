@@ -24,4 +24,5 @@ public record struct CreateUserDto (
     string LastName,
     string? SecondSurname,
     DateOnly? DOB,
-    bool Active);
+    bool Active,
+    bool IntegrationUser);

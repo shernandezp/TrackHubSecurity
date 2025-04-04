@@ -39,6 +39,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Active).HasColumnName("active");
         builder.Property(x => x.LoginAttempts).HasColumnName("loginattempts");
         builder.Property(x => x.AccountId).HasColumnName("accountid");
+        builder.Property(x => x.IntegrationUser).HasColumnName("integrationuser");
 
         builder.Property(t => t.Username)
             .HasMaxLength(ColumnMetadata.DefaultUserNameLength)

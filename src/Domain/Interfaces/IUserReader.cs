@@ -13,10 +13,13 @@
 //  limitations under the License.
 //
 
+using Common.Domain.Helpers;
+
 namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserReader
 {
     Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Filters filters, CancellationToken cancellationToken);
     Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<UserVm>> GetUsersByRoleAsync(Guid accountId, int roleId, CancellationToken cancellationToken);

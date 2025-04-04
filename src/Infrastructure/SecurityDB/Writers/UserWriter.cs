@@ -45,7 +45,8 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             userDto.DOB,
             userDto.Active,
             0,
-            accountId);
+            accountId,
+            userDto.IntegrationUser);
 
         await context.Users.AddAsync(user, cancellationToken);
 
@@ -63,6 +64,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             user.LoginAttempts,
             user.AccountId,
             user.Active,
+            user.IntegrationUser,
             [],
             []);
     }
@@ -89,6 +91,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         user.SecondSurname = userDto.SecondSurname;
         user.DOB = userDto.DOB;
         user.Active = userDto.Active;
+        user.IntegrationUser = userDto.IntegrationUser;
         user.LoginAttempts = 0;
 
         await context.SaveChangesAsync(cancellationToken);

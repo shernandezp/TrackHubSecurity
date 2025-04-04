@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Domain.Helpers;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
@@ -37,6 +38,36 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
             .FirstAsync(cancellationToken);
 
     /// <summary>
+    /// Retrieves a collection of users based on the specified filters
+    /// </summary>
+    /// <param name="filters"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A collection of user view models</returns>
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Filters filters, CancellationToken cancellationToken)
+    {
+        var query = context.Users.AsQueryable();
+        query = filters.Apply(query);
+
+        return await query
+            .Select(u => new UserVm(
+                u.UserId,
+                u.Username,
+                u.EmailAddress,
+                u.FirstName,
+                u.SecondName,
+                u.LastName,
+                u.SecondSurname,
+                u.DOB,
+                u.LoginAttempts,
+                u.AccountId,
+                u.Active,
+                u.IntegrationUser,
+                null,
+                null))
+            .ToListAsync(cancellationToken);
+    }
+
+    /// <summary>
     /// Retrieves the detailed information of a user with the specified ID, including their roles and policies
     /// </summary>
     /// <param name="id"></param>
@@ -59,6 +90,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.LoginAttempts,
                 u.AccountId,
                 u.Active,
+                u.IntegrationUser,
                 u.Roles.Select(r => new RoleVm(r.RoleId, r.Name)).ToList(),
                 u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .FirstAsync(cancellationToken);
@@ -86,6 +118,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.LoginAttempts,
                 u.AccountId,
                 u.Active,
+                u.IntegrationUser,
                 u.Roles.Select(r => new RoleVm(r.RoleId, r.Name)).ToList(),
                 u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .ToListAsync(cancellationToken);
@@ -114,6 +147,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.LoginAttempts,
                 u.AccountId,
                 u.Active,
+                u.IntegrationUser,
                 null,
                 null))
             .ToListAsync(cancellationToken);
@@ -143,6 +177,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.LoginAttempts,
                 u.AccountId,
                 u.Active,
+                u.IntegrationUser,
                 null,
                 null))
             .ToListAsync(cancellationToken);
