@@ -13,20 +13,26 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
+namespace TrackHub.Security.Application.Clients.Commands.Create;
 
-public readonly record struct UserVm(
-    Guid UserId,
-    string Username,
-    string EmailAddress,
-    string FirstName,
-    string? SecondName,
-    string LastName,
-    string? SecondSurname,
-    DateOnly? DOB,
-    int LoginAttempts,
-    Guid AccountId,
-    bool Active,
-    bool IntegrationUser,
-    IReadOnlyCollection<RoleVm>? Roles,
-    IReadOnlyCollection<PolicyVm>? Profiles);
+public sealed class CreateClientCommandValidator : AbstractValidator<CreateClientCommand>
+{
+
+    public CreateClientCommandValidator()
+    {
+
+        RuleFor(v => v.Client)
+            .NotEmpty();
+
+        RuleFor(v => v.Client.Name)
+            .NotEmpty();
+
+        RuleFor(v => v.Client.Description)
+            .NotEmpty();
+
+        RuleFor(v => v.Client.Secret)
+            .NotEmpty();
+
+    }
+
+}

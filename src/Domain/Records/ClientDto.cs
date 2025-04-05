@@ -13,20 +13,10 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
+namespace TrackHub.Security.Domain.Records;
 
-public readonly record struct UserVm(
-    Guid UserId,
-    string Username,
-    string EmailAddress,
-    string FirstName,
-    string? SecondName,
-    string LastName,
-    string? SecondSurname,
-    DateOnly? DOB,
-    int LoginAttempts,
-    Guid AccountId,
-    bool Active,
-    bool IntegrationUser,
-    IReadOnlyCollection<RoleVm>? Roles,
-    IReadOnlyCollection<PolicyVm>? Profiles);
+public record struct ClientDto(
+    Guid? UserId,
+    string Name,
+    string Description,
+    string Secret);

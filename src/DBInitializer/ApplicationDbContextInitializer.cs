@@ -94,9 +94,13 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                     context.ResourceActions.Add(new ResourceAction { ResourceId = resource, ActionId = action });
                 }
             }
+            var customAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
             var userResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Users);
-            var passwordAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
-            context.ResourceActions.Add(new ResourceAction { ResourceId = userResource.ResourceId, ActionId = passwordAction.ActionId });
+            context.ResourceActions.Add(new ResourceAction { ResourceId = userResource.ResourceId, ActionId = customAction.ActionId });
+            var positionResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Positions);
+            context.ResourceActions.Add(new ResourceAction { ResourceId = positionResource.ResourceId, ActionId = customAction.ActionId });
+            var credentialsResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Credentials);
+            context.ResourceActions.Add(new ResourceAction { ResourceId = credentialsResource.ResourceId, ActionId = customAction.ActionId });
 
             await context.SaveChangesAsync();
         }

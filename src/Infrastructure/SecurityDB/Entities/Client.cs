@@ -27,7 +27,7 @@ public sealed class Client(string name,
     private User? _user;
 
     public Guid ClientId { get; private set; } = Guid.NewGuid();
-    public Guid? UserId { get; private set; } = userId;
+    public Guid? UserId { get; set; } = userId;
     public string Name { get; set; } = name;
     public string Description { get; set; } = description;
     public string Secret { get; set; } = secret;

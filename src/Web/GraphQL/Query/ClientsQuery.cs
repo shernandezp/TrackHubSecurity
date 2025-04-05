@@ -13,20 +13,15 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
+using TrackHub.Security.Application.Clients.Queries.GetAll;
+using TrackHub.Security.Domain.Models;
 
-public readonly record struct UserVm(
-    Guid UserId,
-    string Username,
-    string EmailAddress,
-    string FirstName,
-    string? SecondName,
-    string LastName,
-    string? SecondSurname,
-    DateOnly? DOB,
-    int LoginAttempts,
-    Guid AccountId,
-    bool Active,
-    bool IntegrationUser,
-    IReadOnlyCollection<RoleVm>? Roles,
-    IReadOnlyCollection<PolicyVm>? Profiles);
+namespace TrackHub.Security.Web.GraphQL.Query;
+
+public partial class Query
+{
+
+    public async Task<IReadOnlyCollection<ClientVm>> GetClients([Service] ISender sender)
+        => await sender.Send(new GetClientsQuery());
+
+}

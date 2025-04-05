@@ -18,7 +18,7 @@ using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Create;
 
-[Authorize(Resource = Resources.Accounts, Action = Actions.Write)]
+[Authorize(Resource = Resources.Permissions, Action = Actions.Write)]
 public readonly record struct CreateResourceActionPolicyCommand(ResourceActionPolicyDto ResourceActionPolicy) : IRequest<ResourceActionPolicyVm>;
 
 public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>

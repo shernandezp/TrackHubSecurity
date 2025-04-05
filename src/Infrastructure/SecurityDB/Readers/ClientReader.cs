@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Domain.Extensions;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 
 namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
@@ -34,5 +35,25 @@ public sealed class ClientReader(IApplicationDbContext context) : IClientReader
         => await context.Clients
             .Where(c => c.Name.Equals(client))
             .AnyAsync(cancellationToken);
+
+    /// <summary>
+    /// Retrieves a collection of clients from the database
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task<IReadOnlyCollection<ClientVm>> GetClientsAsync(string key, CancellationToken cancellationToken)
+        => await context.Clients
+            .OrderBy(c => c.Name)
+            .Select(c => new ClientVm(
+                c.ClientId,
+                c.UserId,
+                c.Name,
+                c.Description,
+                c.Secret.DecryptData(key, Convert.FromBase64String(c.Salt)),
+                c.Processed,
+                c.LastModified
+            ))
+            .ToListAsync(cancellationToken);
 
 }

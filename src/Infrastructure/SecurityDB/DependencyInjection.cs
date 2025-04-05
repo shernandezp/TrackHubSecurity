@@ -47,6 +47,7 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<IActionReader, ActionReader>();
         services.AddScoped<IClientReader, ClientReader>();
+        services.AddScoped<IClientWriter, ClientWriter>();
         services.AddScoped<IPolicyReader, PolicyReader>();
         services.AddScoped<IResourceReader, ResourceReader>();
         services.AddScoped<IResourceActionPolicyWriter, ResourceActionPolicyWriter>();

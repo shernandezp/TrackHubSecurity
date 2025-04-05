@@ -15,18 +15,11 @@
 
 namespace TrackHub.Security.Domain.Models;
 
-public readonly record struct UserVm(
-    Guid UserId,
-    string Username,
-    string EmailAddress,
-    string FirstName,
-    string? SecondName,
-    string LastName,
-    string? SecondSurname,
-    DateOnly? DOB,
-    int LoginAttempts,
-    Guid AccountId,
-    bool Active,
-    bool IntegrationUser,
-    IReadOnlyCollection<RoleVm>? Roles,
-    IReadOnlyCollection<PolicyVm>? Profiles);
+public readonly record struct ClientVm(
+    Guid ClientId,
+    Guid? UserId,
+    string Name,
+    string Description,
+    string Secret,
+    bool Processed,
+    DateTimeOffset LastModified);

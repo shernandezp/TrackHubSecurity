@@ -13,20 +13,14 @@
 //  limitations under the License.
 //
 
-namespace TrackHub.Security.Domain.Models;
+namespace TrackHub.Security.Application.Clients.Commands.Update;
 
-public readonly record struct UserVm(
-    Guid UserId,
-    string Username,
-    string EmailAddress,
-    string FirstName,
-    string? SecondName,
-    string LastName,
-    string? SecondSurname,
-    DateOnly? DOB,
-    int LoginAttempts,
-    Guid AccountId,
-    bool Active,
-    bool IntegrationUser,
-    IReadOnlyCollection<RoleVm>? Roles,
-    IReadOnlyCollection<PolicyVm>? Profiles);
+[Authorize(Resource = Resources.Administrative, Action = Actions.Edit)]
+public readonly record struct UpdateClientCommand(ClientUserDto Client) : IRequest;
+public class UpdateClientCommandHandler(IClientWriter writer) : IRequestHandler<UpdateClientCommand>
+{
+
+    public async Task Handle(UpdateClientCommand request, CancellationToken cancellationToken)
+        => await writer.UpdateClientAsync(request.Client, cancellationToken);
+
+}
