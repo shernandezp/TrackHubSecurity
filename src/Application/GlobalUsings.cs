@@ -19,4 +19,4 @@ global using TrackHub.Security.Domain.Models;
 global using TrackHub.Security.Domain.Records;
 global using Common.Domain.Constants;
 global using FluentValidation;
-global using MediatR;
+global using Common.Mediator;
