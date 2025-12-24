@@ -13,7 +13,6 @@
 //  limitations under the License.
 //
 
-using System.Reflection;
 using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.HttpOverrides;
 using TrackHub.Security.Infrastructure.SecurityDB;
