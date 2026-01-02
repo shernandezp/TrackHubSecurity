@@ -1,12 +1,81 @@
-﻿## Components and Resources
+﻿# TrackHub Security API
+
+## Key Features
+
+- **Role-Based Access Control (RBAC)**: Comprehensive permission management with roles, policies, and actions
+- **GraphQL Interface**: Efficient, flexible querying for security data using Hot Chocolate server
+- **Fine-Grained Permissions**: Resource-level and action-level access control for maximum security
+- **User Management**: Complete CRUD operations for user accounts with role assignments
+- **Policy Engine**: Define and enforce custom access policies at user and role levels
+- **Service Client Management**: Secure registration and permission management for external service clients
+- **Default Role Templates**: Pre-configured Administrator, Manager, and User roles for quick setup
+- **Clean Architecture**: Maintainable, testable codebase following SOLID principles
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- .NET 10.0 SDK
+- PostgreSQL 14+
+- TrackHub Authority Server running (for authentication)
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/shernandezp/TrackHubSecurity.git
+   cd TrackHubSecurity
+   ```
+
+2. **Configure the database connection** in `appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "SecurityConnection": "Host=localhost;Database=trackhub_security;Username=postgres;Password=yourpassword"
+     }
+   }
+   ```
+
+3. **Run database migrations**:
+   ```bash
+   dotnet ef database update
+   ```
+
+4. **Seed initial data** (roles, resources, actions):
+   ```bash
+   dotnet run --project src/DBInitializer
+   ```
+
+5. **Start the application**:
+   ```bash
+   dotnet run --project src/Web
+   ```
+
+6. **Access GraphQL Playground** at `https://localhost:5001/graphql`
+
+### Default Roles
+
+| Role | Description |
+|------|-------------|
+| **Administrator** | Full access to all resources and actions |
+| **Manager** | Intermediate access for resource management |
+| **User** | Limited access based on assigned responsibilities |
+
+---
+
+## Components and Resources
 
 | Component                | Description                                           | Documentation                                                                 |
 |--------------------------|-------------------------------------------------------|-------------------------------------------------------------------------------|
 | Hot Chocolate            | GraphQL server for .NET                               | [Hot Chocolate Documentation](https://chillicream.com/docs/hotchocolate/v13)  |
 | .NET Core                | Development platform for modern applications          | [.NET Core Documentation](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview) |
-| Postgres                 | Relational database management system                 | [Documentación Postgres](https://www.postgresql.org/)                         |
+| Postgres                 | Relational database management system                 | [Postgres Documentation](https://www.postgresql.org/)                         |
 
-# Security API for TrackHub
+---
+
+## Overview
 
 The Security API is a GraphQL service responsible for managing TrackHub's security database. It exposes essential methods to handle role-based access control (RBAC), enabling the management of user roles, permissions, and resources.
 
