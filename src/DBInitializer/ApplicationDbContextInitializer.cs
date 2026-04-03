@@ -149,7 +149,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         }*/
         if (!context.Users.Any())
         {
-            var password = "123456".HashPassword();
+            var password = "12345678".HashPassword();
             context.Users.Add(new User(
                 "Administrator",
                 password,
@@ -171,6 +171,15 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = admin.RoleId });
             context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = manager.RoleId });
 
+            await context.SaveChangesAsync();
+        }
+        //TODO: Remove this after the first run, only to update the password of the default user
+        else
+        {
+            var user = context.Users.First(x => x.Username == "Administrator");
+            context.Users.Attach(user);
+            var password = "12345678".HashPassword();
+            user.Password = password;
             await context.SaveChangesAsync();
         }
     }

@@ -33,11 +33,14 @@ public sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCom
             .MaximumLength(ColumnMetadata.DefaultUserNameLength)
             .NotEmpty();
 
-        // Validate the minimum and maximum length, and non-empty of the password
+        // Validate the minimum and maximum length, complexity, and non-empty of the password
         RuleFor(v => v.User.Password)
             .MinimumLength(ColumnMetadata.MinimumPasswordLength)
             .MaximumLength(ColumnMetadata.DefaultPasswordLength)
-            .NotEmpty();
+            .NotEmpty()
+            .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+            .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+            .Matches("[0-9]").WithMessage("Password must contain at least one digit.");
 
         // Validate the email address format, maximum length, non-empty, and uniqueness
         RuleFor(v => v.User.EmailAddress)

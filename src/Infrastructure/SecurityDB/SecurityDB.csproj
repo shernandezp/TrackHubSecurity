@@ -4,6 +4,11 @@
     <AssemblyName>TrackHub.Security.Infrastructure.SecurityDB</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Migrations\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="Migrations\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="TrackHubCommon.Application" />
     <PackageReference Include="TrackHubCommon.Infrastructure" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
@@ -17,8 +22,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Application\Application.csproj" />
     <ProjectReference Include="..\ManagerApi\ManagerApi.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>
