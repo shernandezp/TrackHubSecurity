@@ -151,7 +151,7 @@ public class CreateUserCommandValidatorTests
                 FirstName = "First",
                 LastName = "Last",
                 Username = "username",
-                Password = "password",
+                Password = "Password1",
                 EmailAddress = "existing@example.com"
             }
         };
@@ -178,7 +178,7 @@ public class CreateUserCommandValidatorTests
                 FirstName = "first",
                 LastName = "last",
                 Username = "username",
-                Password = "password",
+                Password = "Password1",
                 EmailAddress = "test@example.com"
             }
         };
@@ -211,7 +211,7 @@ public class CreateUserCommandValidatorTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsValid, Is.False);
-            Assert.That(result.Errors, Has.Count.EqualTo(5));
+            Assert.That(result.Errors, Has.Count.EqualTo(7));
         }
     }
 }
