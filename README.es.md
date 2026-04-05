@@ -6,6 +6,7 @@
 - **Interfaz GraphQL**: Consultas eficientes y flexibles para datos de seguridad usando servidor Hot Chocolate
 - **Permisos Granulares**: Control de acceso a nivel de recurso y acción para máxima seguridad
 - **Gestión de Usuarios**: Operaciones CRUD completas para cuentas de usuario con asignación de roles
+- **Validación de Contraseñas**: Requisitos de fortaleza de contraseña incluyendo longitud mínima, mayúsculas, minúsculas, dígitos y caracteres especiales
 - **Motor de Políticas**: Definir y aplicar políticas de acceso personalizadas a nivel de usuario y rol
 - **Gestión de Clientes de Servicio**: Registro seguro y gestión de permisos para clientes de servicios externos
 - **Plantillas de Roles por Defecto**: Roles preconfigurados de Administrador, Gerente y Usuario para configuración rápida
