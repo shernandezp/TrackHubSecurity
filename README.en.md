@@ -6,6 +6,7 @@
 - **GraphQL Interface**: Efficient, flexible querying for security data using Hot Chocolate server
 - **Fine-Grained Permissions**: Resource-level and action-level access control for maximum security
 - **User Management**: Complete CRUD operations for user accounts with role assignments
+- **Password Validation**: Enforced password strength requirements including minimum length, uppercase, lowercase, digit, and special character rules
 - **Policy Engine**: Define and enforce custom access policies at user and role levels
 - **Service Client Management**: Secure registration and permission management for external service clients
 - **Default Role Templates**: Pre-configured Administrator, Manager, and User roles for quick setup
