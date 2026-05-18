@@ -15,14 +15,6 @@
 ---
 
 
-## Mejoras de Plataforma Base
-
-- Extiende los datos de identidad con credenciales de conductor, registros de dispositivos de conductor y permisos de clientes de servicio.
-- Soporta autorizacion por recurso/accion segun tipo de principal, con clientes de servicio validados por audiencia, scope, recurso, accion y restriccion opcional de cuenta.
-- Mantiene los modelos de lectura de usuario sin material de contrasena, conservando los flujos autorizados de gestion de credenciales.
-
----
-
 ## Inicio Rápido
 
 ### Requisitos Previos

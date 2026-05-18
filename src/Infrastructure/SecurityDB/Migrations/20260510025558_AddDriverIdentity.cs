@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 {
     /// <inheritdoc />
-    public partial class AddFoundationIdentity : Migration
+    public partial class AddDriverIdentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -517,3 +517,4 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
         }
     }
 }
+
