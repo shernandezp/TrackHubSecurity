@@ -10,10 +10,10 @@
     <PackageVersion Include="GraphQL.Client.Serializer.SystemTextJson" Version="6.1.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
-    <PackageVersion Include="TrackHubCommon.Application" Version="1.2.19" />
-    <PackageVersion Include="TrackHubCommon.Domain" Version="1.2.19" />
-    <PackageVersion Include="TrackHubCommon.Infrastructure" Version="1.2.19" />
-    <PackageVersion Include="TrackHubCommon.Web" Version="1.2.19" />
+    <PackageVersion Include="TrackHubCommon.Application" Version="1.2.20" />
+    <PackageVersion Include="TrackHubCommon.Domain" Version="1.2.20" />
+    <PackageVersion Include="TrackHubCommon.Infrastructure" Version="1.2.20" />
+    <PackageVersion Include="TrackHubCommon.Web" Version="1.2.20" />
     <PackageVersion Include="coverlet.collector" Version="10.0.0" />
     <PackageVersion Include="HotChocolate.AspNetCore" Version="16.0.3" />
     <PackageVersion Include="HotChocolate.AspNetCore.Authorization" Version="16.0.3" />
