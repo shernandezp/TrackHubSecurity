@@ -1,4 +1,4 @@
-﻿# TrackHub Security API
+# TrackHub Security API
 
 ## Key Features
 
@@ -124,3 +124,5 @@ By leveraging RBAC, the Security API ensures that users and clients only have ac
 ## License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
+
+

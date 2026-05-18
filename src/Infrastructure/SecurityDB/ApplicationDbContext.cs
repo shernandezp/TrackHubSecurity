@@ -23,12 +23,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Action> Actions { get; set; }
     public DbSet<Client> Clients { get; set; }
+    public DbSet<DriverCredential> DriverCredentials { get; set; }
+    public DbSet<DriverDeviceRegistration> DriverDeviceRegistrations { get; set; }
     public DbSet<Policy> Policies { get; set; }
     public DbSet<Resource> Resources { get; set; }
     public DbSet<ResourceAction> ResourceActions { get; set; }
     public DbSet<ResourceActionPolicy> ResourceActionPolicy { get; set; }
     public DbSet<ResourceActionRole> ResourceActionRole { get; set; }
     public DbSet<Role> Roles { get; set; }
+    public DbSet<ServiceClientPermission> ServiceClientPermissions { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<UserPolicy> UserPolicies { get; set; }

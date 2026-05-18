@@ -1,4 +1,4 @@
-﻿# API de Seguridad para TrackHub
+# API de Seguridad para TrackHub
 
 ## Características Principales
 
@@ -13,6 +13,7 @@
 - **Arquitectura Limpia**: Código mantenible y testeable siguiendo principios SOLID
 
 ---
+
 
 ## Inicio Rápido
 
@@ -122,3 +123,4 @@ Al aprovechar RBAC, la API de Seguridad asegura que los usuarios y clientes solo
 ## Licencia
 
 Este proyecto está bajo la Licencia Apache 2.0. Consulta el archivo [LICENSE](https://www.apache.org/licenses/LICENSE-2.0) para más información.
+

@@ -48,6 +48,8 @@ public static class DependencyInjection
         services.AddScoped<IActionReader, ActionReader>();
         services.AddScoped<IClientReader, ClientReader>();
         services.AddScoped<IClientWriter, ClientWriter>();
+        services.AddScoped<IDriverIdentityReader, DriverIdentityReader>();
+        services.AddScoped<IDriverIdentityWriter, DriverIdentityWriter>();
         services.AddScoped<IPolicyReader, PolicyReader>();
         services.AddScoped<IResourceReader, ResourceReader>();
         services.AddScoped<IResourceActionPolicyWriter, ResourceActionPolicyWriter>();
@@ -55,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped<IResourceActionRoleWriter, ResourceActionRoleWriter>();
         services.AddScoped<IResourceActionRoleReader, ResourceActionRoleReader>();
         services.AddScoped<IRoleReader, RoleReader>();
+        services.AddScoped<IServiceClientPermissionReader, ServiceClientPermissionReader>();
         services.AddScoped<IUserPolicyWriter, UserPolicyWriter>();
         services.AddScoped<IUserPolicyReader, UserPolicyReader>();
         services.AddScoped<IUserWriter, UserWriter>();

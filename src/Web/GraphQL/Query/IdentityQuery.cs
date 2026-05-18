@@ -17,6 +17,7 @@ using TrackHub.Security.Application.Identity.Queries.Authorize;
 using TrackHub.Security.Application.Identity.Queries.GetUsername;
 using TrackHub.Security.Application.Identity.Queries.IsInRole;
 using TrackHub.Security.Application.Identity.Queries.IsValidService;
+using TrackHub.Security.Application.Identity.Queries.IsValidServiceForResource;
 
 namespace TrackHub.Security.Web.GraphQL.Query;
 
@@ -31,5 +32,8 @@ public partial class Query
     public async Task<bool> Authorize([Service] ISender sender, [AsParameters] AuthorizeQuery query)
         => await sender.Send(query);
     public async Task<bool> IsValidService([Service] ISender sender, [AsParameters] IsValidServiceQuery query)
+        => await sender.Send(query);
+
+    public async Task<bool> IsValidServiceForResource([Service] ISender sender, [AsParameters] IsValidServiceForResourceQuery query)
         => await sender.Send(query);
 }
