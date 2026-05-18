@@ -1,4 +1,4 @@
-﻿# Security API for TrackHub
+# Security API for TrackHub
 
 [English](README.en.md) | [Español](README.es.md)
 
@@ -9,6 +9,15 @@ Currently in development, our project aims to foster collaboration among diverse
 We believe in the strength of community collaboration to create effective and accessible tools for everyone. Contribute to TrackHub to help shape the future of monitoring solutions!
 
 ![Image](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/wwwroot/images/logo.png)
+
+
+## Platform Foundation Enhancements
+
+- Extends identity data with driver credentials, driver device registrations, and service-client permissions.
+- Supports resource/action authorization by principal type, with service clients validated by audience, scope, resource, action, and optional account restriction.
+- Keeps user read models free of password material while preserving authorized credential-management workflows.
+
+---
 
 ## Project Repositories
 
@@ -22,3 +31,5 @@ We believe in the strength of community collaboration to create effective and ac
 | **Geofencing API**          | [https://github.com/shernandezp/TrackHub.Geofencing](https://github.com/shernandezp/TrackHub.Geofencing)    |
 | **Reporting API**           | [https://github.com/shernandezp/TrackHub.Reporting](https://github.com/shernandezp/TrackHub.Reporting)    |
 | **TrackHub Web**            | [https://github.com/shernandezp/TrackHub](https://github.com/shernandezp/TrackHub)          |
+
+

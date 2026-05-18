@@ -1,4 +1,4 @@
-﻿# API de Seguridad para TrackHub
+# API de Seguridad para TrackHub
 
 ## Características Principales
 
@@ -11,6 +11,15 @@
 - **Gestión de Clientes de Servicio**: Registro seguro y gestión de permisos para clientes de servicios externos
 - **Plantillas de Roles por Defecto**: Roles preconfigurados de Administrador, Gerente y Usuario para configuración rápida
 - **Arquitectura Limpia**: Código mantenible y testeable siguiendo principios SOLID
+
+---
+
+
+## Mejoras de Plataforma Base
+
+- Extiende los datos de identidad con credenciales de conductor, registros de dispositivos de conductor y permisos de clientes de servicio.
+- Soporta autorizacion por recurso/accion segun tipo de principal, con clientes de servicio validados por audiencia, scope, recurso, accion y restriccion opcional de cuenta.
+- Mantiene los modelos de lectura de usuario sin material de contrasena, conservando los flujos autorizados de gestion de credenciales.
 
 ---
 
@@ -122,3 +131,4 @@ Al aprovechar RBAC, la API de Seguridad asegura que los usuarios y clientes solo
 ## Licencia
 
 Este proyecto está bajo la Licencia Apache 2.0. Consulta el archivo [LICENSE](https://www.apache.org/licenses/LICENSE-2.0) para más información.
+

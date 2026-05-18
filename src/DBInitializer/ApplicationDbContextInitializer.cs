@@ -24,6 +24,50 @@ using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
 namespace DBInitializer;
 internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
 {
+    private static readonly string[] DefaultResources =
+    [
+        Resources.Accounts,
+        Resources.AccountsMaster,
+        Resources.Administrative,
+        Resources.AccountFeatures,
+        Resources.Alerts,
+        Resources.Audit,
+        Resources.BackgroundJobs,
+        Resources.Credentials,
+        Resources.Devices,
+        Resources.DevicesMaster,
+        Resources.Documents,
+        Resources.Drivers,
+        Resources.Geofences,
+        Resources.Geofencing,
+        Resources.Groups,
+        Resources.ManageDevices,
+        Resources.Notifications,
+        Resources.Operators,
+        Resources.OperatorsMaster,
+        Resources.Permissions,
+        Resources.Positions,
+        Resources.Profile,
+        Resources.PublicLinks,
+        Resources.Reports,
+        Resources.SettingsScreen,
+        Resources.ServiceClients,
+        Resources.SupportGrants,
+        Resources.Transporters,
+        Resources.TransporterType,
+        Resources.Users
+    ];
+
+    private static readonly string[] DefaultActions =
+    [
+        Actions.Read,
+        Actions.Edit,
+        Actions.Export,
+        Actions.Execute,
+        Actions.Write,
+        Actions.Delete
+    ];
+
     public async Task InitializeAsync()
     {
         try
@@ -54,56 +98,52 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
     {
         // Default data
         // Seed, if necessary
-        if (!context.Resources.Any())
+        foreach (var resourceName in DefaultResources)
         {
-            context.Resources.Add(new Resource { ResourceName = Resources.Accounts });
-            context.Resources.Add(new Resource { ResourceName = Resources.Administrative });
-            context.Resources.Add(new Resource { ResourceName = Resources.Credentials });
-            context.Resources.Add(new Resource { ResourceName = Resources.Devices });
-            context.Resources.Add(new Resource { ResourceName = Resources.Geofences });
-            context.Resources.Add(new Resource { ResourceName = Resources.Geofencing });
-            context.Resources.Add(new Resource { ResourceName = Resources.Groups });
-            context.Resources.Add(new Resource { ResourceName = Resources.Operators });
-            context.Resources.Add(new Resource { ResourceName = Resources.Permissions });
-            context.Resources.Add(new Resource { ResourceName = Resources.Positions });
-            context.Resources.Add(new Resource { ResourceName = Resources.Profile });
-            context.Resources.Add(new Resource { ResourceName = Resources.Reports });
-            context.Resources.Add(new Resource { ResourceName = Resources.SettingsScreen });
-            context.Resources.Add(new Resource { ResourceName = Resources.Transporters });
-            context.Resources.Add(new Resource { ResourceName = Resources.TransporterType });
-            context.Resources.Add(new Resource { ResourceName = Resources.Users });
-            await context.SaveChangesAsync();
-        }
-        if (!context.Actions.Any())
-        {
-            context.Actions.Add(new Action { ActionName = Actions.Read });
-            context.Actions.Add(new Action { ActionName = Actions.Edit });
-            context.Actions.Add(new Action { ActionName = Actions.Export });
-            context.Actions.Add(new Action { ActionName = Actions.Execute });
-            context.Actions.Add(new Action { ActionName = Actions.Write });
-            context.Actions.Add(new Action { ActionName = Actions.Delete });
-            context.Actions.Add(new Action { ActionName = Actions.Custom });
-            await context.SaveChangesAsync();
-        }
-        if (!context.ResourceActions.Any())
-        {
-            for (int resource = 1; resource <= 16; resource++)
+            if (!await context.Resources.AnyAsync(x => x.ResourceName == resourceName))
             {
-                for (int action = 1; action <= 6; action++)
+                context.Resources.Add(new Resource { ResourceName = resourceName });
+            }
+        }
+
+        await context.SaveChangesAsync();
+
+        foreach (var actionName in DefaultActions.Append(Actions.Custom))
+        {
+            if (!await context.Actions.AnyAsync(x => x.ActionName == actionName))
+            {
+                context.Actions.Add(new Action { ActionName = actionName });
+            }
+        }
+
+        await context.SaveChangesAsync();
+
+        var resources = await context.Resources.ToListAsync();
+        var actions = await context.Actions.ToListAsync();
+        var standardActions = actions.Where(x => DefaultActions.Contains(x.ActionName)).ToList();
+
+        foreach (var resource in resources)
+        {
+            foreach (var action in standardActions)
+            {
+                if (!await context.ResourceActions.AnyAsync(x => x.ResourceId == resource.ResourceId && x.ActionId == action.ActionId))
                 {
-                    context.ResourceActions.Add(new ResourceAction { ResourceId = resource, ActionId = action });
+                    context.ResourceActions.Add(new ResourceAction { ResourceId = resource.ResourceId, ActionId = action.ActionId });
                 }
             }
-            var customAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
-            var userResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Users);
-            context.ResourceActions.Add(new ResourceAction { ResourceId = userResource.ResourceId, ActionId = customAction.ActionId });
-            var positionResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Positions);
-            context.ResourceActions.Add(new ResourceAction { ResourceId = positionResource.ResourceId, ActionId = customAction.ActionId });
-            var credentialsResource = await context.Resources.FirstAsync(x => x.ResourceName == Resources.Credentials);
-            context.ResourceActions.Add(new ResourceAction { ResourceId = credentialsResource.ResourceId, ActionId = customAction.ActionId });
-
-            await context.SaveChangesAsync();
         }
+
+        var customAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
+        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials })
+        {
+            var resource = await context.Resources.FirstAsync(x => x.ResourceName == resourceName);
+            if (!await context.ResourceActions.AnyAsync(x => x.ResourceId == resource.ResourceId && x.ActionId == customAction.ActionId))
+            {
+                context.ResourceActions.Add(new ResourceAction { ResourceId = resource.ResourceId, ActionId = customAction.ActionId });
+            }
+        }
+
+        await context.SaveChangesAsync();
         if (!context.Roles.Any())
         {
             context.Roles.Add(new Role { Name = Roles.Administrator, Description = string.Empty });
@@ -124,14 +164,11 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
 
         if (!context.ResourceActionRole.Any())
         {
-            for (int resource = 1; resource <= 14; resource++)
-            {
-                for (int action = 1; action <= 6; action++)
-                {
-                    context.ResourceActionRole.Add(new ResourceActionRole { ResourceId = resource, ActionId = action, RoleId = 1 });
-                }
-            }
-            await context.SaveChangesAsync();
+            await SeedAdministratorResourceActionsAsync();
+        }
+        else
+        {
+            await SeedAdministratorResourceActionsAsync();
         }
 
         /*if (!context.ResourceActionPolicy.Any())
@@ -182,5 +219,29 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             user.Password = password;
             await context.SaveChangesAsync();
         }
+    }
+
+    private async Task SeedAdministratorResourceActionsAsync()
+    {
+        var administrator = await context.Roles.FirstAsync(x => x.Name == Roles.Administrator);
+        var resourceActions = await context.ResourceActions.ToListAsync();
+
+        foreach (var resourceAction in resourceActions)
+        {
+            if (!await context.ResourceActionRole.AnyAsync(x =>
+                    x.RoleId == administrator.RoleId
+                    && x.ResourceId == resourceAction.ResourceId
+                    && x.ActionId == resourceAction.ActionId))
+            {
+                context.ResourceActionRole.Add(new ResourceActionRole
+                {
+                    ResourceId = resourceAction.ResourceId,
+                    ActionId = resourceAction.ActionId,
+                    RoleId = administrator.RoleId
+                });
+            }
+        }
+
+        await context.SaveChangesAsync();
     }
 }

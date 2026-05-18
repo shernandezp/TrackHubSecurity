@@ -1,4 +1,4 @@
-﻿# TrackHub Security API
+# TrackHub Security API
 
 ## Key Features
 
@@ -11,6 +11,15 @@
 - **Service Client Management**: Secure registration and permission management for external service clients
 - **Default Role Templates**: Pre-configured Administrator, Manager, and User roles for quick setup
 - **Clean Architecture**: Maintainable, testable codebase following SOLID principles
+
+---
+
+
+## Platform Foundation Enhancements
+
+- Extends identity data with driver credentials, driver device registrations, and service-client permissions.
+- Supports resource/action authorization by principal type, with service clients validated by audience, scope, resource, action, and optional account restriction.
+- Keeps user read models free of password material while preserving authorized credential-management workflows.
 
 ---
 
@@ -124,3 +133,4 @@ By leveraging RBAC, the Security API ensures that users and clients only have ac
 ## License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
+
