@@ -40,22 +40,27 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Resources.Drivers,
         Resources.Geofences,
         Resources.Geofencing,
+        Resources.GpsIntegrationDashboard,
         Resources.Groups,
         Resources.ManageDevices,
         Resources.Notifications,
         Resources.Operators,
+        Resources.OperatorHealth,
+        Resources.OperatorSyncRuns,
         Resources.OperatorsMaster,
         Resources.Permissions,
         Resources.Positions,
+        Resources.PositionHistory,
         Resources.Profile,
         Resources.PublicLinks,
         Resources.Reports,
         Resources.SettingsScreen,
         Resources.ServiceClients,
         Resources.SupportGrants,
+        Resources.SynchronizedDevices,
         Resources.Transporters,
         Resources.TransporterType,
-        Resources.Users
+        Resources.Users,
     ];
 
     private static readonly string[] DefaultActions =
@@ -208,15 +213,6 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = admin.RoleId });
             context.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = manager.RoleId });
 
-            await context.SaveChangesAsync();
-        }
-        //TODO: Remove this after the first run, only to update the password of the default user
-        else
-        {
-            var user = context.Users.First(x => x.Username == "Administrator");
-            context.Users.Attach(user);
-            var password = "12345678".HashPassword();
-            user.Password = password;
             await context.SaveChangesAsync();
         }
     }
