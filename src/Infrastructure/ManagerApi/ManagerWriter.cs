@@ -12,17 +12,32 @@ namespace TrackHub.Security.Infrastructure.ManagerApi;
 public class ManagerWriter(IGraphQLClientFactory graphQLClient)
     : GraphQLService(graphQLClient.CreateClient(Clients.Manager)), IManagerWriter
 {
+    // Single source of truth for the mutations this writer sends; the
+    // ServiceContracts tests validate these exact strings against the Manager schema.
+    internal const string CreateUserMutation = @"
+                    mutation($accountId: UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
+                      createUser(command: { user: { accountId: $accountId, active: $active, userId: $userId, username: $username } }) {
+                        userId
+                      }
+                    }";
+
+    internal const string UpdateUserMutation = @"
+                    mutation($id:UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
+                      updateUser(id: $id,
+                            command: { user: { active: $active, userId: $userId, username: $username } })
+                    }";
+
+    internal const string DeleteUserMutation = @"
+                    mutation($id:UUID!) {
+                      deleteUser(id: $id)
+                    }";
+
     // Creates a new user asynchronously.
     public async Task<UserShrankVm> CreateUserAsync(UserShrankDto user, CancellationToken token)
     {
         var request = new GraphQLRequest
         {
-            Query = @"
-                    mutation($accountId: UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
-                      createUser(command: { user: { accountId: $accountId, active: $active, userId: $userId, username: $username } }) {
-                        userId
-                      }
-                    }",
+            Query = CreateUserMutation,
             Variables = new
             {
                 user.AccountId,
@@ -40,11 +55,7 @@ public class ManagerWriter(IGraphQLClientFactory graphQLClient)
     {
         var request = new GraphQLRequest
         {
-            Query = @"
-                    mutation($id:UUID!, $active: Boolean!, $userId: UUID!, $username: String!) {
-                      updateUser(id: $id,
-                            command: { user: { active: $active, userId: $userId, username: $username } })
-                    }",
+            Query = UpdateUserMutation,
             Variables = new
             {
                 id,
@@ -62,10 +73,7 @@ public class ManagerWriter(IGraphQLClientFactory graphQLClient)
     {
         var request = new GraphQLRequest
         {
-            Query = @"
-                    mutation($id:UUID!) {
-                      deleteUser(id: $id)
-                    }",
+            Query = DeleteUserMutation,
             Variables = new
             {
                 id
