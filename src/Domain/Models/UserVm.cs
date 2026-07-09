@@ -25,6 +25,7 @@ public readonly record struct UserVm(
     string? SecondSurname,
     DateOnly? DOB,
     int LoginAttempts,
+    DateTimeOffset? LockedUntil,
     Guid AccountId,
     bool Active,
     bool IntegrationUser,

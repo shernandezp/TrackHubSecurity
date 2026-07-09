@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Application.Exceptions;
 using Common.Domain.Extensions;
 using TrackHub.Security.Domain.Records;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
@@ -31,6 +32,13 @@ public sealed class ClientWriter(IApplicationDbContext context) : IClientWriter
     /// <returns>The created client view model</returns>
     public async Task<ClientVm> CreateClientAsync(ClientDto clientDto, byte[] salt, string key, CancellationToken cancellationToken)
     {
+        // Client name is the identity used by IsValidClientAsync / service permissions; a duplicate is a
+        // conflict (409), not a masked 500 from the unique-index violation at SaveChanges.
+        if (await context.Clients.AnyAsync(c => c.Name == clientDto.Name, cancellationToken))
+        {
+            throw new ConflictException($"A client named '{clientDto.Name}' already exists.");
+        }
+
         var client = new Client(
             clientDto.Name,
             clientDto.UserId,

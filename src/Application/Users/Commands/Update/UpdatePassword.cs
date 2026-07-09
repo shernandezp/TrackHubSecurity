@@ -14,11 +14,12 @@
 //
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
 [Authorize(Resource = Resources.Users, Action = Actions.Custom)]
 public readonly record struct UpdatePasswordCommand(UserPasswordDto User) : IRequest;
-public class UpdatePasswordCommandHandler(IUserWriter writer, IUserReader reader, IUser user) : IRequestHandler<UpdatePasswordCommand>
+public class UpdatePasswordCommandHandler(IUserWriter writer, IUserReader reader, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UpdatePasswordCommand>
 {
     private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
 
@@ -36,8 +37,9 @@ public class UpdatePasswordCommandHandler(IUserWriter writer, IUserReader reader
         {
             // Update the user asynchronously
             await writer.UpdatePasswordAsync(request.User, cancellationToken);
+            await publisher.Publish(SecurityAudit.Event(principal, "UserPasswordChanged", "User", request.User.UserId.ToString(), principal.AccountId), cancellationToken);
         }
-        else 
+        else
         {
             throw new UnauthorizedAccessException();
         }

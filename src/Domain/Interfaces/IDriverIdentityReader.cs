@@ -17,6 +17,6 @@ namespace TrackHub.Security.Domain.Interfaces;
 
 public interface IDriverIdentityReader
 {
-    Task<IReadOnlyCollection<DriverCredentialVm>> GetDriverCredentialsAsync(Guid accountId, Guid? driverId, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> GetDriverDevicesAsync(Guid accountId, Guid? driverId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<DriverCredentialVm>> GetDriverCredentialsAsync(Guid accountId, Guid? driverId, int skip, int take, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> GetDriverDevicesAsync(Guid accountId, Guid? driverId, int skip, int take, CancellationToken cancellationToken);
 }

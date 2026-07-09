@@ -38,6 +38,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(x => x.Verified).HasColumnName("verified");
         builder.Property(x => x.Active).HasColumnName("active");
         builder.Property(x => x.LoginAttempts).HasColumnName("loginattempts");
+        builder.Property(x => x.LockedUntil).HasColumnName("lockeduntil");
         builder.Property(x => x.AccountId).HasColumnName("accountid");
         builder.Property(x => x.IntegrationUser).HasColumnName("integrationuser");
 

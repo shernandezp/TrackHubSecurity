@@ -14,14 +14,20 @@
 //
 
 
+using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
+
 namespace TrackHub.Security.Application.UserPolicy.Commands.Delete;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Delete)]
 public readonly record struct DeleteUserPolicyCommand(Guid UserId, int PolicyId) : IRequest;
 
-public class DeleteUserPolicyCommandHandler(IUserPolicyWriter writer) : IRequestHandler<DeleteUserPolicyCommand>
+public class DeleteUserPolicyCommandHandler(IUserPolicyWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteUserPolicyCommand>
 {
     // This method handles the DeleteUserPolicyCommand by deleting the user policy using the provided writer.
     public async Task Handle(DeleteUserPolicyCommand request, CancellationToken cancellationToken)
-        => await writer.DeleteUserPolicyAsync(request.UserId, request.PolicyId, cancellationToken);
+    {
+        await writer.DeleteUserPolicyAsync(request.UserId, request.PolicyId, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "UserPolicyRemoved", "UserPolicy", $"{request.UserId}:{request.PolicyId}", principal.AccountId), cancellationToken);
+    }
 }

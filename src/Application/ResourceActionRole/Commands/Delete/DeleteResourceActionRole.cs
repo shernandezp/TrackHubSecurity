@@ -14,13 +14,14 @@
 //
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 
 namespace TrackHub.Security.Application.ResourceActionRole.Commands.Delete;
 
 [Authorize(Resource = Resources.Permissions, Action = Actions.Delete)]
 public readonly record struct DeleteResourceActionRoleCommand(int ResourceId, int ActionId, int RoleId) : IRequest;
 
-public class DeleteResourceActionRoleCommandHandler(IResourceActionRoleWriter writer, IUserReader userReader, IUser user) : IRequestHandler<DeleteResourceActionRoleCommand>
+public class DeleteResourceActionRoleCommandHandler(IResourceActionRoleWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<DeleteResourceActionRoleCommand>
 {
     private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
 
@@ -31,6 +32,7 @@ public class DeleteResourceActionRoleCommandHandler(IResourceActionRoleWriter wr
     {
         var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
         if (!isAdmin) throw new UnauthorizedAccessException();
-        await writer.DeleteResourceActionRoleAsync(request.ResourceId, request.ActionId, request.RoleId, cancellationToken); 
+        await writer.DeleteResourceActionRoleAsync(request.ResourceId, request.ActionId, request.RoleId, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(user, "ResourceActionRoleChanged", "ResourceActionRole", $"{request.ResourceId}:{request.ActionId}:{request.RoleId}", null, "removed", null), cancellationToken);
     }
 }

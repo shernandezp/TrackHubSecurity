@@ -58,6 +58,7 @@ public static class DependencyInjection
         services.AddScoped<IResourceActionRoleReader, ResourceActionRoleReader>();
         services.AddScoped<IRoleReader, RoleReader>();
         services.AddScoped<IServiceClientPermissionReader, ServiceClientPermissionReader>();
+        services.AddScoped<IServiceClientPermissionWriter, ServiceClientPermissionWriter>();
         services.AddScoped<IUserPolicyWriter, UserPolicyWriter>();
         services.AddScoped<IUserPolicyReader, UserPolicyReader>();
         services.AddScoped<IUserWriter, UserWriter>();

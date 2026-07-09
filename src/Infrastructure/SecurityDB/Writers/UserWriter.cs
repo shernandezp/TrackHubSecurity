@@ -62,6 +62,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             user.SecondSurname,
             user.DOB,
             user.LoginAttempts,
+            user.LockedUntil,
             user.AccountId,
             user.Active,
             user.IntegrationUser,
@@ -139,6 +140,22 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
 
         user.Password = password;
         user.Active = true;
+
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Clears an account lockout: resets the rolling failed-attempt counter and any timed lock so the
+    /// user can sign in immediately. Mirrors the reset the AuthorityServer performs on a successful login.
+    /// </summary>
+    public async Task UnlockUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.FindAsync([userId], cancellationToken)
+            ?? throw new NotFoundException(nameof(User), $"{userId}");
+
+        context.Users.Attach(user);
+        user.LoginAttempts = 0;
+        user.LockedUntil = null;
 
         await context.SaveChangesAsync(cancellationToken);
     }

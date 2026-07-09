@@ -33,7 +33,7 @@ public class DeleteUserPolicyCommandHandlerTests
     {
         var userId = Guid.NewGuid();
         var policyId = 3;
-        var handler = new DeleteUserPolicyCommandHandler(_writerMock.Object);
+        var handler = new DeleteUserPolicyCommandHandler(_writerMock.Object, new Mock<Common.Mediator.IPublisher>().Object, new Mock<Common.Application.Interfaces.ICurrentPrincipal>().Object);
 
         await handler.Handle(new DeleteUserPolicyCommand(userId, policyId), CancellationToken.None);
 
@@ -44,7 +44,7 @@ public class DeleteUserPolicyCommandHandlerTests
     public async Task Handle_DifferentPolicyId_PassesCorrectValues()
     {
         var userId = Guid.NewGuid();
-        var handler = new DeleteUserPolicyCommandHandler(_writerMock.Object);
+        var handler = new DeleteUserPolicyCommandHandler(_writerMock.Object, new Mock<Common.Mediator.IPublisher>().Object, new Mock<Common.Application.Interfaces.ICurrentPrincipal>().Object);
 
         await handler.Handle(new DeleteUserPolicyCommand(userId, 7), CancellationToken.None);
 

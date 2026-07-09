@@ -18,7 +18,7 @@ using Common.Application.Interfaces;
 namespace TrackHub.Security.Application.Users.Queries.GetByAccount;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Read)]
-public readonly record struct GetUsersByAccountQuery() : IRequest<IReadOnlyCollection<UserVm>>;
+public readonly record struct GetUsersByAccountQuery(int Skip = 0, int Take = 50) : IRequest<IReadOnlyCollection<UserVm>>;
 
 // The GetUsersByAccountQueryHandler is a class that implements the IRequestHandler interface to handle the GetUsersByAccountQuery.
 // It takes an IUserReader dependency in the constructor and provides the implementation for handling the query.
@@ -31,7 +31,7 @@ public class GetUsersByAccountQueryHandler(IUserReader reader, IUser user) : IRe
     public async Task<IReadOnlyCollection<UserVm>> Handle(GetUsersByAccountQuery request, CancellationToken cancellationToken)
     {
         var user = await reader.GetUserAsync(UserId, cancellationToken);
-        return await reader.GetUsersAsync(user.AccountId, cancellationToken); 
+        return await reader.GetUsersAsync(user.AccountId, request.Skip, request.Take, cancellationToken);
     }
 
 }

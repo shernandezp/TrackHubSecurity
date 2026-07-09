@@ -13,6 +13,8 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.CreateManager;
@@ -20,7 +22,7 @@ namespace TrackHub.Security.Application.Users.Commands.CreateManager;
 [Authorize(Resource = Resources.Administrative, Action = Actions.Write)]
 public readonly record struct CreateManagerCommand(CreateUserDto User, Guid AccountId) : IRequest<UserVm>;
 
-public class CreateManagerCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<CreateManagerCommand, UserVm>
+public class CreateManagerCommandHandler(IUserWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateManagerCommand, UserVm>
 {
 
     // Handle the Create Manager command
@@ -32,6 +34,7 @@ public class CreateManagerCommandHandler(IUserWriter writer, IPublisher publishe
         // Replicate the user in the management service
         var shrankUser = new UserShrankDto(user.UserId, user.Username, request.AccountId);
         await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "CreateManager", "User", user.UserId.ToString(), request.AccountId, null, user.Username), cancellationToken);
         return user;
     }
 }

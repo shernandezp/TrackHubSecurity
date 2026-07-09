@@ -19,11 +19,11 @@ using Common.Application.GraphQL.Inputs;
 namespace TrackHub.Security.Application.Users.Queries.GetAll;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Read)]
-public readonly record struct GetUsersQuery(FiltersInput Filter) : IRequest<IReadOnlyCollection<UserVm>>;
+public readonly record struct GetUsersQuery(FiltersInput Filter, int Skip = 0, int Take = 50) : IRequest<IReadOnlyCollection<UserVm>>;
 
 public class GetUsersMasterQueryHandler(IUserReader reader) : IRequestHandler<GetUsersQuery, IReadOnlyCollection<UserVm>>
 {
     public async Task<IReadOnlyCollection<UserVm>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
-        => await reader.GetUsersAsync(request.Filter.GetFilters(), cancellationToken);
+        => await reader.GetUsersAsync(request.Filter.GetFilters(), request.Skip, request.Take, cancellationToken);
 
 }

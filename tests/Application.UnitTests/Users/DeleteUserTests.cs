@@ -48,7 +48,7 @@ internal class DeleteUserTests
                   .Returns(Task.CompletedTask); // DeleteUserAsync returns a completed task
         _mockUser.Setup(x => x.Id).Returns(Guid.NewGuid().ToString());
 
-        var handler = new DeleteUserCommandHandler(_writerMock.Object, _mockUser.Object, _publisherMock.Object);
+        var handler = new DeleteUserCommandHandler(_writerMock.Object, _mockUser.Object, _publisherMock.Object, _mockUser.Object);
         var command = new DeleteUserCommand(userId);
 
         // Act
@@ -73,7 +73,7 @@ internal class DeleteUserTests
                   .Returns(Task.CompletedTask); // DeleteUserAsync returns a completed task
         _mockUser.Setup(x => x.Id).Returns(userId.ToString());
 
-        var handler = new DeleteUserCommandHandler(_writerMock.Object, _mockUser.Object, _publisherMock.Object);
+        var handler = new DeleteUserCommandHandler(_writerMock.Object, _mockUser.Object, _publisherMock.Object, _mockUser.Object);
         var command = new DeleteUserCommand(userId);
 
         // Act & Assert

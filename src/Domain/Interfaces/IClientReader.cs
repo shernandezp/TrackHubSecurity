@@ -18,5 +18,5 @@ namespace TrackHub.Security.Domain.Interfaces;
 public interface IClientReader
 {
     Task<bool> IsValidClientAsync(string client, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<ClientVm>> GetClientsAsync(string key, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<ClientVm>> GetClientsAsync(string key, int skip, int take, CancellationToken cancellationToken);
 }

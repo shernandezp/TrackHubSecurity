@@ -14,15 +14,17 @@
 //
 
 using Ardalis.GuardClauses;
+using Common.Application.Interfaces;
 using Common.Domain.Extensions;
 using Microsoft.Extensions.Configuration;
+using TrackHub.Security.Application.Audit.Events;
 
 namespace TrackHub.Security.Application.Clients.Commands.Create;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Write)]
 public readonly record struct CreateClientCommand(ClientDto Client) : IRequest<ClientVm>;
 
-public class CreateClientCommandHandler(IClientWriter writer, IConfiguration configuration) : IRequestHandler<CreateClientCommand, ClientVm>
+public class CreateClientCommandHandler(IClientWriter writer, IConfiguration configuration, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateClientCommand, ClientVm>
 {
     public async Task<ClientVm> Handle(CreateClientCommand request, CancellationToken cancellationToken)
     {
@@ -30,6 +32,8 @@ public class CreateClientCommandHandler(IClientWriter writer, IConfiguration con
         Guard.Against.Null(key, message: "Secrets key not found.");
         var salt = CryptographyExtensions.GenerateAesKey(256);
 
-        return await writer.CreateClientAsync(request.Client, salt, key, cancellationToken);
+        var vm = await writer.CreateClientAsync(request.Client, salt, key, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "CreateClient", "Client", vm.ClientId.ToString(), null, null, vm.Name), cancellationToken);
+        return vm;
     }
 }

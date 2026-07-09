@@ -14,6 +14,7 @@
 //
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Delete;
@@ -21,7 +22,7 @@ namespace TrackHub.Security.Application.Users.Commands.Delete;
 [Authorize(Resource = Resources.Users, Action = Actions.Delete)]
 public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
 
-public class DeleteUserCommandHandler(IUserWriter writer, IUser user, IPublisher publisher) : IRequestHandler<DeleteUserCommand>
+public class DeleteUserCommandHandler(IUserWriter writer, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteUserCommand>
 {
     private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
 
@@ -35,6 +36,7 @@ public class DeleteUserCommandHandler(IUserWriter writer, IUser user, IPublisher
         }
         await writer.DeleteUserAsync(request.Id, cancellationToken);
         await publisher.Publish(new UserDeleted.Notification(request.Id), cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "DeleteUser", "User", request.Id.ToString(), principal.AccountId), cancellationToken);
     }
 
 }

@@ -214,6 +214,9 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedServiceClientRegistrationsAsync();
         await SeedManagerServiceClientPermissionsAsync();
 
+        // Security's own service identity: forwards security audit events to Manager's AuditEvent store.
+        await SeedSecurityServiceClientPermissionsAsync();
+
         /*if (!context.ResourceActionPolicy.Any())
         {
             for (int resource = 1; resource <= 10; resource++)
@@ -294,7 +297,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
     // that IsValidClientAsync checks by NAME. Without it, every service-token call is denied.
     private async Task SeedServiceClientRegistrationsAsync()
     {
-        string[] clients = ["router_client", "syncworker_client"];
+        string[] clients = ["router_client", "syncworker_client", "security_client"];
 
         foreach (var name in clients)
         {
@@ -338,6 +341,18 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         ];
 
         await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], grants);
+    }
+
+    // The security_client posts security audit events to Manager's central AuditEvent store
+    // (spec 02 §7.3). It needs exactly one grant — Audit/Write — and nothing else.
+    private async Task SeedSecurityServiceClientPermissionsAsync()
+    {
+        (string Resource, string Action)[] grants =
+        [
+            (Resources.Audit, Actions.Write),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["security_client"], grants);
     }
 
     private async Task SeedTelemetryServiceClientPermissionsAsync()

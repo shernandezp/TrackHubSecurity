@@ -19,9 +19,9 @@ namespace TrackHub.Security.Domain.Interfaces;
 public interface IUserReader
 {
     Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Filters filters, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Filters filters, int skip, int take, CancellationToken cancellationToken);
     Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, int skip, int take, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<UserVm>> GetUsersByRoleAsync(Guid accountId, int roleId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<UserVm>> GetUsersByPolicyAsync(Guid accountId, int policyId, CancellationToken cancellationToken);
     Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken);

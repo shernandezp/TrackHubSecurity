@@ -19,7 +19,7 @@ using Microsoft.Extensions.Configuration;
 namespace TrackHub.Security.Application.Clients.Queries.GetAll;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Read)]
-public readonly record struct GetClientsQuery() : IRequest<IReadOnlyCollection<ClientVm>>;
+public readonly record struct GetClientsQuery(int Skip = 0, int Take = 50) : IRequest<IReadOnlyCollection<ClientVm>>;
 
 public class GetClientsQueryHandler(IClientReader reader, IConfiguration configuration) : IRequestHandler<GetClientsQuery, IReadOnlyCollection<ClientVm>>
 {
@@ -28,7 +28,7 @@ public class GetClientsQueryHandler(IClientReader reader, IConfiguration configu
         var key = configuration["AppSettings:EncryptionKey"];
         Guard.Against.Null(key, message: "Secrets key not found.");
 
-        return await reader.GetClientsAsync(key, cancellationToken);
+        return await reader.GetClientsAsync(key, request.Skip, request.Take, cancellationToken);
     }
 
 }

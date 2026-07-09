@@ -15,13 +15,14 @@
 
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 
 namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Delete;
 
 [Authorize(Resource = Resources.Permissions, Action = Actions.Delete)]
 public readonly record struct DeleteResourceActionPolicyCommand(int ResourceId, int ActionId, int PolicyId) : IRequest;
 
-public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user) : IRequestHandler<DeleteResourceActionPolicyCommand>
+public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<DeleteResourceActionPolicyCommand>
 {
     private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
 
@@ -32,5 +33,6 @@ public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWrite
         var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
         if (!isAdmin) throw new UnauthorizedAccessException();
         await writer.DeleteResourceActionPolicyAsync(request.ResourceId, request.ActionId, request.PolicyId, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(user, "ResourceActionPolicyChanged", "ResourceActionPolicy", $"{request.ResourceId}:{request.ActionId}:{request.PolicyId}", null, "removed", null), cancellationToken);
     }
 }

@@ -63,7 +63,7 @@ public class CreateUserCommandHandlerTests
             .Verifiable();
         _mockUser.Setup(x => x.Id).Returns(userId.ToString());
 
-        var handler = new CreateUserCommandHandler(_mockUserWriter.Object, _mockUserReader.Object, _mockUser.Object, _mockPublisher.Object);
+        var handler = new CreateUserCommandHandler(_mockUserWriter.Object, _mockUserReader.Object, _mockUser.Object, _mockPublisher.Object, _mockUser.Object);
 
         // Act
         var result = await handler.Handle(createUserCommand, CancellationToken.None);
@@ -103,6 +103,7 @@ public class CreateUserCommandHandlerTests
             _mockUserWriter.Object,
             _mockUserReader.Object,
             _mockUser.Object,
-            _mockPublisher.Object));
+            _mockPublisher.Object,
+            _mockUser.Object));
     }
 }

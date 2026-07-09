@@ -16,6 +16,7 @@
 using TrackHub.Security.Application.Users.Commands.Create;
 using TrackHub.Security.Application.Users.Commands.CreateManager;
 using TrackHub.Security.Application.Users.Commands.Delete;
+using TrackHub.Security.Application.Users.Commands.Unlock;
 using TrackHub.Security.Application.Users.Commands.Update;
 using TrackHub.Security.Domain.Models;
 
@@ -53,5 +54,11 @@ public partial class Mutation
     {
         await sender.Send(new DeleteUserCommand(id));
         return id;
+    }
+
+    public async Task<bool> UnlockUser([Service] ISender sender, Guid id)
+    {
+        await sender.Send(new UnlockUserCommand(id));
+        return true;
     }
 }

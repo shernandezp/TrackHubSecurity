@@ -28,7 +28,13 @@ public static class DependencyInjection
             client => client.Timeout = TimeSpan.FromSeconds(30))
             .AddHeaderPropagation();
 
+        // As-service client for security audit forwarding: authenticates with the security_client
+        // credentials (no user-token propagation). The factory attaches the bearer token itself.
+        services.AddHttpClient($"{Clients.Manager}AsService",
+            client => client.Timeout = TimeSpan.FromSeconds(30));
+
         services.AddScoped<IManagerWriter, ManagerWriter>();
+        services.AddScoped<IManagerAuditWriter, ManagerAuditWriter>();
 
         return services;
     }

@@ -16,17 +16,17 @@
 namespace TrackHub.Security.Application.DriverIdentity.Queries;
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Read)]
-public readonly record struct GetDriverCredentialsQuery(Guid AccountId, Guid? DriverId = null) : IRequest<IReadOnlyCollection<DriverCredentialVm>>;
+public readonly record struct GetDriverCredentialsQuery(Guid AccountId, Guid? DriverId = null, int Skip = 0, int Take = 50) : IRequest<IReadOnlyCollection<DriverCredentialVm>>;
 public class GetDriverCredentialsQueryHandler(IDriverIdentityReader reader) : IRequestHandler<GetDriverCredentialsQuery, IReadOnlyCollection<DriverCredentialVm>>
 {
     public async Task<IReadOnlyCollection<DriverCredentialVm>> Handle(GetDriverCredentialsQuery request, CancellationToken cancellationToken)
-        => await reader.GetDriverCredentialsAsync(request.AccountId, request.DriverId, cancellationToken);
+        => await reader.GetDriverCredentialsAsync(request.AccountId, request.DriverId, request.Skip, request.Take, cancellationToken);
 }
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Read)]
-public readonly record struct GetDriverDevicesQuery(Guid AccountId, Guid? DriverId = null) : IRequest<IReadOnlyCollection<DriverDeviceRegistrationVm>>;
+public readonly record struct GetDriverDevicesQuery(Guid AccountId, Guid? DriverId = null, int Skip = 0, int Take = 50) : IRequest<IReadOnlyCollection<DriverDeviceRegistrationVm>>;
 public class GetDriverDevicesQueryHandler(IDriverIdentityReader reader) : IRequestHandler<GetDriverDevicesQuery, IReadOnlyCollection<DriverDeviceRegistrationVm>>
 {
     public async Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> Handle(GetDriverDevicesQuery request, CancellationToken cancellationToken)
-        => await reader.GetDriverDevicesAsync(request.AccountId, request.DriverId, cancellationToken);
+        => await reader.GetDriverDevicesAsync(request.AccountId, request.DriverId, request.Skip, request.Take, cancellationToken);
 }

@@ -41,7 +41,7 @@ public class DeleteResourceActionPolicyCommandHandlerTests
         _userReaderMock.Setup(r => r.IsAdminAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var handler = new DeleteResourceActionPolicyCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object);
+        var handler = new DeleteResourceActionPolicyCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object, new Mock<Common.Mediator.IPublisher>().Object);
 
         await handler.Handle(new DeleteResourceActionPolicyCommand(1, 2, 3), CancellationToken.None);
 
@@ -56,7 +56,7 @@ public class DeleteResourceActionPolicyCommandHandlerTests
         _userReaderMock.Setup(r => r.IsAdminAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var handler = new DeleteResourceActionPolicyCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object);
+        var handler = new DeleteResourceActionPolicyCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object, new Mock<Common.Mediator.IPublisher>().Object);
 
         Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
             await handler.Handle(new DeleteResourceActionPolicyCommand(1, 2, 3), CancellationToken.None));

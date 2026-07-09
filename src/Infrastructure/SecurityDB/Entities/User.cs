@@ -43,6 +43,7 @@ public sealed class User(string username,
     public DateTime? Verified { get; set; }
     public bool Active { get; set; } = active;
     public int LoginAttempts { get; set; } = loginAttempts;
+    public DateTimeOffset? LockedUntil { get; set; }
     public Guid AccountId { get; set; } = accountId;
     public bool IntegrationUser { get; set; } = integrationUser;
     public Client? Client { get; set; }

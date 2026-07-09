@@ -37,20 +37,39 @@ public sealed class DriverIdentityReader(IApplicationDbContext context, ICurrent
         throw new ForbiddenAccessException();
     }
 
-    public async Task<IReadOnlyCollection<DriverCredentialVm>> GetDriverCredentialsAsync(Guid accountId, Guid? driverId, CancellationToken cancellationToken)
+    private static int PageSize(int take) => Math.Clamp(take <= 0 ? 50 : take, 1, 500);
+    private static int Offset(int skip) => Math.Max(0, skip);
+
+    public async Task<IReadOnlyCollection<DriverCredentialVm>> GetDriverCredentialsAsync(Guid accountId, Guid? driverId, int skip, int take, CancellationToken cancellationToken)
         => await context.DriverCredentials
             .Where(x => x.AccountId == RequireAccountAccess(accountId) && (!driverId.HasValue || x.DriverId == driverId.Value))
-            .OrderBy(x => x.NormalizedLogin)
+            .OrderBy(x => x.NormalizedLogin).ThenBy(x => x.DriverCredentialId)
+            .Skip(Offset(skip)).Take(PageSize(take))
             .Select(x => ToVm(x))
             .ToListAsync(cancellationToken);
 
-    public async Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> GetDriverDevicesAsync(Guid accountId, Guid? driverId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> GetDriverDevicesAsync(Guid accountId, Guid? driverId, int skip, int take, CancellationToken cancellationToken)
         => await context.DriverDeviceRegistrations
             .Where(x => x.AccountId == RequireAccountAccess(accountId) && (!driverId.HasValue || x.DriverId == driverId.Value))
-            .OrderByDescending(x => x.LastSeenAt ?? x.RegisteredAt)
+            .OrderByDescending(x => x.LastSeenAt ?? x.RegisteredAt).ThenBy(x => x.DriverDeviceRegistrationId)
+            .Skip(Offset(skip)).Take(PageSize(take))
             .Select(x => ToVm(x))
             .ToListAsync(cancellationToken);
 
     private static DriverCredentialVm ToVm(DriverCredential x) => new(x.DriverCredentialId, x.DriverId, x.AccountId, x.NormalizedLogin, x.FailedAttempts, x.LockedUntil, x.VerifiedAt, x.LastLoginAt, x.Active, x.ResetRequired, x.LastModified);
-    private static DriverDeviceRegistrationVm ToVm(DriverDeviceRegistration x) => new(x.DriverDeviceRegistrationId, x.DriverId, x.AccountId, x.DeviceId, x.DeviceName, x.Platform, x.AppVersion, x.PushToken, x.RefreshTokenFamilyId, x.Active, x.RegisteredAt, x.LastSeenAt, x.RevokedAt, x.RevokedBy, x.LastModified);
+    private static DriverDeviceRegistrationVm ToVm(DriverDeviceRegistration x) => new(x.DriverDeviceRegistrationId, x.DriverId, x.AccountId, x.DeviceId, x.DeviceName, x.Platform, x.AppVersion, MaskPushToken(x.PushToken), x.Active, x.RegisteredAt, x.LastSeenAt, x.RevokedAt, x.RevokedBy, x.LastModified);
+
+    // Masks the push token, exposing only a trailing fragment so admins can identify a device
+    // without the value being usable. Runs client-side in the final projection.
+    private static string? MaskPushToken(string? pushToken)
+    {
+        if (string.IsNullOrEmpty(pushToken))
+        {
+            return pushToken;
+        }
+
+        return pushToken.Length <= 6
+            ? new string('*', pushToken.Length)
+            : $"******{pushToken[^6..]}";
+    }
 }

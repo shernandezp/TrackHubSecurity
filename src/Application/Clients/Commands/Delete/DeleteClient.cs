@@ -13,15 +13,21 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
+
 namespace TrackHub.Security.Application.Clients.Commands.Delete;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Delete)]
 public readonly record struct DeleteClientCommand(Guid Id) : IRequest;
 
-public class DeleteClientCommandHandler(IClientWriter writer) : IRequestHandler<DeleteClientCommand>
+public class DeleteClientCommandHandler(IClientWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteClientCommand>
 {
 
     public async Task Handle(DeleteClientCommand request, CancellationToken cancellationToken)
-        => await writer.DeleteClientAsync(request.Id, cancellationToken);
+    {
+        await writer.DeleteClientAsync(request.Id, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "DeleteClient", "Client", request.Id.ToString(), null), cancellationToken);
+    }
 
 }

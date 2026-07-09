@@ -14,6 +14,7 @@
 //
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Create;
@@ -21,7 +22,7 @@ namespace TrackHub.Security.Application.Users.Commands.Create;
 [Authorize(Resource = Resources.Users, Action = Actions.Write)]
 public readonly record struct CreateUserCommand(CreateUserDto User) : IRequest<UserVm>;
 
-public class CreateUserCommandHandler(IUserWriter writer, IUserReader reader, IUser user, IPublisher publisher) : IRequestHandler<CreateUserCommand, UserVm>
+public class CreateUserCommandHandler(IUserWriter writer, IUserReader reader, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateUserCommand, UserVm>
 {
     private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
 
@@ -36,6 +37,7 @@ public class CreateUserCommandHandler(IUserWriter writer, IUserReader reader, IU
         var shrankUser = new UserShrankDto(user.UserId, user.Username, currentUser.AccountId);
         // Publish a UserCreated notification
         await publisher.Publish(new UserCreated.Notification(shrankUser), cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "CreateUser", "User", user.UserId.ToString(), currentUser.AccountId, null, user.Username), cancellationToken);
         return user;
     }
 }
