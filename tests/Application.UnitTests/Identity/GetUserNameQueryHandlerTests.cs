@@ -36,7 +36,7 @@ public class GetUserNameQueryHandlerTests
         _serviceMock.Setup(s => s.GetUserNameAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync("john.doe");
 
-        var handler = new TrackHub.Security.Application.Identity.Queries.GetUsername.GetUsersQueryHandler(_serviceMock.Object);
+        var handler = new TrackHub.Security.Application.Identity.Queries.GetUsername.GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(userId).Object);
         var result = await handler.Handle(new GetUserNameQuery(userId), CancellationToken.None);
 
         Assert.That(result, Is.EqualTo("john.doe"));
@@ -46,10 +46,19 @@ public class GetUserNameQueryHandlerTests
     public async Task Handle_PassesCorrectUserId()
     {
         var userId = Guid.NewGuid();
-        var handler = new TrackHub.Security.Application.Identity.Queries.GetUsername.GetUsersQueryHandler(_serviceMock.Object);
+        var handler = new TrackHub.Security.Application.Identity.Queries.GetUsername.GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.Service().Object);
 
         await handler.Handle(new GetUserNameQuery(userId), CancellationToken.None);
 
         _serviceMock.Verify(s => s.GetUserNameAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public void Handle_UserAskingAboutAnotherUser_ThrowsForbidden()
+    {
+        var handler = new TrackHub.Security.Application.Identity.Queries.GetUsername.GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(Guid.NewGuid()).Object);
+
+        Assert.ThrowsAsync<Common.Application.Exceptions.ForbiddenAccessException>(
+            () => handler.Handle(new GetUserNameQuery(Guid.NewGuid()), CancellationToken.None));
     }
 }

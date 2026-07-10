@@ -329,6 +329,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             (Resources.Accounts, Actions.Read),
             (Resources.AccountsMaster, Actions.Read),
             (Resources.AccountFeatures, Actions.Read),
+            (Resources.AccountFeaturesMaster, Actions.Read),
             (Resources.Operators, Actions.Read),
             (Resources.OperatorsMaster, Actions.Read),
             (Resources.SynchronizedDevices, Actions.Read),

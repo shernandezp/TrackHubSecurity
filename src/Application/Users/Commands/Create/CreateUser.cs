@@ -24,7 +24,7 @@ public readonly record struct CreateUserCommand(CreateUserDto User) : IRequest<U
 
 public class CreateUserCommandHandler(IUserWriter writer, IUserReader reader, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateUserCommand, UserVm>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // Handle the Create User command
     public async Task<UserVm> Handle(CreateUserCommand request, CancellationToken cancellationToken)

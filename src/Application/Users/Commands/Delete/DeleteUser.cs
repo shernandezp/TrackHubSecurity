@@ -24,7 +24,7 @@ public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
 
 public class DeleteUserCommandHandler(IUserWriter writer, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteUserCommand>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // Handle method to delete a user
     // The user cannot delete itself

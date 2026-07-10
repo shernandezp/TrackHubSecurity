@@ -23,7 +23,7 @@ public readonly record struct DeleteResourceActionRoleCommand(int ResourceId, in
 
 public class DeleteResourceActionRoleCommandHandler(IResourceActionRoleWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<DeleteResourceActionRoleCommand>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // This method handles the DeleteResourceActionRoleCommand by deleting the resource action role.
     // It calls the DeleteResourceActionRoleAsync method of the writer.

@@ -23,7 +23,7 @@ public readonly record struct GetCurrentUserQuery() : IRequest<UserVm>;
 // The GetCurrentUserQueryHandler class is responsible for handling the GetCurrentUserQuery and returning the corresponding UserVm.
 public class GetCurrentUserQueryHandler(IUserReader reader, IUser user) : IRequestHandler<GetCurrentUserQuery, UserVm>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // The Handle method is called when the GetCurrentUserQuery is executed.
     // It retrieves the user from the IUserReader and returns the corresponding UserVm.

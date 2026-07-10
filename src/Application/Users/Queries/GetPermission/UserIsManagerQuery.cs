@@ -22,7 +22,7 @@ public readonly record struct UserIsManagerQuery() : IRequest<bool>;
 
 public class UserIsManagerQueryHandler(IUserReader reader, IUser user) : IRequestHandler<UserIsManagerQuery, bool>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     /// <summary>
     /// Handles the UserIsManagerQuery request by checking if the user is a manager.

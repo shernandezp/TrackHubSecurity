@@ -38,12 +38,25 @@ public class IdentityService(IUserReader userReader,
     }
 
     // Authorizes the user with the given userId for the specified resource and action asynchronously.
+    // Policies are additive restrictions: a resource-action with NO policy rows imposes no policy
+    // requirement, so an empty set intentionally evaluates to true (roles remain the primary gate).
     public async Task<bool> AuthorizeAsync(Guid userId, string resource, string action, CancellationToken token)
     {
         var resourceActionPolicies = await resourceActionPolicyReader.GetResourceActionPoliciesAsync(resource, action, token);
+        if (!resourceActionPolicies.Any())
+        {
+            return true;
+        }
         var userPolicies = await userPolicyReader.GetUserPolicyNamesAsync(userId, token);
         return resourceActionPolicies.All(policy => userPolicies.Contains(policy));
     }
+
+    // Combined role + policy decision in one in-process evaluation. This backs the
+    // `authorizeUser` GraphQL query that every service's authorization pipeline calls,
+    // replacing the former two-round-trip isInRole + authorize sequence.
+    public async Task<bool> AuthorizeUserAsync(Guid userId, string resource, string action, CancellationToken token)
+        => await IsInRoleAsync(userId, resource, action, token)
+           && await AuthorizeAsync(userId, resource, action, token);
 
     // Checks if the given client is valid asynchronously.
     public async Task<bool> IsValidServiceAsync(string? client, CancellationToken token)

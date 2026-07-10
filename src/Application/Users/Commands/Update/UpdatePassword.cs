@@ -21,7 +21,7 @@ namespace TrackHub.Security.Application.Users.Commands.Update;
 public readonly record struct UpdatePasswordCommand(UserPasswordDto User) : IRequest;
 public class UpdatePasswordCommandHandler(IUserWriter writer, IUserReader reader, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UpdatePasswordCommand>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // Handle the UpdateUserCommand
     // Update the user password if the user is the same user or the requesting user ia a manager

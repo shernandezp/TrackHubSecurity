@@ -36,7 +36,7 @@ public class AuthorizeQueryHandlerTests
         _serviceMock.Setup(s => s.AuthorizeAsync(userId, "Operators", "Read", It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var handler = new GetUsersQueryHandler(_serviceMock.Object);
+        var handler = new GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(userId).Object);
         var result = await handler.Handle(new AuthorizeQuery(userId, "Operators", "Read"), CancellationToken.None);
 
         Assert.That(result, Is.True);
@@ -49,7 +49,7 @@ public class AuthorizeQueryHandlerTests
         _serviceMock.Setup(s => s.AuthorizeAsync(userId, "Admin", "Write", It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var handler = new GetUsersQueryHandler(_serviceMock.Object);
+        var handler = new GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(userId).Object);
         var result = await handler.Handle(new AuthorizeQuery(userId, "Admin", "Write"), CancellationToken.None);
 
         Assert.That(result, Is.False);
@@ -59,10 +59,20 @@ public class AuthorizeQueryHandlerTests
     public async Task Handle_PassesCorrectParametersToService()
     {
         var userId = Guid.NewGuid();
-        var handler = new GetUsersQueryHandler(_serviceMock.Object);
+        var handler = new GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.Service().Object);
 
         await handler.Handle(new AuthorizeQuery(userId, "Resource", "Action"), CancellationToken.None);
 
         _serviceMock.Verify(s => s.AuthorizeAsync(userId, "Resource", "Action", It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Test]
+    public void Handle_UserAskingAboutAnotherUser_ThrowsForbidden()
+    {
+        var handler = new GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(Guid.NewGuid()).Object);
+
+        Assert.ThrowsAsync<Common.Application.Exceptions.ForbiddenAccessException>(
+            () => handler.Handle(new AuthorizeQuery(Guid.NewGuid(), "Resource", "Action"), CancellationToken.None));
+        _serviceMock.Verify(s => s.AuthorizeAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

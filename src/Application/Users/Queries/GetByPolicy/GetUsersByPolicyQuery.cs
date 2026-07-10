@@ -24,7 +24,7 @@ public readonly record struct GetUsersByPolicyQuery(int PolicyId) : IRequest<IRe
 // It takes an IUserReader dependency in the constructor and provides the implementation for handling the query.
 public class GetUsersByPolicyQueryHandler(IUserReader reader, IUser user) : IRequestHandler<GetUsersByPolicyQuery, IReadOnlyCollection<UserVm>>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // The Handle method is responsible for handling the GetUsersByPolicyQuery and returning the result.
     // It asynchronously calls the GetUsersByPolicyAsync method of the IUserReader dependency to retrieve the users by account and policy ID.

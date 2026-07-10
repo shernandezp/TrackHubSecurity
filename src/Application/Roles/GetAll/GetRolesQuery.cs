@@ -23,7 +23,7 @@ public readonly record struct GetRolesQuery() : IRequest<IReadOnlyCollection<Rol
 // The GetRolesQueryHandler is a class that implements the IRequestHandler interface to handle the GetRolesQuery.
 public class GetRolesQueryHandler(IRoleReader reader, IUserReader userReader, IUser user) : IRequestHandler<GetRolesQuery, IReadOnlyCollection<RoleVm>>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // The Handle method is responsible for handling the GetRolesQuery and returning the result.
     // It asynchronously calls the GetRolesAsync method of the IRoleReader dependency to retrieve all roles.

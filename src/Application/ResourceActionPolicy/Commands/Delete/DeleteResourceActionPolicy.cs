@@ -24,7 +24,7 @@ public readonly record struct DeleteResourceActionPolicyCommand(int ResourceId, 
 
 public class DeleteResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<DeleteResourceActionPolicyCommand>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // This method handles the DeleteResourceActionPolicyCommand by deleting the resource action policy
     // with the specified ID using the provided writer.

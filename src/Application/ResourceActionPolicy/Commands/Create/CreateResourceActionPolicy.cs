@@ -24,7 +24,7 @@ public readonly record struct CreateResourceActionPolicyCommand(ResourceActionPo
 
 public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // This method handles the CreateResourceActionPolicyCommand and returns a ResourceActionPolicyVm
     public async Task<ResourceActionPolicyVm> Handle(CreateResourceActionPolicyCommand request, CancellationToken cancellationToken)

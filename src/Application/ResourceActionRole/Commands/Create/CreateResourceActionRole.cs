@@ -24,7 +24,7 @@ public readonly record struct CreateResourceActionRoleCommand(ResourceActionRole
 
 public class CreateResourceActionRoleCommandHandler(IResourceActionRoleWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<CreateResourceActionRoleCommand, ResourceActionRoleVm>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // This method handles the CreateResourceActionRoleCommand by calling the writer's CreateResourceActionRoleAsync method.
     // It returns a ResourceActionRoleVm object.

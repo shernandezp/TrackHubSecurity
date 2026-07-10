@@ -14,6 +14,7 @@
 //
 
 using TrackHub.Security.Application.Identity.Queries.Authorize;
+using TrackHub.Security.Application.Identity.Queries.AuthorizeUser;
 using TrackHub.Security.Application.Identity.Queries.GetUsername;
 using TrackHub.Security.Application.Identity.Queries.IsInRole;
 using TrackHub.Security.Application.Identity.Queries.IsValidService;
@@ -30,6 +31,9 @@ public partial class Query
         => await sender.Send(query);
 
     public async Task<bool> Authorize([Service] ISender sender, [AsParameters] AuthorizeQuery query)
+        => await sender.Send(query);
+
+    public async Task<bool> AuthorizeUser([Service] ISender sender, [AsParameters] AuthorizeUserQuery query)
         => await sender.Send(query);
     public async Task<bool> IsValidService([Service] ISender sender, [AsParameters] IsValidServiceQuery query)
         => await sender.Send(query);
