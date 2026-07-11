@@ -30,6 +30,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Resources.AccountsMaster,
         Resources.Administrative,
         Resources.AccountFeatures,
+        Resources.AccountFeaturesMaster,
         Resources.Alerts,
         Resources.Audit,
         Resources.BackgroundJobs,
@@ -38,6 +39,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Resources.DevicesMaster,
         Resources.Documents,
         Resources.Drivers,
+        Resources.GeocodingProviders,
         Resources.Geofences,
         Resources.Geofencing,
         Resources.GpsIntegrationDashboard,
@@ -49,6 +51,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Resources.OperatorSyncRuns,
         Resources.OperatorsMaster,
         Resources.Permissions,
+        Resources.PointsOfInterest,
         Resources.Positions,
         Resources.PositionHistory,
         Resources.Profile,
@@ -176,6 +179,44 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             await SeedAdministratorResourceActionsAsync();
         }
 
+        // PointsOfInterest defaults: Managers manage POIs, regular users can read them.
+        // GeocodingProviders is intentionally left Administrator-only (grant-all above).
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.PointsOfInterest,
+            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
+        await SeedRoleResourceActionsAsync(Roles.User, Resources.PointsOfInterest,
+            [Actions.Read]);
+
+        // Stored-history replay (spec 07): reads stay feature-gated (gps.positionHistory)
+        // and group-checked in Manager; the role grant lets non-admin users use the
+        // TrackHub replay source at all.
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.PositionHistory,
+            [Actions.Read]);
+        await SeedRoleResourceActionsAsync(Roles.User, Resources.PositionHistory,
+            [Actions.Read]);
+
+        // Live map is core (spec 07 §3): every user sees the latest positions of their
+        // groups' transporters regardless of account features; visibility comes from
+        // group membership, not from withholding the Positions read grant.
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Positions,
+            [Actions.Read]);
+        await SeedRoleResourceActionsAsync(Roles.User, Resources.Positions,
+            [Actions.Read]);
+
+        // Service-client allowlist for the TrackHub.Telemetry surface (spec 01.3 §5.4). The token
+        // audience is the shared trackhub_api, so that is the audience these grants match at
+        // enforcement time. Removing a row blocks the corresponding operation with FORBIDDEN (§10.10).
+        await SeedTelemetryServiceClientPermissionsAsync();
+
+        // Service-client identity + Manager-surface allowlist: IsValidServiceAsync requires the
+        // client NAME to exist in security.clients before any permission row is even consulted,
+        // and the Router/SyncWorker service flows hit Manager master-data operations that the
+        // telemetry seeding above does not cover.
+        await SeedServiceClientRegistrationsAsync();
+        await SeedManagerServiceClientPermissionsAsync();
+
+        // Security's own service identity: forwards security audit events to Manager's AuditEvent store.
+        await SeedSecurityServiceClientPermissionsAsync();
+
         /*if (!context.ResourceActionPolicy.Any())
         {
             for (int resource = 1; resource <= 10; resource++)
@@ -215,6 +256,151 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
 
             await context.SaveChangesAsync();
         }
+    }
+
+    private async Task SeedRoleResourceActionsAsync(string roleName, string resourceName, string[] actionNames)
+    {
+        var role = await context.Roles.FirstOrDefaultAsync(x => x.Name == roleName);
+        var resource = await context.Resources.FirstOrDefaultAsync(x => x.ResourceName == resourceName);
+        if (role is null || resource is null)
+        {
+            return;
+        }
+
+        foreach (var actionName in actionNames)
+        {
+            var action = await context.Actions.FirstOrDefaultAsync(x => x.ActionName == actionName);
+            if (action is null)
+            {
+                continue;
+            }
+
+            if (!await context.ResourceActionRole.AnyAsync(x =>
+                    x.RoleId == role.RoleId
+                    && x.ResourceId == resource.ResourceId
+                    && x.ActionId == action.ActionId))
+            {
+                context.ResourceActionRole.Add(new ResourceActionRole
+                {
+                    ResourceId = resource.ResourceId,
+                    ActionId = action.ActionId,
+                    RoleId = role.RoleId
+                });
+            }
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    // The two service identities every deployment needs. The real credential (secret) lives in
+    // the AuthorityServer's OpenIddict application store; this row is the app-level allowlist
+    // that IsValidClientAsync checks by NAME. Without it, every service-token call is denied.
+    private async Task SeedServiceClientRegistrationsAsync()
+    {
+        string[] clients = ["router_client", "syncworker_client", "security_client"];
+
+        foreach (var name in clients)
+        {
+            if (await context.Clients.AnyAsync(c => c.Name == name))
+            {
+                continue;
+            }
+
+            context.Clients.Add(new Client(
+                name,
+                userId: null,
+                description: "Service client (seeded; credential managed by the AuthorityServer)",
+                secret: string.Empty,
+                salt: string.Empty,
+                processed: true));
+        }
+
+        await context.SaveChangesAsync();
+    }
+
+    // Manager master-data surface the Router/SyncWorker call with their SERVICE identity
+    // (client credentials): account/operator/device-sync reads, device synchronization writes,
+    // credential token refresh, alert recording, and the ServiceClient-only geocoding provider
+    // read. Sourced from the [Authorize] attributes on the corresponding Manager handlers.
+    private async Task SeedManagerServiceClientPermissionsAsync()
+    {
+        (string Resource, string Action)[] grants =
+        [
+            (Resources.Accounts, Actions.Read),
+            (Resources.AccountsMaster, Actions.Read),
+            (Resources.AccountFeatures, Actions.Read),
+            (Resources.AccountFeaturesMaster, Actions.Read),
+            (Resources.Operators, Actions.Read),
+            (Resources.OperatorsMaster, Actions.Read),
+            (Resources.SynchronizedDevices, Actions.Read),
+            (Resources.SynchronizedDevices, Actions.Write),
+            (Resources.Devices, Actions.Delete),
+            (Resources.TransporterType, Actions.Read),
+            (Resources.Credentials, Actions.Write),
+            (Resources.Alerts, Actions.Write),
+            (Resources.GeocodingProviders, Actions.Read),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], grants);
+    }
+
+    // The security_client posts security audit events to Manager's central AuditEvent store
+    // (spec 02 §7.3). It needs exactly one grant — Audit/Write — and nothing else.
+    private async Task SeedSecurityServiceClientPermissionsAsync()
+    {
+        (string Resource, string Action)[] grants =
+        [
+            (Resources.Audit, Actions.Write),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["security_client"], grants);
+    }
+
+    private async Task SeedTelemetryServiceClientPermissionsAsync()
+    {
+        (string Resource, string Action)[] grants =
+        [
+            (Resources.Positions, Actions.Custom),
+            (Resources.PositionHistory, Actions.Write),
+            (Resources.PositionHistory, Actions.Read),
+            (Resources.OperatorHealth, Actions.Write),
+            (Resources.OperatorSyncRuns, Actions.Write),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], grants);
+    }
+
+    private async Task SeedServiceClientPermissionsAsync(string[] clients, (string Resource, string Action)[] grants)
+    {
+        const string serviceScope = "service_scope";
+        const string serviceAudience = "trackhub_api";
+
+        foreach (var clientId in clients)
+        {
+            foreach (var (resource, action) in grants)
+            {
+                if (await context.ServiceClientPermissions.AnyAsync(p =>
+                        p.ClientId == clientId
+                        && p.Resource == resource
+                        && p.Action == action
+                        && p.Scope == serviceScope
+                        && p.Audience == serviceAudience))
+                {
+                    continue;
+                }
+
+                context.ServiceClientPermissions.Add(new ServiceClientPermission(
+                    clientId,
+                    accountId: null,
+                    resource,
+                    action,
+                    serviceScope,
+                    serviceAudience,
+                    active: true));
+            }
+        }
+
+        await context.SaveChangesAsync();
     }
 
     private async Task SeedAdministratorResourceActionsAsync()

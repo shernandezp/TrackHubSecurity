@@ -36,7 +36,7 @@ public class CreateUserPolicyCommandHandlerTests
         _writerMock.Setup(w => w.CreateUserPolicyAsync(dto, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedVm);
 
-        var handler = new CreateUserPolicyCommandHandler(_writerMock.Object);
+        var handler = new CreateUserPolicyCommandHandler(_writerMock.Object, new Mock<Common.Mediator.IPublisher>().Object, new Mock<Common.Application.Interfaces.ICurrentPrincipal>().Object);
         var result = await handler.Handle(new CreateUserPolicyCommand(dto), CancellationToken.None);
 
         Assert.That(result, Is.EqualTo(expectedVm));

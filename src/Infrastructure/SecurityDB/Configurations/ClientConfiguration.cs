@@ -44,5 +44,9 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .HasForeignKey<Client>(d => d.UserId)
             .IsRequired(false);
 
+        // Client name is the identity used by IsValidClientAsync / service-permission lookups;
+        // duplicates are a correctness bug (409 on create).
+        builder.HasIndex(x => x.Name).IsUnique();
+
     }
 }

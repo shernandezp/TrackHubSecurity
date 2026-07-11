@@ -26,9 +26,14 @@ public sealed class UpdatePasswordCommandValidator : AbstractValidator<UpdatePas
         RuleFor(v => v.User.UserId)
             .NotEmpty();
 
+        // Same complexity policy as CreateUser/CreateManager — a password change
+        // must not be allowed to weaken the account below the creation policy.
         RuleFor(v => v.User.Password)
             .MinimumLength(ColumnMetadata.MinimumPasswordLength)
             .MaximumLength(ColumnMetadata.DefaultPasswordLength)
-            .NotEmpty();
+            .NotEmpty()
+            .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+            .Matches("[a-z]").WithMessage("Password must contain at least one lowercase letter.")
+            .Matches("[0-9]").WithMessage("Password must contain at least one digit.");
     }
 }

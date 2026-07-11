@@ -21,7 +21,7 @@ namespace TrackHub.Security.Web.GraphQL.Query;
 public partial class Query
 {
 
-    public async Task<IReadOnlyCollection<ClientVm>> GetClients([Service] ISender sender)
-        => await sender.Send(new GetClientsQuery());
+    public async Task<IReadOnlyCollection<ClientVm>> GetClients([Service] ISender sender, [AsParameters] GetClientsQuery query)
+        => await sender.Send(query);
 
 }

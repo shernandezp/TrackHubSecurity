@@ -17,7 +17,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -96,6 +96,9 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .HasColumnName("userid");
 
                     b.HasKey("ClientId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -483,7 +486,8 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 
                     b.HasKey("ServiceClientPermissionId");
 
-                    b.HasIndex("ClientId", "AccountId", "Resource", "Action");
+                    b.HasIndex("ClientId", "AccountId", "Resource", "Action", "Scope", "Audience")
+                        .IsUnique();
 
                     b.ToTable("service_client_permissions", "security");
                 });
@@ -539,6 +543,10 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .HasColumnType("text")
                         .HasColumnName("lastname");
 
+                    b.Property<DateTimeOffset?>("LockedUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("lockeduntil");
+
                     b.Property<int>("LoginAttempts")
                         .HasColumnType("integer")
                         .HasColumnName("loginattempts");
@@ -563,7 +571,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("username");
 
-                    b.Property<DateTime?>("Verified")
+                    b.Property<DateTimeOffset?>("Verified")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("verified");
 

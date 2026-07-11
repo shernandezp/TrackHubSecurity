@@ -22,7 +22,7 @@ public readonly record struct UserIsAdminQuery() : IRequest<bool>;
 
 public class UserIsAdminQueryHandler(IUserReader reader, IUser user) : IRequestHandler<UserIsAdminQuery, bool>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     /// <summary>
     /// Handles the UserIsAdminQuery request by checking if the user is an admin.

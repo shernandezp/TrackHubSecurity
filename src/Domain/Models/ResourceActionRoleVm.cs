@@ -16,7 +16,7 @@
 
 namespace TrackHub.Security.Domain.Models;
 public record struct ResourceActionRoleVm(
-    int ResourceActionPolicyId,
+    int ResourceActionRoleId,
     int ResourceId,
     int ActionId,
     int RoleId);

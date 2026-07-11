@@ -21,7 +21,7 @@ namespace TrackHub.Security.Application.Users.Commands.Update;
 public readonly record struct UpdateCurrentUserCommand(UpdateCurrentUserDto User) : IRequest;
 public class UpdateCurrentUserCommandHandler(IUserWriter writer, IUser user) : IRequestHandler<UpdateCurrentUserCommand>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     /// <summary>
     /// Handle the UpdateUserCommand

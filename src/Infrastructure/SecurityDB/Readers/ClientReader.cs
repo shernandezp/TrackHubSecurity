@@ -40,9 +40,10 @@ public sealed class ClientReader(IApplicationDbContext context) : IClientReader
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<IReadOnlyCollection<ClientVm>> GetClientsAsync(string key, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<ClientVm>> GetClientsAsync(string key, int skip, int take, CancellationToken cancellationToken)
         => await context.Clients
-            .OrderBy(c => c.Name)
+            .OrderBy(c => c.Name).ThenBy(c => c.ClientId)
+            .Skip(Math.Max(0, skip)).Take(Math.Clamp(take <= 0 ? 50 : take, 1, 500))
             .Select(c => new ClientVm(
                 c.ClientId,
                 c.UserId,

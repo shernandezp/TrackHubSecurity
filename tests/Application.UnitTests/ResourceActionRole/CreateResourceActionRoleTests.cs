@@ -46,7 +46,7 @@ public class CreateResourceActionRoleCommandHandlerTests
         _writerMock.Setup(w => w.CreateResourceActionRoleAsync(dto, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedVm);
 
-        var handler = new CreateResourceActionRoleCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object);
+        var handler = new CreateResourceActionRoleCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object, new Mock<Common.Mediator.IPublisher>().Object);
         var result = await handler.Handle(new CreateResourceActionRoleCommand(dto), CancellationToken.None);
 
         Assert.That(result, Is.EqualTo(expectedVm));
@@ -60,7 +60,7 @@ public class CreateResourceActionRoleCommandHandlerTests
         _userReaderMock.Setup(r => r.IsAdminAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var handler = new CreateResourceActionRoleCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object);
+        var handler = new CreateResourceActionRoleCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object, new Mock<Common.Mediator.IPublisher>().Object);
 
         Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
             await handler.Handle(new CreateResourceActionRoleCommand(new ResourceActionRoleDto(1, 2, 3)), CancellationToken.None));
@@ -72,6 +72,6 @@ public class CreateResourceActionRoleCommandHandlerTests
         _userMock.Setup(u => u.Id).Returns((string?)null);
 
         Assert.Throws<UnauthorizedAccessException>(() =>
-            new CreateResourceActionRoleCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object));
+            new CreateResourceActionRoleCommandHandler(_writerMock.Object, _userReaderMock.Object, _userMock.Object, new Mock<Common.Mediator.IPublisher>().Object));
     }
 }

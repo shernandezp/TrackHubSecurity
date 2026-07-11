@@ -14,17 +14,24 @@
 //
 
 
+using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
+
 namespace TrackHub.Security.Application.UserRole.Commands.Create;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Write)]
 public readonly record struct CreateUserRoleCommand(UserRoleDto UserRole) : IRequest<UserRoleVm>;
 
-public class CreateUserRoleCommandHandler(IUserRoleWriter writer) : IRequestHandler<CreateUserRoleCommand, UserRoleVm>
+public class CreateUserRoleCommandHandler(IUserRoleWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateUserRoleCommand, UserRoleVm>
 {
     // This method handles the CreateUserRoleCommand by creating a user role using the provided writer.
     // It returns a UserRoleVm.
     public async Task<UserRoleVm> Handle(CreateUserRoleCommand request, CancellationToken cancellationToken)
-        => await writer.CreateUserRoleAsync(request.UserRole, cancellationToken);
+    {
+        var vm = await writer.CreateUserRoleAsync(request.UserRole, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "UserRoleAssigned", "UserRole", $"{request.UserRole.UserId}:{request.UserRole.RoleId}", principal.AccountId), cancellationToken);
+        return vm;
+    }
 
 }
 

@@ -14,15 +14,22 @@
 //
 
 
+using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
+
 namespace TrackHub.Security.Application.UserPolicy.Commands.Create;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Write)]
 public readonly record struct CreateUserPolicyCommand(UserPolicyDto UserPolicy) : IRequest<UserPolicyVm>;
 
-public class CreateUserPolicyCommandHandler(IUserPolicyWriter writer) : IRequestHandler<CreateUserPolicyCommand, UserPolicyVm>
+public class CreateUserPolicyCommandHandler(IUserPolicyWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateUserPolicyCommand, UserPolicyVm>
 {
     // This method handles the execution of the CreateUserPolicyCommand.
     public async Task<UserPolicyVm> Handle(CreateUserPolicyCommand request, CancellationToken cancellationToken)
-        => await writer.CreateUserPolicyAsync(request.UserPolicy, cancellationToken);
+    {
+        var vm = await writer.CreateUserPolicyAsync(request.UserPolicy, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "UserPolicyAssigned", "UserPolicy", $"{request.UserPolicy.UserId}:{request.UserPolicy.PolicyId}", principal.AccountId), cancellationToken);
+        return vm;
+    }
 
 }

@@ -25,6 +25,7 @@ internal class UpdateUserTests
 {
     private Mock<IUserWriter> _writerMock;
     private Mock<IPublisher> _publisherMock;
+    private Mock<Common.Application.Interfaces.ICurrentPrincipal> _principalMock;
 
     [SetUp]
     public void Setup()
@@ -32,6 +33,7 @@ internal class UpdateUserTests
         // Initialize the mock and the object under test before each test
         _writerMock = new Mock<IUserWriter>();
         _publisherMock = new Mock<IPublisher>();
+        _principalMock = new Mock<Common.Application.Interfaces.ICurrentPrincipal>();
     }
 
     [Test]
@@ -45,7 +47,7 @@ internal class UpdateUserTests
         _writerMock.Setup(m => m.UpdateUserAsync(userDto, cancellationToken))
                   .Returns(Task.CompletedTask); // UpdateUserAsync returns a completed task
 
-        var handler = new UpdateUserCommandHandler(_writerMock.Object, _publisherMock.Object);
+        var handler = new UpdateUserCommandHandler(_writerMock.Object, _publisherMock.Object, _principalMock.Object);
         var command = new UpdateUserCommand { User = userDto };
 
         // Act

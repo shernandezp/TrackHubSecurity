@@ -13,13 +13,15 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 using TrackHub.Security.Application.Users.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Edit)]
 public readonly record struct UpdateUserCommand(UpdateUserDto User) : IRequest;
-public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) : IRequestHandler<UpdateUserCommand>
+public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UpdateUserCommand>
 {
 
     /// <summary>
@@ -38,5 +40,6 @@ public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher) 
 
         // Publish a notification for the user update
         await publisher.Publish(new UserUpdated.Notification(request.User.UserId, user), cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "UpdateUser", "User", request.User.UserId.ToString(), principal.AccountId), cancellationToken);
     }
 }

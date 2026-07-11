@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using TrackHub.Security.Application.Clients.Commands.Update;
 
 namespace Application.UnitTests.Clients;
@@ -21,18 +22,22 @@ namespace Application.UnitTests.Clients;
 public class UpdateClientCommandHandlerTests
 {
     private Mock<IClientWriter> _writerMock;
+    private Mock<IPublisher> _publisherMock;
+    private Mock<ICurrentPrincipal> _principalMock;
 
     [SetUp]
     public void SetUp()
     {
         _writerMock = new Mock<IClientWriter>();
+        _publisherMock = new Mock<IPublisher>();
+        _principalMock = new Mock<ICurrentPrincipal>();
     }
 
     [Test]
     public async Task Handle_ValidCommand_DelegatesToWriter()
     {
         var dto = new ClientUserDto(Guid.NewGuid(), Guid.NewGuid());
-        var handler = new UpdateClientCommandHandler(_writerMock.Object);
+        var handler = new UpdateClientCommandHandler(_writerMock.Object, _publisherMock.Object, _principalMock.Object);
 
         await handler.Handle(new UpdateClientCommand(dto), CancellationToken.None);
 
@@ -45,7 +50,7 @@ public class UpdateClientCommandHandlerTests
         var clientId = Guid.NewGuid();
         var userId = Guid.NewGuid();
         var dto = new ClientUserDto(clientId, userId);
-        var handler = new UpdateClientCommandHandler(_writerMock.Object);
+        var handler = new UpdateClientCommandHandler(_writerMock.Object, _publisherMock.Object, _principalMock.Object);
 
         await handler.Handle(new UpdateClientCommand(dto), CancellationToken.None);
 

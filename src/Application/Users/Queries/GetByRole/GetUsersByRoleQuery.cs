@@ -24,7 +24,7 @@ public readonly record struct GetUsersByRoleQuery(int RoleId) : IRequest<IReadOn
 // It takes an IUserReader dependency in the constructor and provides the implementation for handling the query.
 public class GetUsersByRoleQueryHandler(IUserReader reader, IUser user) : IRequestHandler<GetUsersByRoleQuery, IReadOnlyCollection<UserVm>>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // The Handle method is responsible for handling the GetUsersByRoleQuery and returning the result.
     // It asynchronously calls the GetUsersByRoleAsync method of the IUserReader dependency to retrieve the users by account and role ID.

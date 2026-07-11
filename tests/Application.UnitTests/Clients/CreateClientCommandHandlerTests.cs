@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using TrackHub.Security.Application.Clients.Commands.Create;
 
@@ -23,12 +24,16 @@ public class CreateClientCommandHandlerTests
 {
     private Mock<IClientWriter> _writerMock;
     private Mock<IConfiguration> _configMock;
+    private Mock<IPublisher> _publisherMock;
+    private Mock<ICurrentPrincipal> _principalMock;
 
     [SetUp]
     public void SetUp()
     {
         _writerMock = new Mock<IClientWriter>();
         _configMock = new Mock<IConfiguration>();
+        _publisherMock = new Mock<IPublisher>();
+        _principalMock = new Mock<ICurrentPrincipal>();
     }
 
     [Test]
@@ -42,7 +47,7 @@ public class CreateClientCommandHandlerTests
         _writerMock.Setup(w => w.CreateClientAsync(clientDto, It.IsAny<byte[]>(), "test-encryption-key-32chars!!", It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedVm);
 
-        var handler = new CreateClientCommandHandler(_writerMock.Object, _configMock.Object);
+        var handler = new CreateClientCommandHandler(_writerMock.Object, _configMock.Object, _publisherMock.Object, _principalMock.Object);
 
         // Act
         var result = await handler.Handle(new CreateClientCommand(clientDto), CancellationToken.None);
@@ -62,7 +67,7 @@ public class CreateClientCommandHandlerTests
         // Arrange — config returns null for encryption key
         _configMock.Setup(c => c["AppSettings:EncryptionKey"]).Returns((string?)null);
 
-        var handler = new CreateClientCommandHandler(_writerMock.Object, _configMock.Object);
+        var handler = new CreateClientCommandHandler(_writerMock.Object, _configMock.Object, _publisherMock.Object, _principalMock.Object);
         var clientDto = new ClientDto(null, "Client", "Desc", "secret");
 
         // Act & Assert
@@ -87,7 +92,7 @@ public class CreateClientCommandHandlerTests
             })
             .ReturnsAsync(new ClientVm(Guid.NewGuid(), null, "Client", "Desc", "enc", true, DateTimeOffset.UtcNow));
 
-        var handler = new CreateClientCommandHandler(_writerMock.Object, _configMock.Object);
+        var handler = new CreateClientCommandHandler(_writerMock.Object, _configMock.Object, _publisherMock.Object, _principalMock.Object);
 
         // Act
         await handler.Handle(new CreateClientCommand(clientDto), CancellationToken.None);

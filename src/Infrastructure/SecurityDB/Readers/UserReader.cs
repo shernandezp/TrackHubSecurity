@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
 /// <param name="context"></param>
 public sealed class UserReader(IApplicationDbContext context) : IUserReader
 {
+    private static int PageSize(int take) => Math.Clamp(take <= 0 ? 50 : take, 1, 500);
+    private static int Offset(int skip) => Math.Max(0, skip);
 
     /// <summary>
     /// Retrieves the username of a user with the specified ID
@@ -43,12 +45,14 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <param name="filters"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>A collection of user view models</returns>
-    public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Filters filters, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Filters filters, int skip, int take, CancellationToken cancellationToken)
     {
         var query = context.Users.AsQueryable();
         query = filters.Apply(query);
 
         return await query
+            .OrderBy(u => u.Username).ThenBy(u => u.UserId)
+            .Skip(Offset(skip)).Take(PageSize(take))
             .Select(u => new UserVm(
                 u.UserId,
                 u.Username,
@@ -59,6 +63,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.SecondSurname,
                 u.DOB,
                 u.LoginAttempts,
+                u.LockedUntil,
                 u.AccountId,
                 u.Active,
                 u.IntegrationUser,
@@ -88,6 +93,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.SecondSurname,
                 u.DOB,
                 u.LoginAttempts,
+                u.LockedUntil,
                 u.AccountId,
                 u.Active,
                 u.IntegrationUser,
@@ -101,11 +107,13 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <param name="accountId"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>A collection of user view models</returns>
-    public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, int skip, int take, CancellationToken cancellationToken)
         => await context.Users
             .Where(u => u.AccountId.Equals(accountId))
             .Include(role => role.Roles)
             .Include(policy => policy.Policies)
+            .OrderBy(u => u.Username).ThenBy(u => u.UserId)
+            .Skip(Offset(skip)).Take(PageSize(take))
             .Select(u => new UserVm(
                 u.UserId,
                 u.Username,
@@ -116,6 +124,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.SecondSurname,
                 u.DOB,
                 u.LoginAttempts,
+                u.LockedUntil,
                 u.AccountId,
                 u.Active,
                 u.IntegrationUser,
@@ -145,6 +154,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.SecondSurname,
                 u.DOB,
                 u.LoginAttempts,
+                u.LockedUntil,
                 u.AccountId,
                 u.Active,
                 u.IntegrationUser,
@@ -175,6 +185,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.SecondSurname,
                 u.DOB,
                 u.LoginAttempts,
+                u.LockedUntil,
                 u.AccountId,
                 u.Active,
                 u.IntegrationUser,

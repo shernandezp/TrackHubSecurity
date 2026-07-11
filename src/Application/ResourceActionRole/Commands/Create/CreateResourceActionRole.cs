@@ -15,25 +15,32 @@
 
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 
 namespace TrackHub.Security.Application.ResourceActionRole.Commands.Create;
 
-[Authorize(Resource = Resources.Permissions, Action = Actions.Write)] 
+[Authorize(Resource = Resources.Permissions, Action = Actions.Write)]
 public readonly record struct CreateResourceActionRoleCommand(ResourceActionRoleDto ResourceActionRole) : IRequest<ResourceActionRoleVm>;
 
-public class CreateResourceActionRoleCommandHandler(IResourceActionRoleWriter writer, IUserReader userReader, IUser user) : IRequestHandler<CreateResourceActionRoleCommand, ResourceActionRoleVm>
+public class CreateResourceActionRoleCommandHandler(IResourceActionRoleWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<CreateResourceActionRoleCommand, ResourceActionRoleVm>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // This method handles the CreateResourceActionRoleCommand by calling the writer's CreateResourceActionRoleAsync method.
     // It returns a ResourceActionRoleVm object.
     // It throws an UnauthorizedAccessException if the user is not an admin.
     public async Task<ResourceActionRoleVm> Handle(CreateResourceActionRoleCommand request, CancellationToken cancellationToken)
-    { 
+    {
         var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
-        return !isAdmin
-            ? throw new UnauthorizedAccessException()
-            : await writer.CreateResourceActionRoleAsync(request.ResourceActionRole, cancellationToken);
+        if (!isAdmin)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        var vm = await writer.CreateResourceActionRoleAsync(request.ResourceActionRole, cancellationToken);
+        // Resource/action/role mappings are global platform definitions → null account.
+        await publisher.Publish(SecurityAudit.Event(user, "ResourceActionRoleChanged", "ResourceActionRole", $"{request.ResourceActionRole.ResourceId}:{request.ResourceActionRole.ActionId}:{request.ResourceActionRole.RoleId}", null, null, "assigned"), cancellationToken);
+        return vm;
     }
 
 }

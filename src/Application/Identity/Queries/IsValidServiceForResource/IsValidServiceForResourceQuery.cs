@@ -19,10 +19,13 @@ namespace TrackHub.Security.Application.Identity.Queries.IsValidServiceForResour
 
 public readonly record struct IsValidServiceForResourceQuery(string? Client, string Resource, string Action, Guid? AccountId = null, IReadOnlyCollection<string>? Scopes = null, IReadOnlyCollection<string>? Audiences = null) : IRequest<bool>;
 
-public class IsValidServiceForResourceQueryHandler(IIdentityService service) : IRequestHandler<IsValidServiceForResourceQuery, bool>
+public class IsValidServiceForResourceQueryHandler(IIdentityService service, IUser user) : IRequestHandler<IsValidServiceForResourceQuery, bool>
 {
     public async Task<bool> Handle(IsValidServiceForResourceQuery request, CancellationToken cancellationToken)
-        => request.AccountId.HasValue || request.Scopes is { Count: > 0 } || request.Audiences is { Count: > 0 }
+    {
+        IdentityCallerGuard.EnsureCallerIsSubjectService(user, request.Client, "IsValidServiceForResource");
+        return request.AccountId.HasValue || request.Scopes is { Count: > 0 } || request.Audiences is { Count: > 0 }
             ? await service.IsValidServiceAsync(request.Client, request.Resource, request.Action, request.AccountId, request.Scopes ?? [], request.Audiences ?? [], cancellationToken)
             : await service.IsValidServiceAsync(request.Client, request.Resource, request.Action, cancellationToken);
+    }
 }

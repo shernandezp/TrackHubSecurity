@@ -14,6 +14,7 @@
 //
 
 using System.Reflection;
+using Common.Infrastructure;
 using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
 using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
 
@@ -40,5 +41,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(builder);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        configurationBuilder.UseUtcTimestamps();
     }
 }

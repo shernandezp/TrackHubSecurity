@@ -19,10 +19,12 @@ namespace TrackHub.Security.Application.Identity.Queries.IsValidService;
 
 public readonly record struct IsValidServiceQuery(string? Client) : IRequest<bool>;
 
-public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<IsValidServiceQuery, bool>
+public class GetUsersQueryHandler(IIdentityService service, IUser user) : IRequestHandler<IsValidServiceQuery, bool>
 {
     // Handles the IsValidServiceQuery by calling the IsValidServiceAsync method of the IIdentityService
     public async Task<bool> Handle(IsValidServiceQuery request, CancellationToken cancellationToken)
-        => await service.IsValidServiceAsync(request.Client, cancellationToken);
-
+    {
+        IdentityCallerGuard.EnsureCallerIsSubjectService(user, request.Client, "IsValidService");
+        return await service.IsValidServiceAsync(request.Client, cancellationToken);
+    }
 }

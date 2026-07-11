@@ -40,9 +40,10 @@ public sealed class User(string username,
     public string LastName { get; set; } = lastName;
     public string? SecondSurname { get; set; } = secondSurname;
     public DateOnly? DOB { get; set; } = dOB;
-    public DateTime? Verified { get; set; }
+    public DateTimeOffset? Verified { get; set; }
     public bool Active { get; set; } = active;
     public int LoginAttempts { get; set; } = loginAttempts;
+    public DateTimeOffset? LockedUntil { get; set; }
     public Guid AccountId { get; set; } = accountId;
     public bool IntegrationUser { get; set; } = integrationUser;
     public Client? Client { get; set; }

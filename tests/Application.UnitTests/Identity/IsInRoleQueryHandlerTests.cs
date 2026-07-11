@@ -36,7 +36,7 @@ public class IsInRoleQueryHandlerTests
         _serviceMock.Setup(s => s.IsInRoleAsync(userId, "Admin", "Write", It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var handler = new TrackHub.Security.Application.Identity.Queries.IsInRole.GetUsersQueryHandler(_serviceMock.Object);
+        var handler = new TrackHub.Security.Application.Identity.Queries.IsInRole.GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(userId).Object);
         var result = await handler.Handle(new IsInRoleQuery(userId, "Admin", "Write"), CancellationToken.None);
 
         Assert.That(result, Is.True);
@@ -49,9 +49,18 @@ public class IsInRoleQueryHandlerTests
         _serviceMock.Setup(s => s.IsInRoleAsync(userId, "Admin", "Delete", It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var handler = new TrackHub.Security.Application.Identity.Queries.IsInRole.GetUsersQueryHandler(_serviceMock.Object);
+        var handler = new TrackHub.Security.Application.Identity.Queries.IsInRole.GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(userId).Object);
         var result = await handler.Handle(new IsInRoleQuery(userId, "Admin", "Delete"), CancellationToken.None);
 
         Assert.That(result, Is.False);
+    }
+
+    [Test]
+    public void Handle_UserAskingAboutAnotherUser_ThrowsForbidden()
+    {
+        var handler = new TrackHub.Security.Application.Identity.Queries.IsInRole.GetUsersQueryHandler(_serviceMock.Object, IdentityTestCallers.User(Guid.NewGuid()).Object);
+
+        Assert.ThrowsAsync<Common.Application.Exceptions.ForbiddenAccessException>(
+            () => handler.Handle(new IsInRoleQuery(Guid.NewGuid(), "Admin", "Write"), CancellationToken.None));
     }
 }

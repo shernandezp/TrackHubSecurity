@@ -35,8 +35,8 @@ public partial class Query
     public async Task<UserVm> GetCurrentUser([Service] ISender sender)
         => await sender.Send(new GetCurrentUserQuery());
 
-    public async Task<IReadOnlyCollection<UserVm>> GetUsersByAccount([Service] ISender sender)
-        => await sender.Send(new GetUsersByAccountQuery());
+    public async Task<IReadOnlyCollection<UserVm>> GetUsersByAccount([Service] ISender sender, [AsParameters] GetUsersByAccountQuery query)
+        => await sender.Send(query);
 
     public async Task<IReadOnlyCollection<UserVm>> GetUsersByRole([Service] ISender sender, [AsParameters] GetUsersByRoleQuery query)
         => await sender.Send(query);

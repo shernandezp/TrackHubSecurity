@@ -13,6 +13,7 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using TrackHub.Security.Application.Clients.Commands.Delete;
 
 namespace Application.UnitTests.Clients;
@@ -21,18 +22,22 @@ namespace Application.UnitTests.Clients;
 public class DeleteClientCommandHandlerTests
 {
     private Mock<IClientWriter> _writerMock;
+    private Mock<IPublisher> _publisherMock;
+    private Mock<ICurrentPrincipal> _principalMock;
 
     [SetUp]
     public void SetUp()
     {
         _writerMock = new Mock<IClientWriter>();
+        _publisherMock = new Mock<IPublisher>();
+        _principalMock = new Mock<ICurrentPrincipal>();
     }
 
     [Test]
     public async Task Handle_ValidCommand_DelegatesToWriter()
     {
         var clientId = Guid.NewGuid();
-        var handler = new DeleteClientCommandHandler(_writerMock.Object);
+        var handler = new DeleteClientCommandHandler(_writerMock.Object, _publisherMock.Object, _principalMock.Object);
 
         await handler.Handle(new DeleteClientCommand(clientId), CancellationToken.None);
 
@@ -44,7 +49,7 @@ public class DeleteClientCommandHandlerTests
     {
         var clientId = Guid.NewGuid();
         var wrongId = Guid.NewGuid();
-        var handler = new DeleteClientCommandHandler(_writerMock.Object);
+        var handler = new DeleteClientCommandHandler(_writerMock.Object, _publisherMock.Object, _principalMock.Object);
 
         await handler.Handle(new DeleteClientCommand(clientId), CancellationToken.None);
 

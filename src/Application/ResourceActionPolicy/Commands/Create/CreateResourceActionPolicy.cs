@@ -15,23 +15,29 @@
 
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
 
 namespace TrackHub.Security.Application.ResourceActionPolicy.Commands.Create;
 
 [Authorize(Resource = Resources.Permissions, Action = Actions.Write)]
 public readonly record struct CreateResourceActionPolicyCommand(ResourceActionPolicyDto ResourceActionPolicy) : IRequest<ResourceActionPolicyVm>;
 
-public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>
+public class CreateResourceActionPolicyCommandHandler(IResourceActionPolicyWriter writer, IUserReader userReader, IUser user, IPublisher publisher) : IRequestHandler<CreateResourceActionPolicyCommand, ResourceActionPolicyVm>
 {
-    private Guid UserId { get; } = user.Id is null ? throw new UnauthorizedAccessException() : new Guid(user.Id);
+    private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // This method handles the CreateResourceActionPolicyCommand and returns a ResourceActionPolicyVm
     public async Task<ResourceActionPolicyVm> Handle(CreateResourceActionPolicyCommand request, CancellationToken cancellationToken)
     {
         var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
-        return !isAdmin
-            ? throw new UnauthorizedAccessException()
-            : await writer.CreateResourceActionPolicyAsync(request.ResourceActionPolicy, cancellationToken); 
+        if (!isAdmin)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        var vm = await writer.CreateResourceActionPolicyAsync(request.ResourceActionPolicy, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(user, "ResourceActionPolicyChanged", "ResourceActionPolicy", $"{request.ResourceActionPolicy.ResourceId}:{request.ResourceActionPolicy.ActionId}:{request.ResourceActionPolicy.PolicyId}", null, null, "assigned"), cancellationToken);
+        return vm;
     }
 
 }

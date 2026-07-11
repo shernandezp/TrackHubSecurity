@@ -41,6 +41,7 @@ public class ServiceClientPermissionConfiguration : IEntityTypeConfiguration<Ser
         builder.Property(x => x.Scope).HasMaxLength(ColumnMetadata.DefaultNameLength).IsRequired();
         builder.Property(x => x.Audience).HasMaxLength(ColumnMetadata.DefaultNameLength).IsRequired();
 
-        builder.HasIndex(x => new { x.ClientId, x.AccountId, x.Resource, x.Action });
+        // Unique across the full grant key so duplicate active grants fail with 409.
+        builder.HasIndex(x => new { x.ClientId, x.AccountId, x.Resource, x.Action, x.Scope, x.Audience }).IsUnique();
     }
 }

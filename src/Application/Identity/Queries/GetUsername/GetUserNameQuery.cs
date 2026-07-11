@@ -19,10 +19,12 @@ namespace TrackHub.Security.Application.Identity.Queries.GetUsername;
 
 public readonly record struct GetUserNameQuery(Guid UserId) : IRequest<string>;
 
-public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<GetUserNameQuery, string>
+public class GetUsersQueryHandler(IIdentityService service, IUser user) : IRequestHandler<GetUserNameQuery, string>
 {
     // Handles the GetUserNameQuery by retrieving the username from the identity service
     public async Task<string> Handle(GetUserNameQuery request, CancellationToken cancellationToken)
-        => await service.GetUserNameAsync(request.UserId, cancellationToken);
-
+    {
+        IdentityCallerGuard.EnsureCallerIsSubjectUserOrService(user, request.UserId, "UserName");
+        return await service.GetUserNameAsync(request.UserId, cancellationToken);
+    }
 }

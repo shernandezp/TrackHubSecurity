@@ -19,10 +19,12 @@ namespace TrackHub.Security.Application.Identity.Queries.IsInRole;
 
 public readonly record struct IsInRoleQuery(Guid UserId, string Resource, string Action) : IRequest<bool>;
 
-public class GetUsersQueryHandler(IIdentityService service) : IRequestHandler<IsInRoleQuery, bool>
+public class GetUsersQueryHandler(IIdentityService service, IUser user) : IRequestHandler<IsInRoleQuery, bool>
 {
     // Handles the IsInRoleQuery by calling the IsInRoleAsync method of the IIdentityService
     public async Task<bool> Handle(IsInRoleQuery request, CancellationToken cancellationToken)
-        => await service.IsInRoleAsync(request.UserId, request.Resource, request.Action, cancellationToken);
-
+    {
+        IdentityCallerGuard.EnsureCallerIsSubjectUserOrService(user, request.UserId, "IsInRole");
+        return await service.IsInRoleAsync(request.UserId, request.Resource, request.Action, cancellationToken);
+    }
 }

@@ -13,14 +13,20 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
+using TrackHub.Security.Application.Audit.Events;
+
 namespace TrackHub.Security.Application.Clients.Commands.Update;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Edit)]
 public readonly record struct UpdateClientCommand(ClientUserDto Client) : IRequest;
-public class UpdateClientCommandHandler(IClientWriter writer) : IRequestHandler<UpdateClientCommand>
+public class UpdateClientCommandHandler(IClientWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UpdateClientCommand>
 {
 
     public async Task Handle(UpdateClientCommand request, CancellationToken cancellationToken)
-        => await writer.UpdateClientAsync(request.Client, cancellationToken);
+    {
+        await writer.UpdateClientAsync(request.Client, cancellationToken);
+        await publisher.Publish(SecurityAudit.Event(principal, "UpdateClient", "Client", request.Client.ClientId.ToString(), null), cancellationToken);
+    }
 
 }
