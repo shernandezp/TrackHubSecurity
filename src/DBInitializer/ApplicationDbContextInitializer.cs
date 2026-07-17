@@ -142,7 +142,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         }
 
         var customAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
-        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials })
+        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials, Resources.Notifications })
         {
             var resource = await context.Resources.FirstAsync(x => x.ResourceName == resourceName);
             if (!await context.ResourceActions.AnyAsync(x => x.ResourceId == resource.ResourceId && x.ActionId == customAction.ActionId))
@@ -186,7 +186,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedRoleResourceActionsAsync(Roles.User, Resources.PointsOfInterest,
             [Actions.Read]);
 
-        // Stored-history replay (spec 07): reads stay feature-gated (gps.positionHistory)
+        // Stored-history replay: reads stay feature-gated (gps.positionHistory)
         // and group-checked in Manager; the role grant lets non-admin users use the
         // TrackHub replay source at all.
         await SeedRoleResourceActionsAsync(Roles.Manager, Resources.PositionHistory,
@@ -202,7 +202,22 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedRoleResourceActionsAsync(Roles.User, Resources.Positions,
             [Actions.Read]);
 
-        // Service-client allowlist for the TrackHub.Telemetry surface (spec 01.3 §5.4). The token
+        // Notifications are platform baseline for every portal user: the bell feed
+        // (Read), mark-read (Edit), and self-service subscriptions (Write/Edit/Delete — the Manager
+        // writers restrict rule/template/delivery administration to privileged roles and
+        // subscriptions to the caller's own principal, so these grants stay safe for plain users).
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Notifications,
+            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
+        await SeedRoleResourceActionsAsync(Roles.User, Resources.Notifications,
+            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
+        // Alert feed + ack/resolve for operations users (spec 05 §4); group visibility is applied
+        // by the Manager reader through the source resource.
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Alerts,
+            [Actions.Read, Actions.Edit]);
+        await SeedRoleResourceActionsAsync(Roles.User, Resources.Alerts,
+            [Actions.Read]);
+
+        // Service-client allowlist for the TrackHub.Telemetry surface. The token
         // audience is the shared trackhub_api, so that is the audience these grants match at
         // enforcement time. Removing a row blocks the corresponding operation with FORBIDDEN (§10.10).
         await SeedTelemetryServiceClientPermissionsAsync();
@@ -345,7 +360,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
     }
 
     // The security_client posts security audit events to Manager's central AuditEvent store
-    // (spec 02 §7.3). It needs exactly one grant — Audit/Write — and nothing else.
+    // It needs exactly one grant — Audit/Write — and nothing else.
     private async Task SeedSecurityServiceClientPermissionsAsync()
     {
         (string Resource, string Action)[] grants =
