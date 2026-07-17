@@ -232,6 +232,10 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         // Security's own service identity: forwards security audit events to Manager's AuditEvent store.
         await SeedSecurityServiceClientPermissionsAsync();
 
+        // Geofencing's service identity: emits geofence alert events into Manager's alert
+        // pipeline and records its dwell-evaluator job runs there (spec 08 §7.2).
+        await SeedGeofenceServiceClientPermissionsAsync();
+
         /*if (!context.ResourceActionPolicy.Any())
         {
             for (int resource = 1; resource <= 10; resource++)
@@ -312,7 +316,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
     // that IsValidClientAsync checks by NAME. Without it, every service-token call is denied.
     private async Task SeedServiceClientRegistrationsAsync()
     {
-        string[] clients = ["router_client", "syncworker_client", "security_client"];
+        string[] clients = ["router_client", "syncworker_client", "security_client", "geofence_client"];
 
         foreach (var name in clients)
         {
@@ -369,6 +373,29 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         ];
 
         await SeedServiceClientPermissionsAsync(["security_client"], grants);
+    }
+
+    // The geofence_client records geofence alert events (recordAlertEvent) and its dwell
+    // evaluator's job runs (createBackgroundJobRun) in Manager — exactly two grants.
+    // The Router/SyncWorker side additionally needs Geofencing/Custom to feed the real-time
+    // detection pipeline (processPositions) — without it every batch is denied and no geofence
+    // events or alerts can ever be produced (spec 08 §2.1 detection path).
+    private async Task SeedGeofenceServiceClientPermissionsAsync()
+    {
+        (string Resource, string Action)[] emitterGrants =
+        [
+            (Resources.Alerts, Actions.Write),
+            (Resources.BackgroundJobs, Actions.Write),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["geofence_client"], emitterGrants);
+
+        (string Resource, string Action)[] detectionGrants =
+        [
+            (Resources.Geofencing, Actions.Custom),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], detectionGrants);
     }
 
     private async Task SeedTelemetryServiceClientPermissionsAsync()
