@@ -18,5 +18,5 @@ namespace TrackHub.Security.Domain.Models;
 public readonly record struct DriverCredentialVm(Guid DriverCredentialId, Guid DriverId, Guid AccountId, string NormalizedLogin, int FailedAttempts, DateTimeOffset? LockedUntil, DateTimeOffset? VerifiedAt, DateTimeOffset? LastLoginAt, bool Active, bool ResetRequired, DateTimeOffset LastModified);
 
 // PushToken is masked (only a trailing fragment is exposed) and RefreshTokenFamilyId is dropped
-// entirely: admins need presence/identification, not the sensitive token material (spec §6).
+// entirely: admins need presence/identification, not the sensitive token material.
 public readonly record struct DriverDeviceRegistrationVm(Guid DriverDeviceRegistrationId, Guid DriverId, Guid AccountId, string DeviceId, string? DeviceName, string Platform, string? AppVersion, string? PushToken, bool Active, DateTimeOffset RegisteredAt, DateTimeOffset? LastSeenAt, DateTimeOffset? RevokedAt, string? RevokedBy, DateTimeOffset LastModified);

@@ -132,7 +132,7 @@ public sealed class DriverIdentityWriter(IApplicationDbContext context, ICurrent
     private static DriverCredentialVm ToVm(DriverCredential x) => new(x.DriverCredentialId, x.DriverId, x.AccountId, x.NormalizedLogin, x.FailedAttempts, x.LockedUntil, x.VerifiedAt, x.LastLoginAt, x.Active, x.ResetRequired, x.LastModified);
     private static DriverDeviceRegistrationVm ToVm(DriverDeviceRegistration x) => new(x.DriverDeviceRegistrationId, x.DriverId, x.AccountId, x.DeviceId, x.DeviceName, x.Platform, x.AppVersion, MaskPushToken(x.PushToken), x.Active, x.RegisteredAt, x.LastSeenAt, x.RevokedAt, x.RevokedBy, x.LastModified);
 
-    // Keep read models free of usable token material (spec §6): only a trailing fragment is exposed.
+    // Keep read models free of usable token material: only a trailing fragment is exposed.
     private static string? MaskPushToken(string? pushToken)
     {
         if (string.IsNullOrEmpty(pushToken))

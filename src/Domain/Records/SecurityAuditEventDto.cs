@@ -15,7 +15,7 @@
 
 namespace TrackHub.Security.Domain.Records;
 
-// Security-side payload forwarded to Manager's central AuditEvent store (spec 02 §7.3).
+// Security-side payload forwarded to Manager's central AuditEvent store.
 // AccountId is null only for platform-level changes (resource/action definitions, master flags).
 public readonly record struct SecurityAuditEventDto(
     Guid? AccountId,

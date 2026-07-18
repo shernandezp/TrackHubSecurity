@@ -22,8 +22,8 @@ using TrackHub.Security.Infrastructure.SecurityDB.Readers;
 
 namespace Infrastructure.UnitTests;
 
-// Spec 02 §6 / AC10: driver device read models mask the push token (trailing fragment only) and expose
-// no RefreshTokenFamilyId (absent from the VM entirely). AC17: the list is paged with stable ordering.
+// Driver device read models mask the push token (trailing fragment only) and expose
+// no RefreshTokenFamilyId (absent from the VM entirely). The list is paged with stable ordering.
 [TestFixture]
 public class DriverIdentityReaderTests
 {

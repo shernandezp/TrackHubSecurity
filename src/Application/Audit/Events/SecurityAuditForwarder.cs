@@ -52,7 +52,7 @@ public static class SecurityAudit
 }
 
 // Post-commit, best-effort forwarding of a security audit event to Manager. A transport failure
-// (Manager down) is logged with the payload and never fails the originating command (spec 02 §7.3).
+// (Manager down) is logged with the payload and never fails the originating command.
 public sealed class SecurityAuditForwarder
 {
     public readonly record struct Notification(SecurityAuditEventDto AuditEvent) : INotification

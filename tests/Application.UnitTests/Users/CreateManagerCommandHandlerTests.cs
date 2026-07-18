@@ -19,7 +19,7 @@ using TrackHub.Security.Application.Users.Commands.CreateManager;
 
 namespace Application.UnitTests.Users;
 
-// Spec 02 §7.3 / AC14: creating a Manager user (Administrative/Write) is a user-creation path and must
+// Creating a Manager user (Administrative/Write) is a user-creation path and must
 // produce exactly one security audit event, on parity with CreateUserCommand.
 [TestFixture]
 public class CreateManagerCommandHandlerTests
