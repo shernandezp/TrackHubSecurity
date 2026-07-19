@@ -23,7 +23,7 @@ using TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
 namespace Infrastructure.UnitTests;
 
-// Spec 02 §6 / AC9 & AC11: client name is unique (409 on duplicate) and the create response echoes the
+// Client name is unique (409 on duplicate) and the create response echoes the
 // supplied secret once while the stored column holds ciphertext, never plaintext.
 [TestFixture]
 public class ClientWriterTests

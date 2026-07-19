@@ -142,7 +142,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         }
 
         var customAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
-        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials })
+        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials, Resources.Notifications })
         {
             var resource = await context.Resources.FirstAsync(x => x.ResourceName == resourceName);
             if (!await context.ResourceActions.AnyAsync(x => x.ResourceId == resource.ResourceId && x.ActionId == customAction.ActionId))
@@ -186,7 +186,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedRoleResourceActionsAsync(Roles.User, Resources.PointsOfInterest,
             [Actions.Read]);
 
-        // Stored-history replay (spec 07): reads stay feature-gated (gps.positionHistory)
+        // Stored-history replay: reads stay feature-gated (gps.positionHistory)
         // and group-checked in Manager; the role grant lets non-admin users use the
         // TrackHub replay source at all.
         await SeedRoleResourceActionsAsync(Roles.Manager, Resources.PositionHistory,
@@ -194,7 +194,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedRoleResourceActionsAsync(Roles.User, Resources.PositionHistory,
             [Actions.Read]);
 
-        // Live map is core (spec 07 §3): every user sees the latest positions of their
+        // Live map is core: every user sees the latest positions of their
         // groups' transporters regardless of account features; visibility comes from
         // group membership, not from withholding the Positions read grant.
         await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Positions,
@@ -202,9 +202,24 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedRoleResourceActionsAsync(Roles.User, Resources.Positions,
             [Actions.Read]);
 
-        // Service-client allowlist for the TrackHub.Telemetry surface (spec 01.3 §5.4). The token
+        // Notifications are platform baseline for every portal user: the bell feed
+        // (Read), mark-read (Edit), and self-service subscriptions (Write/Edit/Delete — the Manager
+        // writers restrict rule/template/delivery administration to privileged roles and
+        // subscriptions to the caller's own principal, so these grants stay safe for plain users).
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Notifications,
+            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
+        await SeedRoleResourceActionsAsync(Roles.User, Resources.Notifications,
+            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
+        // Alert feed + ack/resolve for operations users; group visibility is applied
+        // by the Manager reader through the source resource.
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Alerts,
+            [Actions.Read, Actions.Edit]);
+        await SeedRoleResourceActionsAsync(Roles.User, Resources.Alerts,
+            [Actions.Read]);
+
+        // Service-client allowlist for the TrackHub.Telemetry surface. The token
         // audience is the shared trackhub_api, so that is the audience these grants match at
-        // enforcement time. Removing a row blocks the corresponding operation with FORBIDDEN (§10.10).
+        // enforcement time. Removing a row blocks the corresponding operation with FORBIDDEN.
         await SeedTelemetryServiceClientPermissionsAsync();
 
         // Service-client identity + Manager-surface allowlist: IsValidServiceAsync requires the
@@ -216,6 +231,10 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
 
         // Security's own service identity: forwards security audit events to Manager's AuditEvent store.
         await SeedSecurityServiceClientPermissionsAsync();
+
+        // Geofencing's service identity: emits geofence alert events into Manager's alert
+        // pipeline and records its dwell-evaluator job runs there.
+        await SeedGeofenceServiceClientPermissionsAsync();
 
         /*if (!context.ResourceActionPolicy.Any())
         {
@@ -297,7 +316,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
     // that IsValidClientAsync checks by NAME. Without it, every service-token call is denied.
     private async Task SeedServiceClientRegistrationsAsync()
     {
-        string[] clients = ["router_client", "syncworker_client", "security_client"];
+        string[] clients = ["router_client", "syncworker_client", "security_client", "geofence_client"];
 
         foreach (var name in clients)
         {
@@ -345,7 +364,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
     }
 
     // The security_client posts security audit events to Manager's central AuditEvent store
-    // (spec 02 §7.3). It needs exactly one grant — Audit/Write — and nothing else.
+    // It needs exactly one grant — Audit/Write — and nothing else.
     private async Task SeedSecurityServiceClientPermissionsAsync()
     {
         (string Resource, string Action)[] grants =
@@ -354,6 +373,29 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         ];
 
         await SeedServiceClientPermissionsAsync(["security_client"], grants);
+    }
+
+    // The geofence_client records geofence alert events (recordAlertEvent) and its dwell
+    // evaluator's job runs (createBackgroundJobRun) in Manager — exactly two grants.
+    // The Router/SyncWorker side additionally needs Geofencing/Custom to feed the real-time
+    // detection pipeline (processPositions) — without it every batch is denied and no geofence
+    // events or alerts can ever be produced.
+    private async Task SeedGeofenceServiceClientPermissionsAsync()
+    {
+        (string Resource, string Action)[] emitterGrants =
+        [
+            (Resources.Alerts, Actions.Write),
+            (Resources.BackgroundJobs, Actions.Write),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["geofence_client"], emitterGrants);
+
+        (string Resource, string Action)[] detectionGrants =
+        [
+            (Resources.Geofencing, Actions.Custom),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], detectionGrants);
     }
 
     private async Task SeedTelemetryServiceClientPermissionsAsync()

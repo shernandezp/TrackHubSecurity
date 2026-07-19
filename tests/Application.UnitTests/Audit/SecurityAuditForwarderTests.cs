@@ -18,7 +18,7 @@ using TrackHub.Security.Application.Audit.Events;
 
 namespace Application.UnitTests.Audit;
 
-// Spec 02 §7.3 / AC14: security audit forwarding to Manager is post-commit, best-effort. A transport
+// Security audit forwarding to Manager is post-commit, best-effort. A transport
 // failure (Manager down) or a missing security_client identity must be logged and swallowed so the
 // originating security command still succeeds — audit transport failure != authorization failure.
 [TestFixture]

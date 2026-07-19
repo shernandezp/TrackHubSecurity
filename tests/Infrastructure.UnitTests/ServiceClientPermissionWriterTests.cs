@@ -22,7 +22,7 @@ using TrackHub.Security.Infrastructure.SecurityDB.Writers;
 
 namespace Infrastructure.UnitTests;
 
-// Spec 02 §7.3 / AC11: a duplicate service-client-permission grant (same client, account, resource,
+// A duplicate service-client-permission grant (same client, account, resource,
 // action, scope, audience) is rejected up-front with a 409 (ConflictException) — before it hits the
 // unique index at SaveChanges.
 [TestFixture]
