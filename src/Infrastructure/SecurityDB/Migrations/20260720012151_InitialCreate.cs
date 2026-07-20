@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDriverIdentity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -176,9 +176,10 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     lastname = table.Column<string>(type: "text", nullable: false),
                     secondsurname = table.Column<string>(type: "text", nullable: true),
                     dob = table.Column<DateOnly>(type: "date", nullable: true),
-                    verified = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    verified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     active = table.Column<bool>(type: "boolean", nullable: false),
                     loginattempts = table.Column<int>(type: "integer", nullable: false),
+                    lockeduntil = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     accountid = table.Column<Guid>(type: "uuid", nullable: false),
                     integrationuser = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
@@ -375,6 +376,13 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_clients_name",
+                schema: "security",
+                table: "clients",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_clients_userid",
                 schema: "security",
                 table: "clients",
@@ -441,7 +449,8 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 name: "IX_service_client_permissions_clientid_accountid_resource_acti~",
                 schema: "security",
                 table: "service_client_permissions",
-                columns: new[] { "clientid", "accountid", "resource", "action" });
+                columns: new[] { "clientid", "accountid", "resource", "action", "scope", "audience" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_user_policy_userid",
@@ -517,4 +526,3 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
         }
     }
 }
-

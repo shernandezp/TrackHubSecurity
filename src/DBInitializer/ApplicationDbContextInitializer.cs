@@ -44,7 +44,6 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Resources.Geofencing,
         Resources.GpsIntegrationDashboard,
         Resources.Groups,
-        Resources.ManageDevices,
         Resources.Notifications,
         Resources.Operators,
         Resources.OperatorHealth,
@@ -57,7 +56,6 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Resources.Profile,
         Resources.PublicLinks,
         Resources.Reports,
-        Resources.SettingsScreen,
         Resources.ServiceClients,
         Resources.SupportGrants,
         Resources.SynchronizedDevices,
@@ -75,19 +73,6 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Actions.Write,
         Actions.Delete
     ];
-
-    public async Task InitializeAsync()
-    {
-        try
-        {
-            await context.Database.MigrateAsync();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while initializing the database.");
-            throw;
-        }
-    }
 
     public async Task SeedAsync()
     {
@@ -154,9 +139,17 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await context.SaveChangesAsync();
         if (!context.Roles.Any())
         {
+            // Seed the parents first, then resolve their generated ids by name so the
+            // Administrator -> Manager -> User hierarchy is wired up without hardcoding row ids.
             context.Roles.Add(new Role { Name = Roles.Administrator, Description = string.Empty });
-            context.Roles.Add(new Role { Name = Roles.Manager, Description = string.Empty, ParentRoleId = 1 });
-            context.Roles.Add(new Role { Name = Roles.User, Description = string.Empty, ParentRoleId = 2 });
+            await context.SaveChangesAsync();
+
+            var administratorRole = await context.Roles.FirstAsync(x => x.Name == Roles.Administrator);
+            context.Roles.Add(new Role { Name = Roles.Manager, Description = string.Empty, ParentRoleId = administratorRole.RoleId });
+            await context.SaveChangesAsync();
+
+            var managerRole = await context.Roles.FirstAsync(x => x.Name == Roles.Manager);
+            context.Roles.Add(new Role { Name = Roles.User, Description = string.Empty, ParentRoleId = managerRole.RoleId });
             await context.SaveChangesAsync();
         }
 
@@ -170,52 +163,81 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
             await context.SaveChangesAsync();
         }
 
-        if (!context.ResourceActionRole.Any())
+        // Administrator keeps grant-all (every catalogued resource/action pair).
+        await SeedAdministratorResourceActionsAsync();
+
+        // Data-driven default role matrix for the non-admin roles. Each entry is the full set of
+        // resource -> actions a role is granted; SeedRoleResourceActionsAsync is idempotent and
+        // silently skips any resource/action pair that isn't in the ResourceAction catalog, so
+        // resources not listed for a role receive no grant. Administrator is intentionally absent
+        // here — it is handled by SeedAdministratorResourceActionsAsync above.
+        //
+        // Rationale anchors: Geofences full CRUD for User (portal Geofence Manager route is
+        // USER-gated); Positions/Custom = BulkTransporterPosition on the User dashboard;
+        // Credentials/Drivers are Manager-only; Notifications/Custom (SendTest) is Manager-only;
+        // Reports/Edit, SupportGrants, ServiceClients, Administrative, *Master and GeocodingProviders
+        // stay Administrator-only.
+        var roleMatrix = new Dictionary<string, (string Resource, string[] Actions)[]>
         {
-            await SeedAdministratorResourceActionsAsync();
-        }
-        else
+            [Roles.Manager] =
+            [
+                (Resources.Accounts, [Actions.Read, Actions.Edit]),
+                (Resources.AccountFeatures, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Alerts, [Actions.Read, Actions.Edit]),
+                (Resources.Audit, [Actions.Read]),
+                (Resources.BackgroundJobs, [Actions.Read]),
+                (Resources.Credentials, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Devices, [Actions.Read, Actions.Delete]),
+                (Resources.Documents, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Drivers, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Geofences, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Geofencing, [Actions.Read]),
+                (Resources.GpsIntegrationDashboard, [Actions.Read]),
+                (Resources.Groups, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Notifications, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete, Actions.Custom]),
+                (Resources.Operators, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.OperatorHealth, [Actions.Read]),
+                (Resources.OperatorSyncRuns, [Actions.Read]),
+                (Resources.Permissions, [Actions.Read]),
+                (Resources.PointsOfInterest, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Positions, [Actions.Read, Actions.Custom]),
+                (Resources.PositionHistory, [Actions.Read]),
+                (Resources.Profile, [Actions.Read, Actions.Edit]),
+                (Resources.PublicLinks, [Actions.Read, Actions.Write, Actions.Delete]),
+                (Resources.Reports, [Actions.Read]),
+                (Resources.SynchronizedDevices, [Actions.Read, Actions.Write, Actions.Edit, Actions.Execute]),
+                (Resources.Transporters, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.TransporterType, [Actions.Read]),
+                (Resources.Users, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete, Actions.Custom]),
+            ],
+            [Roles.User] =
+            [
+                (Resources.Accounts, [Actions.Read]),
+                (Resources.Alerts, [Actions.Read]),
+                (Resources.Devices, [Actions.Read]),
+                (Resources.Documents, [Actions.Read]),
+                (Resources.Geofences, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Geofencing, [Actions.Read]),
+                (Resources.Groups, [Actions.Read]),
+                (Resources.Notifications, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                (Resources.Operators, [Actions.Read]),
+                (Resources.PointsOfInterest, [Actions.Read]),
+                (Resources.Positions, [Actions.Read, Actions.Custom]),
+                (Resources.PositionHistory, [Actions.Read]),
+                (Resources.Profile, [Actions.Read, Actions.Edit]),
+                (Resources.Reports, [Actions.Read]),
+                (Resources.Transporters, [Actions.Read]),
+                (Resources.TransporterType, [Actions.Read]),
+            ],
+        };
+
+        foreach (var (roleName, grants) in roleMatrix)
         {
-            await SeedAdministratorResourceActionsAsync();
+            foreach (var (resource, actionNames) in grants)
+            {
+                await SeedRoleResourceActionsAsync(roleName, resource, actionNames);
+            }
         }
-
-        // PointsOfInterest defaults: Managers manage POIs, regular users can read them.
-        // GeocodingProviders is intentionally left Administrator-only (grant-all above).
-        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.PointsOfInterest,
-            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
-        await SeedRoleResourceActionsAsync(Roles.User, Resources.PointsOfInterest,
-            [Actions.Read]);
-
-        // Stored-history replay: reads stay feature-gated (gps.positionHistory)
-        // and group-checked in Manager; the role grant lets non-admin users use the
-        // TrackHub replay source at all.
-        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.PositionHistory,
-            [Actions.Read]);
-        await SeedRoleResourceActionsAsync(Roles.User, Resources.PositionHistory,
-            [Actions.Read]);
-
-        // Live map is core: every user sees the latest positions of their
-        // groups' transporters regardless of account features; visibility comes from
-        // group membership, not from withholding the Positions read grant.
-        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Positions,
-            [Actions.Read]);
-        await SeedRoleResourceActionsAsync(Roles.User, Resources.Positions,
-            [Actions.Read]);
-
-        // Notifications are platform baseline for every portal user: the bell feed
-        // (Read), mark-read (Edit), and self-service subscriptions (Write/Edit/Delete — the Manager
-        // writers restrict rule/template/delivery administration to privileged roles and
-        // subscriptions to the caller's own principal, so these grants stay safe for plain users).
-        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Notifications,
-            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
-        await SeedRoleResourceActionsAsync(Roles.User, Resources.Notifications,
-            [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]);
-        // Alert feed + ack/resolve for operations users; group visibility is applied
-        // by the Manager reader through the source resource.
-        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.Alerts,
-            [Actions.Read, Actions.Edit]);
-        await SeedRoleResourceActionsAsync(Roles.User, Resources.Alerts,
-            [Actions.Read]);
 
         // Service-client allowlist for the TrackHub.Telemetry surface. The token
         // audience is the shared trackhub_api, so that is the audience these grants match at
@@ -236,19 +258,6 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         // pipeline and records its dwell-evaluator job runs there.
         await SeedGeofenceServiceClientPermissionsAsync();
 
-        /*if (!context.ResourceActionPolicy.Any())
-        {
-            for (int resource = 1; resource <= 10; resource++)
-            {
-                for (int action = 1; action <= 5; action++)
-                {
-                    context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 1 });
-                    context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 2 });
-                    context.ResourceActionPolicy.Add(new ResourceActionPolicy { ResourceId = resource, ActionId = action, PolicyId = 3 });
-                }
-            }
-            await context.SaveChangesAsync();
-        }*/
         if (!context.Users.Any())
         {
             var password = "12345678".HashPassword();
