@@ -12,15 +12,15 @@ using TrackHub.Security.Infrastructure.SecurityDB;
 namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260707034921_AddSecurityLockoutAndUniqueIndexes")]
-    partial class AddSecurityLockoutAndUniqueIndexes
+    [Migration("20260720012151_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.9")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -574,7 +574,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("username");
 
-                    b.Property<DateTime?>("Verified")
+                    b.Property<DateTimeOffset?>("Verified")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("verified");
 
