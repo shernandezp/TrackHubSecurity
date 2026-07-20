@@ -186,6 +186,15 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedRoleResourceActionsAsync(Roles.User, Resources.PointsOfInterest,
             [Actions.Read]);
 
+        // Platform status page (spec 28): the "GPS synchronisation" tile is visible to
+        // SuperAdministrators AND Managers, so the Manager role needs the read grant that guards
+        // Telemetry's platformSyncActivity. That query is platform-wide but returns only
+        // timestamps and counts — no account id, name, or operator — so it reveals whether the
+        // sync worker is alive, not whose data it moved. The jobs table and announcement
+        // management remain Administrative/Read and are NOT granted here.
+        await SeedRoleResourceActionsAsync(Roles.Manager, Resources.OperatorSyncRuns,
+            [Actions.Read]);
+
         // Stored-history replay: reads stay feature-gated (gps.positionHistory)
         // and group-checked in Manager; the role grant lets non-admin users use the
         // TrackHub replay source at all.
