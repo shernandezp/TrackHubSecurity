@@ -32,6 +32,7 @@ public class ServiceClientPermissionConfiguration : IEntityTypeConfiguration<Ser
         builder.Property(x => x.Scope).HasColumnName("scope");
         builder.Property(x => x.Audience).HasColumnName("audience");
         builder.Property(x => x.Active).HasColumnName("active");
+        builder.Property(x => x.AllowCrossAccount).HasColumnName("allowcrossaccount").HasDefaultValue(false);
         builder.Property(x => x.EffectiveFrom).HasColumnName("effectivefrom");
         builder.Property(x => x.EffectiveTo).HasColumnName("effectiveto");
 

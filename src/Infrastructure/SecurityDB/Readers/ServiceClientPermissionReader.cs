@@ -37,7 +37,8 @@ public sealed class ServiceClientPermissionReader(IApplicationDbContext context)
                 x.Active,
                 x.EffectiveFrom,
                 x.EffectiveTo,
-                x.LastModified))
+                x.LastModified,
+                x.AllowCrossAccount))
             .ToListAsync(cancellationToken);
 
     public async Task<bool> HasPermissionAsync(string clientId, string resource, string action, CancellationToken cancellationToken)
@@ -55,9 +56,19 @@ public sealed class ServiceClientPermissionReader(IApplicationDbContext context)
                 cancellationToken);
     }
 
+    // Account matching, explicit (replaces the old "NULL AccountId matches anything" wildcard):
+    //   * AllowCrossAccount        -> a declared platform-wide grant; matches any token account.
+    //   * AccountId == token account -> the grant is bound to exactly that tenant.
+    //   * both NULL                -> an unscoped grant used by an unscoped token; no tenant is
+    //                                 being crossed, so nothing to restrict here (the request's own
+    //                                 AccountId is policed by Common's AccountScopeBehavior).
+    // A grant bound to account A can no longer be exercised by a token for account B, and an
+    // unbound grant can no longer be exercised by an account-bearing token that never declared
+    // cross-account reach.
     public async Task<bool> HasPermissionAsync(string clientId, string resource, string action, Guid? accountId, IReadOnlyCollection<string> scopes, IReadOnlyCollection<string> audiences, CancellationToken cancellationToken)
     {
         var now = DateTimeOffset.UtcNow;
+        var tokenHasAccount = accountId.HasValue;
 
         return await context.ServiceClientPermissions
             .AnyAsync(permission =>
@@ -65,7 +76,9 @@ public sealed class ServiceClientPermissionReader(IApplicationDbContext context)
                 && permission.ClientId == clientId
                 && permission.Resource == resource
                 && permission.Action == action
-                && (!permission.AccountId.HasValue || permission.AccountId == accountId)
+                && (permission.AllowCrossAccount
+                    || (permission.AccountId.HasValue && permission.AccountId == accountId)
+                    || (!permission.AccountId.HasValue && !tokenHasAccount))
                 && scopes.Contains(permission.Scope)
                 && audiences.Contains(permission.Audience)
                 && (!permission.EffectiveFrom.HasValue || permission.EffectiveFrom <= now)

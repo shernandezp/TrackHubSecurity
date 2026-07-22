@@ -59,8 +59,11 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         Resources.ServiceClients,
         Resources.SupportGrants,
         Resources.SynchronizedDevices,
+        Resources.TollCatalog,
         Resources.Transporters,
         Resources.TransporterType,
+        Resources.Trips,
+        Resources.TripTracking,
         Resources.Users,
     ];
 
@@ -127,7 +130,14 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         }
 
         var customAction = await context.Actions.FirstAsync(x => x.ActionName == Actions.Custom);
-        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials, Resources.Notifications })
+        // Resources.Trips needs Custom because spec 11's planTripRoute, shareTrip and
+        // revokeTripShare are user-facing Custom operations. Without a ResourceAction row here
+        // there is no ResourceActionRole to grant, so IdentityService resolves no roles and
+        // AuthorizationBehavior returns FORBIDDEN for EVERY user including Administrator —
+        // route planning and the whole public-sharing surface would be dead on a fresh deploy.
+        // (TripTracking/Custom is deliberately NOT here: only service clients call it, and they
+        // authorize through the separate service_client_permissions table.)
+        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials, Resources.Notifications, Resources.Trips })
         {
             var resource = await context.Resources.FirstAsync(x => x.ResourceName == resourceName);
             if (!await context.ResourceActions.AnyAsync(x => x.ResourceId == resource.ResourceId && x.ActionId == customAction.ActionId))
@@ -177,6 +187,22 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         // Credentials/Drivers are Manager-only; Notifications/Custom (SendTest) is Manager-only;
         // Reports/Edit, SupportGrants, ServiceClients, Administrative, *Master and GeocodingProviders
         // stay Administrator-only.
+        //
+        // Trip Management (spec 11 §15): Manager gets Trips R/W/E/D/Export/Custom + TollCatalog/Read;
+        // User gets Trips R/W/E/Custom + TollCatalog/Read. TollCatalog Write/Edit/Delete
+        // is deliberately NOT granted to Manager or User — the toll catalog is platform reference
+        // data, so a non-administrator can read stations/tariffs/vehicle classes but can never
+        // create, edit or delete one (spec 11 §17 acceptance 5).
+        //
+        // TripTracking carries NO role grant at all. §15 called for Manager → TripTracking/Read,
+        // but the resource has exactly one operation — processTripPositions, which is
+        // TripTracking/Custom — so a Read grant authorized nothing while standing as a live
+        // permission row that would silently pre-authorize any TripTracking read added later.
+        // TripTracking/Custom is a service-identity grant only and is seeded below.
+        //
+        // NOTE: SeedRoleResourceActionsAsync only ADDS missing rows, it never removes. A deployment
+        // already seeded with the earlier matrix keeps its inert Manager → TripTracking/Read row;
+        // delete it manually if you want the permission table to match this list exactly.
         var roleMatrix = new Dictionary<string, (string Resource, string[] Actions)[]>
         {
             [Roles.Manager] =
@@ -206,8 +232,16 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 (Resources.PublicLinks, [Actions.Read, Actions.Write, Actions.Delete]),
                 (Resources.Reports, [Actions.Read]),
                 (Resources.SynchronizedDevices, [Actions.Read, Actions.Write, Actions.Edit, Actions.Execute]),
+                (Resources.TollCatalog, [Actions.Read]),
                 (Resources.Transporters, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
                 (Resources.TransporterType, [Actions.Read]),
+                // Custom is planTripRoute / shareTrip / revokeTripShare. Adding Trips to the
+                // Actions.Custom resource list only makes the pair GRANTABLE — authorization reads
+                // ResourceActionRole, and role inheritance does not fill the gap
+                // (ResourceActionRoleReader matches role names exactly, no ParentRoleId walk).
+                // Without it an account administrator could create a trip but not plan its route
+                // or share it, and only the platform Administrator's grant-all covered it.
+                (Resources.Trips, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete, Actions.Export, Actions.Custom]),
                 (Resources.Users, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete, Actions.Custom]),
             ],
             [Roles.User] =
@@ -226,8 +260,13 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 (Resources.PositionHistory, [Actions.Read]),
                 (Resources.Profile, [Actions.Read, Actions.Edit]),
                 (Resources.Reports, [Actions.Read]),
+                (Resources.TollCatalog, [Actions.Read]),
                 (Resources.Transporters, [Actions.Read]),
                 (Resources.TransporterType, [Actions.Read]),
+                // Custom = plan route / share / revoke. The dispatcher is the actor spec 11 §4 names
+                // for exactly these three operations, so withholding it left the primary user of
+                // the module unable to plan a route on a trip they had just created.
+                (Resources.Trips, [Actions.Read, Actions.Write, Actions.Edit, Actions.Custom]),
             ],
         };
 
@@ -257,6 +296,15 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         // Geofencing's service identity: emits geofence alert events into Manager's alert
         // pipeline and records its dwell-evaluator job runs there.
         await SeedGeofenceServiceClientPermissionsAsync();
+
+        // Trip Management's service identity: emits trip alert events and job runs, reads the
+        // Manager/Telemetry master data route planning and tracking need, and manages the public
+        // tracking links. The Router/SyncWorker side additionally needs TripTracking/Custom to feed
+        // the position pipeline (processTripPositions).
+        // NOTE: db-init MUST be re-run on existing deployments after this change, or every trip
+        // call returns FORBIDDEN — the resource catalog, role grants and service-client permission
+        // rows above are what the authorization pipeline consults at enforcement time (spec 11 §15).
+        await SeedTripServiceClientPermissionsAsync();
 
         if (!context.Users.Any())
         {
@@ -325,7 +373,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
     // that IsValidClientAsync checks by NAME. Without it, every service-token call is denied.
     private async Task SeedServiceClientRegistrationsAsync()
     {
-        string[] clients = ["router_client", "syncworker_client", "security_client", "geofence_client"];
+        string[] clients = ["router_client", "syncworker_client", "security_client", "geofence_client", "trip_client"];
 
         foreach (var name in clients)
         {
@@ -407,6 +455,39 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], detectionGrants);
     }
 
+    // The trip_client calls Manager (alert events, job runs, driver/transporter/group master data,
+    // trip document metadata, public tracking links) and Telemetry (route replay position history)
+    // with its SERVICE identity. Sourced from the [Authorize] attributes on the corresponding
+    // producer handlers — this is the complete allowlist; removing a row blocks that operation with
+    // FORBIDDEN. The Router/SyncWorker side gets TripTracking/Custom and NOTHING else in this
+    // module, so those two identities can call processTripPositions only (spec 11 §17 acceptance 8).
+    private async Task SeedTripServiceClientPermissionsAsync()
+    {
+        (string Resource, string Action)[] tripGrants =
+        [
+            (Resources.Alerts, Actions.Write),
+            (Resources.BackgroundJobs, Actions.Write),
+            (Resources.Drivers, Actions.Read),
+            (Resources.Transporters, Actions.Read),
+            (Resources.Groups, Actions.Read),
+            (Resources.Documents, Actions.Read),
+            (Resources.PublicLinks, Actions.Write),
+            (Resources.PublicLinks, Actions.Delete),
+            (Resources.PublicLinks, Actions.Read),
+            (Resources.PositionHistory, Actions.Read),
+            (Resources.AccountFeatures, Actions.Read),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["trip_client"], tripGrants);
+
+        (string Resource, string Action)[] trackingGrants =
+        [
+            (Resources.TripTracking, Actions.Custom),
+        ];
+
+        await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], trackingGrants);
+    }
+
     private async Task SeedTelemetryServiceClientPermissionsAsync()
     {
         (string Resource, string Action)[] grants =
@@ -421,7 +502,16 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         await SeedServiceClientPermissionsAsync(["router_client", "syncworker_client"], grants);
     }
 
-    private async Task SeedServiceClientPermissionsAsync(string[] clients, (string Resource, string Action)[] grants)
+    // Every identity seeded here is a PLATFORM-INTERNAL service client: it runs with no account
+    // claim and legitimately operates across every tenant (Router/SyncWorker feed positions for all
+    // accounts; geofence/trip/security clients emit events and job runs for all accounts). That
+    // reach used to be implicit — a NULL accountid silently matched any account. It is now
+    // declared: allowCrossAccount = true. A PARTNER/tenant-bound client must be seeded WITHOUT this
+    // flag and WITH an accountid, so its grant only matches a token carrying that same account.
+    private async Task SeedServiceClientPermissionsAsync(
+        string[] clients,
+        (string Resource, string Action)[] grants,
+        bool allowCrossAccount = true)
     {
         const string serviceScope = "service_scope";
         const string serviceAudience = "trackhub_api";
@@ -430,13 +520,22 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         {
             foreach (var (resource, action) in grants)
             {
-                if (await context.ServiceClientPermissions.AnyAsync(p =>
+                var existing = await context.ServiceClientPermissions.FirstOrDefaultAsync(p =>
                         p.ClientId == clientId
                         && p.Resource == resource
                         && p.Action == action
                         && p.Scope == serviceScope
-                        && p.Audience == serviceAudience))
+                        && p.Audience == serviceAudience);
+
+                if (existing is not null)
                 {
+                    // Upgrade path: rows seeded before the flag existed carry the default false.
+                    // Re-running db-init restores the declared reach for the internal identities.
+                    if (existing.AllowCrossAccount != allowCrossAccount)
+                    {
+                        existing.AllowCrossAccount = allowCrossAccount;
+                    }
+
                     continue;
                 }
 
@@ -447,7 +546,8 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                     action,
                     serviceScope,
                     serviceAudience,
-                    active: true));
+                    active: true,
+                    allowCrossAccount: allowCrossAccount));
             }
         }
 

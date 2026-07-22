@@ -24,11 +24,26 @@ public sealed class ServiceClientPermission(
     string action,
     string scope,
     string audience,
-    bool active) : BaseAuditableEntity
+    bool active,
+    bool allowCrossAccount = false) : BaseAuditableEntity
 {
     public Guid ServiceClientPermissionId { get; private set; } = Guid.NewGuid();
     public string ClientId { get; set; } = clientId;
+    /// <summary>
+    /// The single account this grant is restricted to. A grant with an account is usable ONLY by a
+    /// token carrying that same account claim; a grant with no account is usable only by a token
+    /// that carries no account claim. A NULL account is NOT a wildcard — see
+    /// <see cref="AllowCrossAccount"/>.
+    /// </summary>
     public Guid? AccountId { get; set; } = accountId;
+
+    /// <summary>
+    /// Declares this grant as a platform-wide (cross-tenant) grant: it matches regardless of the
+    /// token's account claim. This replaces the old implicit rule where a NULL
+    /// <see cref="AccountId"/> silently matched every account, which made "global" indistinguishable
+    /// from "unscoped" and gave any service client an unbounded tenant reach.
+    /// </summary>
+    public bool AllowCrossAccount { get; set; } = allowCrossAccount;
     public string Resource { get; set; } = resource;
     public string Action { get; set; } = action;
     public string Scope { get; set; } = scope;

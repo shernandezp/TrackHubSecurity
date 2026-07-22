@@ -24,4 +24,7 @@ public readonly record struct ServiceClientPermissionDto(
     string Audience,
     bool Active,
     DateTimeOffset? EffectiveFrom,
-    DateTimeOffset? EffectiveTo);
+    DateTimeOffset? EffectiveTo,
+    // Explicit platform-wide grant. A NULL AccountId is NOT a wildcard: set this to true to declare
+    // that the grant deliberately spans every tenant (Router/SyncWorker-class identities).
+    bool AllowCrossAccount = false);

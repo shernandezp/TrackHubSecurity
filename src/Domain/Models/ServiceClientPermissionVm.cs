@@ -26,4 +26,5 @@ public readonly record struct ServiceClientPermissionVm(
     bool Active,
     DateTimeOffset? EffectiveFrom,
     DateTimeOffset? EffectiveTo,
-    DateTimeOffset LastModified);
+    DateTimeOffset LastModified,
+    bool AllowCrossAccount = false);

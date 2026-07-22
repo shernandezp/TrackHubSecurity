@@ -32,7 +32,8 @@ public sealed class ServiceClientPermissionWriter(IApplicationDbContext context)
             permission.Action,
             permission.Scope,
             permission.Audience,
-            permission.Active)
+            permission.Active,
+            permission.AllowCrossAccount)
         {
             EffectiveFrom = permission.EffectiveFrom,
             EffectiveTo = permission.EffectiveTo
@@ -59,6 +60,7 @@ public sealed class ServiceClientPermissionWriter(IApplicationDbContext context)
         entity.Scope = permission.Scope;
         entity.Audience = permission.Audience;
         entity.Active = permission.Active;
+        entity.AllowCrossAccount = permission.AllowCrossAccount;
         entity.EffectiveFrom = permission.EffectiveFrom;
         entity.EffectiveTo = permission.EffectiveTo;
 
@@ -98,5 +100,5 @@ public sealed class ServiceClientPermissionWriter(IApplicationDbContext context)
     }
 
     private static ServiceClientPermissionVm ToVm(ServiceClientPermission x)
-        => new(x.ServiceClientPermissionId, x.ClientId, x.AccountId, x.Resource, x.Action, x.Scope, x.Audience, x.Active, x.EffectiveFrom, x.EffectiveTo, x.LastModified);
+        => new(x.ServiceClientPermissionId, x.ClientId, x.AccountId, x.Resource, x.Action, x.Scope, x.Audience, x.Active, x.EffectiveFrom, x.EffectiveTo, x.LastModified, x.AllowCrossAccount);
 }
