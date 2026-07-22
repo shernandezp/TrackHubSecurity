@@ -137,7 +137,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         // route planning and the whole public-sharing surface would be dead on a fresh deploy.
         // (TripTracking/Custom is deliberately NOT here: only service clients call it, and they
         // authorize through the separate service_client_permissions table.)
-        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials, Resources.Notifications, Resources.Trips })
+        foreach (var resourceName in new[] { Resources.Users, Resources.Positions, Resources.Credentials, Resources.Notifications, Resources.Trips, Resources.Operators })
         {
             var resource = await context.Resources.FirstAsync(x => x.ResourceName == resourceName);
             if (!await context.ResourceActions.AnyAsync(x => x.ResourceId == resource.ResourceId && x.ActionId == customAction.ActionId))
@@ -183,8 +183,12 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         // here — it is handled by SeedAdministratorResourceActionsAsync above.
         //
         // Rationale anchors: Geofences full CRUD for User (portal Geofence Manager route is
-        // USER-gated); Positions/Custom = BulkTransporterPosition on the User dashboard;
-        // Credentials/Drivers are Manager-only; Notifications/Custom (SendTest) is Manager-only;
+        // USER-gated); Positions is Read-only for both roles (Positions/Custom is a service-identity
+        // write from the Router feed, with no portal or mobile caller); Operators/Custom is ping and
+        // manual sync, held by Manager and User; Users/Custom is SELF-SERVICE password change only
+        // (UpdatePasswordCommand re-checks that the subject is the caller);
+        // Credentials (viewing decrypted credential material) and Drivers are Manager-only;
+        // Notifications/Custom (SendTest) is Manager-only;
         // Reports/Edit, SupportGrants, ServiceClients, Administrative, *Master and GeocodingProviders
         // stay Administrator-only.
         //
@@ -221,12 +225,18 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 (Resources.GpsIntegrationDashboard, [Actions.Read]),
                 (Resources.Groups, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
                 (Resources.Notifications, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete, Actions.Custom]),
-                (Resources.Operators, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
+                // Custom = operate the GPS integration (pingOperator, triggerOperatorSync). The Router
+                // reaches the provider with its own service identity, so this grants operation of the
+                // integration without granting sight of credential material.
+                (Resources.Operators, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete, Actions.Custom]),
                 (Resources.OperatorHealth, [Actions.Read]),
                 (Resources.OperatorSyncRuns, [Actions.Read]),
                 (Resources.Permissions, [Actions.Read]),
                 (Resources.PointsOfInterest, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
-                (Resources.Positions, [Actions.Read, Actions.Custom]),
+                // Read only. Positions/Custom gates two commands — bulkTransporterPosition and
+                // persistResolvedAddress — and both are service-identity writes from the Router feed.
+                // Every user-facing positions operation uses Actions.Read.
+                (Resources.Positions, [Actions.Read]),
                 (Resources.PositionHistory, [Actions.Read]),
                 (Resources.Profile, [Actions.Read, Actions.Edit]),
                 (Resources.PublicLinks, [Actions.Read, Actions.Write, Actions.Delete]),
@@ -254,9 +264,11 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 (Resources.Geofencing, [Actions.Read]),
                 (Resources.Groups, [Actions.Read]),
                 (Resources.Notifications, [Actions.Read, Actions.Write, Actions.Edit, Actions.Delete]),
-                (Resources.Operators, [Actions.Read]),
+                // Custom = ping / manual sync. See the Manager entry.
+                (Resources.Operators, [Actions.Read, Actions.Custom]),
                 (Resources.PointsOfInterest, [Actions.Read]),
-                (Resources.Positions, [Actions.Read, Actions.Custom]),
+                // Read only — see the note on the Manager entry above.
+                (Resources.Positions, [Actions.Read]),
                 (Resources.PositionHistory, [Actions.Read]),
                 (Resources.Profile, [Actions.Read, Actions.Edit]),
                 (Resources.Reports, [Actions.Read]),
@@ -267,6 +279,10 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 // for exactly these three operations, so withholding it left the primary user of
                 // the module unable to plan a route on a trip they had just created.
                 (Resources.Trips, [Actions.Read, Actions.Write, Actions.Edit, Actions.Custom]),
+                // Custom on Users gates exactly one command: UpdatePasswordCommand, whose handler
+                // requires the subject to be the caller (or a verified manager of the subject). This
+                // is the self-service password change; it grants no user administration.
+                (Resources.Users, [Actions.Custom]),
             ],
         };
 
