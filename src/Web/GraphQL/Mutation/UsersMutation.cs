@@ -24,41 +24,41 @@ namespace TrackHub.Security.Web.GraphQL.Mutation;
 
 public partial class Mutation
 {
-    public async Task<UserVm> CreateUser([Service] ISender sender, CreateUserCommand command)
-        => await sender.Send(command);
+    public async Task<UserVm> CreateUser([Service] ISender sender, CreateUserCommand command, CancellationToken cancellationToken)
+        => await sender.Send(command, cancellationToken);
 
-    public async Task<UserVm> CreateManager([Service] ISender sender, CreateManagerCommand command)
-        => await sender.Send(command);
+    public async Task<UserVm> CreateManager([Service] ISender sender, CreateManagerCommand command, CancellationToken cancellationToken)
+        => await sender.Send(command, cancellationToken);
 
-    public async Task<bool> UpdateUser([Service] ISender sender, Guid id, UpdateUserCommand command)
+    public async Task<bool> UpdateUser([Service] ISender sender, Guid id, UpdateUserCommand command, CancellationToken cancellationToken)
     {
         if (id != command.User.UserId) return false;
-        await sender.Send(command);
+        await sender.Send(command, cancellationToken);
         return true;
     }
 
-    public async Task<bool> UpdateCurrentUser([Service] ISender sender, UpdateCurrentUserCommand command)
+    public async Task<bool> UpdateCurrentUser([Service] ISender sender, UpdateCurrentUserCommand command, CancellationToken cancellationToken)
     {
-        await sender.Send(command);
+        await sender.Send(command, cancellationToken);
         return true;
     }
 
-    public async Task<bool> UpdatePassword([Service] ISender sender, Guid id, UpdatePasswordCommand command)
+    public async Task<bool> UpdatePassword([Service] ISender sender, Guid id, UpdatePasswordCommand command, CancellationToken cancellationToken)
     {
         if (id != command.User.UserId) return false;
-        await sender.Send(command);
+        await sender.Send(command, cancellationToken);
         return true;
     }
 
-    public async Task<Guid> DeleteUser([Service] ISender sender, Guid id)
+    public async Task<Guid> DeleteUser([Service] ISender sender, Guid id, CancellationToken cancellationToken)
     {
-        await sender.Send(new DeleteUserCommand(id));
+        await sender.Send(new DeleteUserCommand(id), cancellationToken);
         return id;
     }
 
-    public async Task<bool> UnlockUser([Service] ISender sender, Guid id)
+    public async Task<bool> UnlockUser([Service] ISender sender, Guid id, CancellationToken cancellationToken)
     {
-        await sender.Send(new UnlockUserCommand(id));
+        await sender.Send(new UnlockUserCommand(id), cancellationToken);
         return true;
     }
 }

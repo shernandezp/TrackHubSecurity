@@ -13,6 +13,8 @@
 //  limitations under the License.
 //
 
+using TrackHub.Security.Application.Lookups;
+
 namespace TrackHub.Security.Application.ResourceQueries.GetAll;
 
 [Authorize(Resource = Resources.Permissions, Action = Actions.Read)]
@@ -24,6 +26,6 @@ public class GetResourcesQueryHandler(IResourceReader reader) : IRequestHandler<
     // The Handle method is responsible for handling the GetResourcesQuery and returning the result.
     // It asynchronously calls the GetResourcesAsync method of the IResourceReader dependency to retrieve all resources.
     public async Task<IReadOnlyCollection<ResourceVm>> Handle(GetResourcesQuery request, CancellationToken cancellationToken)
-        => await reader.GetResourcesAsync(cancellationToken);
+        => SeededCatalogLimits.EnsureWithinCeiling(await reader.GetResourcesAsync(cancellationToken), "resources");
 
 }

@@ -14,9 +14,9 @@
 //
 
 using TrackHub.Security.Domain.Models;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 
 public sealed class ServiceClientPermissionReader(IApplicationDbContext context) : IServiceClientPermissionReader
 {

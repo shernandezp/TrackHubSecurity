@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
+using Action = TrackHub.Security.Infrastructure.Entities.Action;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+namespace TrackHub.Security.Infrastructure.Interfaces;
 
 public interface IApplicationDbContext
 {

@@ -16,11 +16,11 @@
 using Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using TrackHub.Security.Infrastructure.SecurityDB;
-using TrackHub.Security.Infrastructure.SecurityDB.Identity;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
-using TrackHub.Security.Infrastructure.SecurityDB.Readers;
-using TrackHub.Security.Infrastructure.SecurityDB.Writers;
+using TrackHub.Security.Infrastructure;
+using TrackHub.Security.Infrastructure.Identity;
+using TrackHub.Security.Infrastructure.Interfaces;
+using TrackHub.Security.Infrastructure.Readers;
+using TrackHub.Security.Infrastructure.Writers;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

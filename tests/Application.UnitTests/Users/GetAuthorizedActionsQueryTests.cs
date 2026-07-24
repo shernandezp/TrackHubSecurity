@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ namespace Application.UnitTests.Users;
 [TestFixture]
 internal class GetAuthorizedActionsQueryTests
 {
+    private readonly Mock<IUserReader> _userReaderMock = new();
     private readonly Mock<IUserRoleReader> _userRoleReaderMock = new();
     private readonly Mock<IUserPolicyReader> _userPolicyReaderMock = new();
     private readonly Mock<IResourceActionRoleReader> _resourceActionRoleReaderMock = new();
@@ -50,6 +51,7 @@ internal class GetAuthorizedActionsQueryTests
 
         var query = new GetAuthorizedActionsQuery(userId);
         var handler = new GetAuthorizedActionsQueryHandler(
+            _userReaderMock.Object,
             _userRoleReaderMock.Object,
             _userPolicyReaderMock.Object,
             _resourceActionRoleReaderMock.Object,
@@ -87,6 +89,7 @@ internal class GetAuthorizedActionsQueryTests
 
         var query = new GetAuthorizedActionsQuery(userId);
         var handler = new GetAuthorizedActionsQueryHandler(
+            _userReaderMock.Object,
             _userRoleReaderMock.Object,
             _userPolicyReaderMock.Object,
             _resourceActionRoleReaderMock.Object,
@@ -124,6 +127,7 @@ internal class GetAuthorizedActionsQueryTests
 
         var query = new GetAuthorizedActionsQuery(userId);
         var handler = new GetAuthorizedActionsQueryHandler(
+            _userReaderMock.Object,
             _userRoleReaderMock.Object,
             _userPolicyReaderMock.Object,
             _resourceActionRoleReaderMock.Object,
@@ -161,6 +165,7 @@ internal class GetAuthorizedActionsQueryTests
 
         var query = new GetAuthorizedActionsQuery(userId);
         var handler = new GetAuthorizedActionsQueryHandler(
+            _userReaderMock.Object,
             _userRoleReaderMock.Object,
             _userPolicyReaderMock.Object,
             _resourceActionRoleReaderMock.Object,

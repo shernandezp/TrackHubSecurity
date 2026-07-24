@@ -16,9 +16,9 @@
 using Common.Application.Exceptions;
 using Common.Domain.Extensions;
 using TrackHub.Security.Domain.Records;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
+namespace TrackHub.Security.Infrastructure.Writers;
 
 public sealed class ClientWriter(IApplicationDbContext context) : IClientWriter
 {

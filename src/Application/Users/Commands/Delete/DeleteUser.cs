@@ -20,6 +20,9 @@ using TrackHub.Security.Application.Users.Events;
 namespace TrackHub.Security.Application.Users.Commands.Delete;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Delete)]
+// Enforcement: UserWriter.DeleteUserAsync loads the row and calls RequireAccountAccess on its
+// owning account before removing it (the handler additionally forbids self-delete).
+[AccountScopeEnforcedInHandler]
 public readonly record struct DeleteUserCommand(Guid Id) : IRequest;
 
 public class DeleteUserCommandHandler(IUserWriter writer, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteUserCommand>

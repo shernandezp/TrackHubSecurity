@@ -22,10 +22,10 @@ namespace TrackHub.Security.Web.GraphQL.Query;
 public partial class Query
 {
 
-    public async Task<IReadOnlyCollection<PolicyVm>> GetPolicies([Service] ISender sender)
-        => await sender.Send(new GetPoliciesQuery());
+    public async Task<IReadOnlyCollection<PolicyVm>> GetPolicies([Service] ISender sender, CancellationToken cancellationToken)
+        => await sender.Send(new GetPoliciesQuery(), cancellationToken);
 
-    public async Task<PolicyResourceVm> GetResourcesByPolicy([Service] ISender sender, [AsParameters] GetResourcesByPolicyQuery query)
-        => await sender.Send(query);
+    public async Task<PolicyResourceVm> GetResourcesByPolicy([Service] ISender sender, [AsParameters] GetResourcesByPolicyQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 
 }

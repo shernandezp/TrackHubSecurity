@@ -16,6 +16,9 @@
 namespace TrackHub.Security.Application.Users.Queries.Get;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Read)]
+// Enforcement: UserReader.GetUserAsync loads the row and calls RequireAccountAccess on its owning
+// account before returning it.
+[AccountScopeEnforcedInHandler]
 public readonly record struct GetUserQuery(Guid Id) : IRequest<UserVm>;
 
 // The GetUserQueryHandler class is responsible for handling the GetUserQuery and returning the corresponding UserVm.

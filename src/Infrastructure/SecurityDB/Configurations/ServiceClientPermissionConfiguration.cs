@@ -16,7 +16,7 @@
 using Common.Domain.Constants;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Configurations;
+namespace TrackHub.Security.Infrastructure.Configurations;
 
 public class ServiceClientPermissionConfiguration : IEntityTypeConfiguration<ServiceClientPermission>
 {

@@ -16,6 +16,7 @@
 namespace TrackHub.Security.Application.ServiceClientPermissions.Queries;
 
 [Authorize(Resource = Resources.ServiceClients, Action = Actions.Read)]
+[AllowCrossAccount("Read twin of the SCP console commands below: the Administrator filters service-client grants by a PARTNER's bound account, never the platform operator's own. The ServiceClients/Read gate restricts this to the platform operator.")]
 public readonly record struct GetServiceClientPermissionsQuery(string? ClientId = null, Guid? AccountId = null, int Skip = 0, int Take = 50) : IRequest<IReadOnlyCollection<ServiceClientPermissionVm>>;
 public class GetServiceClientPermissionsQueryHandler(IServiceClientPermissionReader reader) : IRequestHandler<GetServiceClientPermissionsQuery, IReadOnlyCollection<ServiceClientPermissionVm>>
 {

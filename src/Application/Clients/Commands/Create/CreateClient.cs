@@ -22,6 +22,7 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.Clients.Commands.Create;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Write)]
+[PlatformScoped("OAuth client registry: service/integration client credentials are platform-owned infrastructure with no tenant dimension, administered from the Administrator-only systemadmin console.")]
 public readonly record struct CreateClientCommand(ClientDto Client) : IRequest<ClientVm>;
 
 public class CreateClientCommandHandler(IClientWriter writer, IConfiguration configuration, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateClientCommand, ClientVm>

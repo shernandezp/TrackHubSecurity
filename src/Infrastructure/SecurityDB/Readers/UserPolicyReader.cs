@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 
 // This class represents a reader for user policies in the security database.
 public sealed class UserPolicyReader(IApplicationDbContext context) : IUserPolicyReader

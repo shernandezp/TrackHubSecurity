@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 
 public sealed class RoleReader(IApplicationDbContext context) : IRoleReader
 {
@@ -29,11 +29,19 @@ public sealed class RoleReader(IApplicationDbContext context) : IRoleReader
             .Select(r => new RoleVm(r.RoleId, r.Name))
             .FirstAsync(cancellationToken);
 
-    // Get all roles
+    // Get all roles the caller is entitled to see
+    // param includeAdministrator: Whether the Administrator role belongs in the result
     // param cancellationToken: A token to cancel the operation
     // returns: A collection of RoleVm objects
-    public async Task<IReadOnlyCollection<RoleVm>> GetRolesAsync(CancellationToken cancellationToken)
+    //
+    // The Administrator exclusion is applied in SQL rather than over a materialized list: post-fetch
+    // filtering in the handler is what makes any windowed read ragged, and it also pulled back a row
+    // the caller was never entitled to.
+    public async Task<IReadOnlyCollection<RoleVm>> GetRolesAsync(bool includeAdministrator, CancellationToken cancellationToken)
         => await context.Roles
+            .Where(r => includeAdministrator || r.Name != Common.Domain.Constants.Roles.Administrator)
+            .OrderBy(r => r.Name)
+            .ThenBy(r => r.RoleId)
             .Select(r => new RoleVm(r.RoleId, r.Name))
             .ToListAsync(cancellationToken);
 

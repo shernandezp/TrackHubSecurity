@@ -20,6 +20,9 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.UserPolicy.Commands.Delete;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Delete)]
+// Enforcement: UserPolicyWriter loads the TARGET user and calls RequireAccountAccess on its owning
+// account before removing the grant.
+[AccountScopeEnforcedInHandler]
 public readonly record struct DeleteUserPolicyCommand(Guid UserId, int PolicyId) : IRequest;
 
 public class DeleteUserPolicyCommandHandler(IUserPolicyWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteUserPolicyCommand>

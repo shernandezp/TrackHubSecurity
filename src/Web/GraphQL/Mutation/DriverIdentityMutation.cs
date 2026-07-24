@@ -20,17 +20,17 @@ namespace TrackHub.Security.Web.GraphQL.Mutation;
 
 public partial class Mutation
 {
-    public async Task<DriverCredentialVm> CreateDriverCredential([Service] ISender sender, CreateDriverCredentialCommand command)
-        => await sender.Send(command);
+    public async Task<DriverCredentialVm> CreateDriverCredential([Service] ISender sender, CreateDriverCredentialCommand command, CancellationToken cancellationToken)
+        => await sender.Send(command, cancellationToken);
 
-    public async Task<bool> ActivateDriverCredential([Service] ISender sender, ActivateDriverCredentialCommand command) { await sender.Send(command); return true; }
-    public async Task<bool> LockDriverCredential([Service] ISender sender, LockDriverCredentialCommand command) { await sender.Send(command); return true; }
-    public async Task<bool> ResetDriverCredential([Service] ISender sender, ResetDriverCredentialCommand command) { await sender.Send(command); return true; }
-    public async Task<bool> RevokeDriverCredential([Service] ISender sender, RevokeDriverCredentialCommand command) { await sender.Send(command); return true; }
+    public async Task<bool> ActivateDriverCredential([Service] ISender sender, ActivateDriverCredentialCommand command, CancellationToken cancellationToken) { await sender.Send(command, cancellationToken); return true; }
+    public async Task<bool> LockDriverCredential([Service] ISender sender, LockDriverCredentialCommand command, CancellationToken cancellationToken) { await sender.Send(command, cancellationToken); return true; }
+    public async Task<bool> ResetDriverCredential([Service] ISender sender, ResetDriverCredentialCommand command, CancellationToken cancellationToken) { await sender.Send(command, cancellationToken); return true; }
+    public async Task<bool> RevokeDriverCredential([Service] ISender sender, RevokeDriverCredentialCommand command, CancellationToken cancellationToken) { await sender.Send(command, cancellationToken); return true; }
 
-    public async Task<DriverDeviceRegistrationVm> RegisterDriverDevice([Service] ISender sender, RegisterDriverDeviceCommand command)
-        => await sender.Send(command);
+    public async Task<DriverDeviceRegistrationVm> RegisterDriverDevice([Service] ISender sender, RegisterDriverDeviceCommand command, CancellationToken cancellationToken)
+        => await sender.Send(command, cancellationToken);
 
-    public async Task<bool> UpdateDriverDevicePushToken([Service] ISender sender, UpdateDriverDevicePushTokenCommand command) { await sender.Send(command); return true; }
-    public async Task<bool> RevokeDriverDevice([Service] ISender sender, RevokeDriverDeviceCommand command) { await sender.Send(command); return true; }
+    public async Task<bool> UpdateDriverDevicePushToken([Service] ISender sender, UpdateDriverDevicePushTokenCommand command, CancellationToken cancellationToken) { await sender.Send(command, cancellationToken); return true; }
+    public async Task<bool> RevokeDriverDevice([Service] ISender sender, RevokeDriverDeviceCommand command, CancellationToken cancellationToken) { await sender.Send(command, cancellationToken); return true; }
 }

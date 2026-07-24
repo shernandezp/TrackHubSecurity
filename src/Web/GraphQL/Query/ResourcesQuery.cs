@@ -20,6 +20,6 @@ namespace TrackHub.Security.Web.GraphQL.Query;
 
 public partial class Query
 {
-    public async Task<IReadOnlyCollection<ResourceVm>> GetResources([Service] ISender sender)
-        => await sender.Send(new GetResourcesQuery());
+    public async Task<IReadOnlyCollection<ResourceVm>> GetResources([Service] ISender sender, CancellationToken cancellationToken)
+        => await sender.Send(new GetResourcesQuery(), cancellationToken);
 }

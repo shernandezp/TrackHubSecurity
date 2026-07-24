@@ -15,7 +15,7 @@
 
 using Common.Infrastructure;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Entities;
+namespace TrackHub.Security.Infrastructure.Entities;
 
 public sealed class DriverDeviceRegistration(
     Guid driverId,

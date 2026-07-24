@@ -15,7 +15,7 @@
 
 using Common.Application.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Identity;
+namespace TrackHub.Security.Infrastructure.Identity;
 
 public class IdentityService(IUserReader userReader,
     IResourceActionRoleReader resourceActionRoleReader,

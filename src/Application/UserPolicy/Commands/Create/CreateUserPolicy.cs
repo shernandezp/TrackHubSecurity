@@ -20,6 +20,9 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.UserPolicy.Commands.Create;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Write)]
+// Enforcement: UserPolicyWriter loads the TARGET user and calls RequireAccountAccess on its owning
+// account before writing the grant.
+[AccountScopeEnforcedInHandler]
 public readonly record struct CreateUserPolicyCommand(UserPolicyDto UserPolicy) : IRequest<UserPolicyVm>;
 
 public class CreateUserPolicyCommandHandler(IUserPolicyWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateUserPolicyCommand, UserPolicyVm>

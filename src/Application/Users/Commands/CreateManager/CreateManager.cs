@@ -20,6 +20,7 @@ using TrackHub.Security.Application.Users.Events;
 namespace TrackHub.Security.Application.Users.Commands.CreateManager;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Write)]
+[AllowCrossAccount("Platform onboarding: Manager's CreateAccountCommand relays the Administrator's account-creation to provision the NEW tenant's first Manager user, under the Administrator's own token — so the target account is by definition not the caller's own. The Administrative/Write gate restricts this to the platform operator.")]
 public readonly record struct CreateManagerCommand(CreateUserDto User, Guid AccountId) : IRequest<UserVm>;
 
 public class CreateManagerCommandHandler(IUserWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateManagerCommand, UserVm>

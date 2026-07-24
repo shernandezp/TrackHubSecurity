@@ -47,6 +47,7 @@ public class UpdateServiceClientPermissionCommandHandler(IServiceClientPermissio
 }
 
 [Authorize(Resource = Resources.ServiceClients, Action = Actions.Delete)]
+[AllowCrossAccount("Delete twin of CreateServiceClientPermissionCommand above, same Administrator-only systemadmin console and same reasoning: the grant being removed may be bound to a PARTNER's account, never the platform operator's own.")]
 public readonly record struct DeleteServiceClientPermissionCommand(Guid ServiceClientPermissionId) : IRequest<Guid>;
 public class DeleteServiceClientPermissionCommandHandler(IServiceClientPermissionWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteServiceClientPermissionCommand, Guid>
 {

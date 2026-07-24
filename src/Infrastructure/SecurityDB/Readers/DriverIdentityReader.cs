@@ -13,35 +13,20 @@
 //  limitations under the License.
 //
 
-using Common.Application.Exceptions;
 using Common.Application.Interfaces;
-using Common.Domain.Constants;
-using TrackHub.Security.Infrastructure.SecurityDB.Entities;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Entities;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 
-public sealed class DriverIdentityReader(IApplicationDbContext context, ICurrentPrincipal principal) : IDriverIdentityReader
+public sealed class DriverIdentityReader(IApplicationDbContext context, ICurrentPrincipal principal)
+    : AccountScopedDataAccess(context, principal), IDriverIdentityReader
 {
-    private bool CanAccessAllAccounts =>
-        principal.PrincipalType == PrincipalType.ServiceClient && !principal.AccountId.HasValue
-        || string.Equals(principal.Role, Roles.Administrator, StringComparison.OrdinalIgnoreCase);
-
-    private Guid RequireAccountAccess(Guid accountId)
-    {
-        if (CanAccessAllAccounts || principal.AccountId == accountId)
-        {
-            return accountId;
-        }
-
-        throw new ForbiddenAccessException();
-    }
-
     private static int PageSize(int take) => Math.Clamp(take <= 0 ? 50 : take, 1, 500);
     private static int Offset(int skip) => Math.Max(0, skip);
 
     public async Task<IReadOnlyCollection<DriverCredentialVm>> GetDriverCredentialsAsync(Guid accountId, Guid? driverId, int skip, int take, CancellationToken cancellationToken)
-        => await context.DriverCredentials
+        => await Context.DriverCredentials
             .Where(x => x.AccountId == RequireAccountAccess(accountId) && (!driverId.HasValue || x.DriverId == driverId.Value))
             .OrderBy(x => x.NormalizedLogin).ThenBy(x => x.DriverCredentialId)
             .Skip(Offset(skip)).Take(PageSize(take))
@@ -49,7 +34,7 @@ public sealed class DriverIdentityReader(IApplicationDbContext context, ICurrent
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> GetDriverDevicesAsync(Guid accountId, Guid? driverId, int skip, int take, CancellationToken cancellationToken)
-        => await context.DriverDeviceRegistrations
+        => await Context.DriverDeviceRegistrations
             .Where(x => x.AccountId == RequireAccountAccess(accountId) && (!driverId.HasValue || x.DriverId == driverId.Value))
             .OrderByDescending(x => x.LastSeenAt ?? x.RegisteredAt).ThenBy(x => x.DriverDeviceRegistrationId)
             .Skip(Offset(skip)).Take(PageSize(take))

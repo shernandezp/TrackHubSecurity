@@ -17,6 +17,12 @@ using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.Identity.Queries.IsValidServiceForResource;
 
+// Authorization-pipeline primitive: every service's AuthorizationBehavior validates an incoming
+// service token through this query under that same token — including account-less global service
+// identities, which is why the tenant guard must not require an account here. When the caller
+// carries an account claim it passes it as AccountId (its own), so the guard's same-account rule
+// still applies to tenant-bound clients.
+[PlatformScoped("Authorization pipeline: a service client validating its own permission grant; IdentityCallerGuard.EnsureCallerIsSubjectService binds the subject to the calling client, and a supplied AccountId is the caller's own claim (same-account rule enforced by the tenant guard).")]
 public readonly record struct IsValidServiceForResourceQuery(string? Client, string Resource, string Action, Guid? AccountId = null, IReadOnlyCollection<string>? Scopes = null, IReadOnlyCollection<string>? Audiences = null) : IRequest<bool>;
 
 public class IsValidServiceForResourceQueryHandler(IIdentityService service, IUser user) : IRequestHandler<IsValidServiceForResourceQuery, bool>

@@ -14,6 +14,7 @@
 //
 
 using Common.Application.Interfaces;
+using TrackHub.Security.Application.Lookups;
 
 namespace TrackHub.Security.Application.Roles.GetAll;
 
@@ -26,18 +27,12 @@ public class GetRolesQueryHandler(IRoleReader reader, IUserReader userReader, IU
     private Guid UserId { get; } = Guid.TryParse(user.Id, out var userId) ? userId : throw new UnauthorizedAccessException();
 
     // The Handle method is responsible for handling the GetRolesQuery and returning the result.
-    // It asynchronously calls the GetRolesAsync method of the IRoleReader dependency to retrieve all roles.
-    // It filters out the admin role if the user is not an admin.
+    // Whether the admin role belongs in the result is decided here and pushed into the query, so the
+    // reader never materializes a row that is then thrown away.
     public async Task<IReadOnlyCollection<RoleVm>> Handle(GetRolesQuery request, CancellationToken cancellationToken)
     {
         var isAdmin = await userReader.IsAdminAsync(UserId, cancellationToken);
-        var roles = await reader.GetRolesAsync(cancellationToken);
-        if (!isAdmin) 
-        {
-            var admin = Common.Domain.Constants.Roles.Administrator;
-            roles = roles.Where(r => r.Name != admin).ToList();
-        }
-        return roles;
+        return SeededCatalogLimits.EnsureWithinCeiling(await reader.GetRolesAsync(isAdmin, cancellationToken), "roles");
     }
 
 }

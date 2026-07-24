@@ -13,16 +13,19 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using Common.Domain.Helpers;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 
 /// <summary>
 /// This class represents a reader for retrieving user information from the database
 /// </summary>
 /// <param name="context"></param>
-public sealed class UserReader(IApplicationDbContext context) : IUserReader
+/// <param name="principal">Caller identity for the by-id account-access guard.</param>
+public sealed class UserReader(IApplicationDbContext context, ICurrentPrincipal principal)
+    : AccountScopedDataAccess(context, principal), IUserReader
 {
     private static int PageSize(int take) => Math.Clamp(take <= 0 ? 50 : take, 1, 500);
     private static int Offset(int skip) => Math.Max(0, skip);
@@ -34,7 +37,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <param name="cancellationToken"></param>
     /// <returns>The username of the user with the specified ID</returns>
     public async Task<string> GetUserNameAsync(Guid id, CancellationToken cancellationToken)
-        => await context.Users
+        => await Context.Users
             .Where(u => u.UserId.Equals(id))
             .Select(u => u.Username)
             .FirstAsync(cancellationToken);
@@ -47,7 +50,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <returns>A collection of user view models</returns>
     public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Filters filters, int skip, int take, CancellationToken cancellationToken)
     {
-        var query = context.Users.AsQueryable();
+        var query = Context.Users.AsQueryable();
         query = filters.Apply(query);
 
         return await query
@@ -73,13 +76,16 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     }
 
     /// <summary>
-    /// Retrieves the detailed information of a user with the specified ID, including their roles and policies
+    /// Retrieves the detailed information of a user with the specified ID, including their roles and policies.
+    /// The loaded row's owning account is checked against the caller — this is the enforcement point
+    /// the <c>[AccountScopeEnforcedInHandler]</c> marker on the by-id user requests cites.
     /// </summary>
     /// <param name="id"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>A user view model</returns>
     public async Task<UserVm> GetUserAsync(Guid id, CancellationToken cancellationToken)
-        => await context.Users
+    {
+        var user = await Context.Users
             .Where(u => u.UserId.Equals(id))
             .Include(role => role.Roles)
             .Include(policy => policy.Policies)
@@ -101,19 +107,32 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .FirstAsync(cancellationToken);
 
+        RequireAccountAccess(user.AccountId);
+        return user;
+    }
+
     /// <summary>
-    /// Retrieves a collection of users associated with the specified account ID, including their roles and policies
+    /// Retrieves one page of the account's users, including their roles and policies, plus the
+    /// unpaged total so the caller can render an exact range rather than an open-ended one.
     /// </summary>
     /// <param name="accountId"></param>
+    /// <param name="skip">Rows to skip</param>
+    /// <param name="take">Rows to return</param>
+    /// <param name="search">Optional username / e-mail / name filter, applied before the window</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>A collection of user view models</returns>
-    public async Task<IReadOnlyCollection<UserVm>> GetUsersAsync(Guid accountId, int skip, int take, CancellationToken cancellationToken)
-        => await context.Users
-            .Where(u => u.AccountId.Equals(accountId))
+    /// <returns>A page of user view models</returns>
+    public async Task<UsersPageVm> GetUsersAsync(Guid accountId, int skip, int take, string? search, CancellationToken cancellationToken)
+    {
+        var query = ApplySearch(Context.Users.Where(u => u.AccountId.Equals(accountId)), search);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        // Usernames are unique per account today, but nothing in the schema enforces it across the
+        // table, so the primary key makes the ordering total and the page window stable.
+        var items = await query
             .Include(role => role.Roles)
             .Include(policy => policy.Policies)
             .OrderBy(u => u.Username).ThenBy(u => u.UserId)
-            .Skip(Offset(skip)).Take(PageSize(take))
+            .Skip(skip).Take(take)
             .Select(u => new UserVm(
                 u.UserId,
                 u.Username,
@@ -132,6 +151,25 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
                 u.Policies.Select(p => new PolicyVm(p.PolicyId, p.Name)).ToList()))
             .ToListAsync(cancellationToken);
 
+        return new UsersPageVm(items, totalCount);
+    }
+
+    // The users screen searches the columns it renders: the username and e-mail in the first
+    // column, and the two name columns beside them.
+    private static IQueryable<User> ApplySearch(IQueryable<User> query, string? search)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+        {
+            return query;
+        }
+
+        var term = SearchPattern.Contains(search);
+        return query.Where(u => EF.Functions.ILike(u.Username, term, SearchPattern.Escape)
+            || EF.Functions.ILike(u.EmailAddress, term, SearchPattern.Escape)
+            || EF.Functions.ILike(u.FirstName, term, SearchPattern.Escape)
+            || EF.Functions.ILike(u.LastName, term, SearchPattern.Escape));
+    }
+
     /// <summary>
     /// Retrieves a collection of users associated with the specified account ID and role ID
     /// </summary>
@@ -141,7 +179,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <returns>A collection of user view models</returns>
     public async Task<IReadOnlyCollection<UserVm>> GetUsersByRoleAsync(Guid accountId, int roleId, CancellationToken cancellationToken)
     {
-        return await context.Users
+        return await Context.Users
             .Where(u => u.AccountId == accountId && u.Roles.Any(r => r.RoleId == roleId))
             .Include(u => u.Roles)
             .Select(u => new UserVm(
@@ -172,7 +210,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <returns>A collection of user view models</returns>
     public async Task<IReadOnlyCollection<UserVm>> GetUsersByPolicyAsync(Guid accountId, int policyId, CancellationToken cancellationToken)
     {
-        return await context.Users
+        return await Context.Users
             .Where(u => u.AccountId == accountId && u.Policies.Any(r => r.PolicyId == policyId))
             .Include(u => u.Policies)
             .Select(u => new UserVm(
@@ -195,13 +233,43 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     }
 
     /// <summary>
-    /// Validates if the specified email address is unique 
+    /// Minimal projection of the account's members holding a role, for the allocator dialogs.
+    /// Returns up to <paramref name="fetchSize"/> rows so the caller can detect an over-ceiling set.
+    /// </summary>
+    public async Task<IReadOnlyCollection<UserLookupVm>> GetUserLookupByRoleAsync(Guid accountId, int roleId, int fetchSize, CancellationToken cancellationToken)
+        => await LookupOrdered(Context.Users.Where(u => u.AccountId == accountId && u.Roles.Any(r => r.RoleId == roleId)), fetchSize)
+            .ToListAsync(cancellationToken);
+
+    /// <summary>
+    /// Minimal projection of the account's members holding a policy, for the allocator dialogs.
+    /// </summary>
+    public async Task<IReadOnlyCollection<UserLookupVm>> GetUserLookupByPolicyAsync(Guid accountId, int policyId, int fetchSize, CancellationToken cancellationToken)
+        => await LookupOrdered(Context.Users.Where(u => u.AccountId == accountId && u.Policies.Any(p => p.PolicyId == policyId)), fetchSize)
+            .ToListAsync(cancellationToken);
+
+    /// <summary>
+    /// Minimal projection of every member of the account — the other operand of the allocator's set
+    /// difference.
+    /// </summary>
+    public async Task<IReadOnlyCollection<UserLookupVm>> GetUserLookupByAccountAsync(Guid accountId, int fetchSize, CancellationToken cancellationToken)
+        => await LookupOrdered(Context.Users.Where(u => u.AccountId == accountId), fetchSize)
+            .ToListAsync(cancellationToken);
+
+    private static IQueryable<UserLookupVm> LookupOrdered(IQueryable<TrackHub.Security.Infrastructure.Entities.User> query, int fetchSize)
+        => query
+            .OrderBy(u => u.Username)
+            .ThenBy(u => u.UserId)
+            .Take(fetchSize)
+            .Select(u => new UserLookupVm(u.UserId, u.Username));
+
+    /// <summary>
+    /// Validates if the specified email address is unique
     /// </summary>
     /// <param name="emailAddress"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>A boolean indicating whether the specified email address is unique</returns>
     public async Task<bool> ValidateEmailAddressAsync(string emailAddress, CancellationToken cancellationToken)
-        => !await context.Users
+        => !await Context.Users
             .Where(u => u.EmailAddress.Equals(emailAddress))
             .AnyAsync(cancellationToken);
 
@@ -213,7 +281,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <param name="cancellationToken"></param>
     /// <returns>A boolean indicating whether the specified email address is unique</returns>
     public async Task<bool> ValidateEmailAddressAsync(Guid userId, string emailAddress, CancellationToken cancellationToken)
-        => !await context.Users
+        => !await Context.Users
             .Where(u => !u.UserId.Equals(userId) && u.EmailAddress.Equals(emailAddress))
             .AnyAsync(cancellationToken);
 
@@ -225,7 +293,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <param name="cancellationToken"></param>
     /// <returns>A boolean indicating whether the specified username is unique</returns>
     public async Task<bool> ValidateUsernameAsync(Guid userId, string username, CancellationToken cancellationToken)
-        => !await context.Users
+        => !await Context.Users
             .Where(u => !u.UserId.Equals(userId) && u.Username.Equals(username))
             .AnyAsync(cancellationToken);
 
@@ -236,7 +304,7 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <param name="cancellationToken"></param>
     /// <returns>A boolean indicating whether the specified user is an administrator</returns>
     public async Task<bool> IsAdminAsync(Guid userId, CancellationToken cancellationToken)
-        => await context.Users
+        => await Context.Users
             .Where(u => u.UserId == userId)
             .SelectMany(u => u.Roles)
             .AnyAsync(r => r.ParentRoleId == null, cancellationToken);
@@ -249,10 +317,10 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     /// <returns>A boolean indicating whether the specified user is a manager</returns>
     public async Task<bool> IsManagerAsync(Guid userId, CancellationToken cancellationToken)
     {
-        return await context.Users
+        return await Context.Users
             .Where(u => u.UserId == userId)
             .SelectMany(u => u.Roles)
-            .AnyAsync(r => context.Roles
+            .AnyAsync(r => Context.Roles
                 .Where(pr => pr.RoleId == r.ParentRoleId && pr.ParentRoleId == null)
                 .Any(), cancellationToken);
     }
@@ -268,14 +336,14 @@ public sealed class UserReader(IApplicationDbContext context) : IUserReader
     public async Task<bool> IsManagerAsync(Guid userId, Guid managerId, CancellationToken cancellationToken)
     {
         // Retrieve the account ID of the user
-        var user = await context.Users.FindAsync(userId, cancellationToken)
+        var user = await Context.Users.FindAsync(userId, cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userId}");
 
         // Check if the manager is part of the same account and if a role parent of the manager is top level
-        return await context.Users
+        return await Context.Users
             .Where(u => u.UserId == managerId && u.AccountId == user.AccountId)
             .SelectMany(u => u.Roles)
-            .SelectMany(r => context.Roles
+            .SelectMany(r => Context.Roles
                 .Where(pr => pr.RoleId == r.ParentRoleId && pr.ParentRoleId == null))
             .AnyAsync(cancellationToken);
     }

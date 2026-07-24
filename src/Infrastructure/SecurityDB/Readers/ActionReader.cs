@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 
 public sealed class ActionReader(IApplicationDbContext context) : IActionReader
 {

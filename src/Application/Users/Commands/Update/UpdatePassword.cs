@@ -18,6 +18,9 @@ using TrackHub.Security.Application.Audit.Events;
 
 namespace TrackHub.Security.Application.Users.Commands.Update;
 [Authorize(Resource = Resources.Users, Action = Actions.Custom)]
+// Enforcement: the handler allows self or a same-account manager (UserReader.IsManagerAsync), and
+// UserWriter.UpdatePasswordAsync additionally calls RequireAccountAccess on the loaded row.
+[AccountScopeEnforcedInHandler]
 public readonly record struct UpdatePasswordCommand(UserPasswordDto User) : IRequest;
 public class UpdatePasswordCommandHandler(IUserWriter writer, IUserReader reader, IUser user, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UpdatePasswordCommand>
 {

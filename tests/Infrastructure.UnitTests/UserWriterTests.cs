@@ -13,11 +13,12 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using TrackHub.Security.Domain.Records;
-using TrackHub.Security.Infrastructure.SecurityDB.Entities;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
-using TrackHub.Security.Infrastructure.SecurityDB.Writers;
+using TrackHub.Security.Infrastructure.Entities;
+using TrackHub.Security.Infrastructure.Interfaces;
+using TrackHub.Security.Infrastructure.Writers;
 
 namespace Infrastructure.UnitTests;
 
@@ -26,6 +27,7 @@ internal class UserWriterTests : Context
 {
     // Declare necessary fields
     private Mock<IApplicationDbContext> _dbContextMock;
+    private Mock<ICurrentPrincipal> _principalMock;
     private UserWriter _userWriter;
 
     [SetUp]
@@ -33,7 +35,12 @@ internal class UserWriterTests : Context
     {
         // Initialize the mock and the object under test before each test
         _dbContextMock = new Mock<IApplicationDbContext>();
-        _userWriter = new UserWriter(_dbContextMock.Object);
+        // A global service identity: account-transparent, so these round-trip tests exercise the
+        // write paths while the account guard is pinned separately by the foreign-deny tests.
+        _principalMock = new Mock<ICurrentPrincipal>();
+        _principalMock.SetupGet(p => p.PrincipalType).Returns(PrincipalType.ServiceClient);
+        _principalMock.SetupGet(p => p.AccountId).Returns((Guid?)null);
+        _userWriter = new UserWriter(_dbContextMock.Object, _principalMock.Object);
     }
 
     [Test]

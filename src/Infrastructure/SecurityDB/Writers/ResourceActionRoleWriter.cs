@@ -15,9 +15,9 @@
 
 
 using TrackHub.Security.Domain.Records;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
+namespace TrackHub.Security.Infrastructure.Writers;
 
 // This class represents a writer for the ResourceActionRole entity in the security database.
 public sealed class ResourceActionRoleWriter(IApplicationDbContext context) : IResourceActionRoleWriter

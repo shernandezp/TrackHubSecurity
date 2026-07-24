@@ -19,6 +19,7 @@ using Common.Application.GraphQL.Inputs;
 namespace TrackHub.Security.Application.Users.Queries.GetAll;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Read)]
+[AllowCrossAccount("Administrator master read: the systemadmin console lists users across every tenant account, deliberately unfiltered by the caller's own account. The Administrative/Read gate restricts this to the platform operator.")]
 public readonly record struct GetUsersQuery(FiltersInput Filter, int Skip = 0, int Take = 50) : IRequest<IReadOnlyCollection<UserVm>>;
 
 public class GetUsersMasterQueryHandler(IUserReader reader) : IRequestHandler<GetUsersQuery, IReadOnlyCollection<UserVm>>

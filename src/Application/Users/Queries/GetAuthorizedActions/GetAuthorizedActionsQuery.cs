@@ -16,9 +16,13 @@
 namespace TrackHub.Security.Application.Users.Queries.GetAuthorizedActions;
 
 [Authorize(Resource = Resources.Accounts, Action = Actions.Read)]
+// Enforcement: the handler resolves the TARGET user through UserReader.GetUserAsync, whose
+// RequireAccountAccess check binds the caller to the target's owning account.
+[AccountScopeEnforcedInHandler]
 public readonly record struct GetAuthorizedActionsQuery(Guid UserId) : IRequest<IReadOnlyCollection<ResourceActionVm>>;
 
 public class GetAuthorizedActionsQueryHandler(
+    IUserReader userReader,
     IUserRoleReader userRoleReader,
     IUserPolicyReader userPolicyReader,
     IResourceActionRoleReader resourceActionRoleReader,
@@ -32,6 +36,9 @@ public class GetAuthorizedActionsQueryHandler(
     /// <returns>a list of ResourceActionVm objects</returns>
     public async Task<IReadOnlyCollection<ResourceActionVm>> Handle(GetAuthorizedActionsQuery request, CancellationToken cancellationToken)
     {
+        // Tenant guard: resolving the target user enforces caller access to its owning account.
+        _ = await userReader.GetUserAsync(request.UserId, cancellationToken);
+
         // Get the user roles for the specified user ID
         var userRoles = await userRoleReader.GetUserRolesIdsAsync(request.UserId, cancellationToken);
 

@@ -21,12 +21,12 @@ namespace TrackHub.Security.Web.GraphQL.Mutation;
 
 public partial class Mutation
 {
-    public async Task<ResourceActionPolicyVm> CreateResourceActionPolicy([Service] ISender sender, CreateResourceActionPolicyCommand command)
-        => await sender.Send(command);
+    public async Task<ResourceActionPolicyVm> CreateResourceActionPolicy([Service] ISender sender, CreateResourceActionPolicyCommand command, CancellationToken cancellationToken)
+        => await sender.Send(command, cancellationToken);
 
-    public async Task<int> DeleteResourceActionPolicy([Service] ISender sender, int resourceId, int actionId, int policyId)
+    public async Task<int> DeleteResourceActionPolicy([Service] ISender sender, int resourceId, int actionId, int policyId, CancellationToken cancellationToken)
     {
-        await sender.Send(new DeleteResourceActionPolicyCommand(resourceId, actionId, policyId));
+        await sender.Send(new DeleteResourceActionPolicyCommand(resourceId, actionId, policyId), cancellationToken);
         return policyId;
     }
 }

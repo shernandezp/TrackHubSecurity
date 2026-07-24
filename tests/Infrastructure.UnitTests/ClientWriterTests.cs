@@ -16,10 +16,10 @@
 using Common.Application.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using TrackHub.Security.Domain.Records;
-using TrackHub.Security.Infrastructure.SecurityDB;
-using TrackHub.Security.Infrastructure.SecurityDB.Entities;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
-using TrackHub.Security.Infrastructure.SecurityDB.Writers;
+using TrackHub.Security.Infrastructure;
+using TrackHub.Security.Infrastructure.Entities;
+using TrackHub.Security.Infrastructure.Interfaces;
+using TrackHub.Security.Infrastructure.Writers;
 
 namespace Infrastructure.UnitTests;
 

@@ -15,10 +15,10 @@
 
 using System.Reflection;
 using Common.Infrastructure;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
-using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
+using TrackHub.Security.Infrastructure.Interfaces;
+using Action = TrackHub.Security.Infrastructure.Entities.Action;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB;
+namespace TrackHub.Security.Infrastructure;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
 {

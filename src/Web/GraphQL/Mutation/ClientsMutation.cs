@@ -22,19 +22,19 @@ namespace TrackHub.Security.Web.GraphQL.Mutation;
 
 public partial class Mutation
 {
-    public async Task<ClientVm> CreateClient([Service] ISender sender, CreateClientCommand command)
-        => await sender.Send(command);
+    public async Task<ClientVm> CreateClient([Service] ISender sender, CreateClientCommand command, CancellationToken cancellationToken)
+        => await sender.Send(command, cancellationToken);
 
-    public async Task<bool> UpdateClient([Service] ISender sender, Guid id, UpdateClientCommand command)
+    public async Task<bool> UpdateClient([Service] ISender sender, Guid id, UpdateClientCommand command, CancellationToken cancellationToken)
     {
         if (id != command.Client.ClientId) return false;
-        await sender.Send(command);
+        await sender.Send(command, cancellationToken);
         return true;
     }
 
-    public async Task<Guid> DeleteClient([Service] ISender sender, Guid id)
+    public async Task<Guid> DeleteClient([Service] ISender sender, Guid id, CancellationToken cancellationToken)
     {
-        await sender.Send(new DeleteClientCommand(id));
+        await sender.Send(new DeleteClientCommand(id), cancellationToken);
         return id;
     }
 }

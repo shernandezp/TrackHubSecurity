@@ -14,6 +14,8 @@
 //
 
 
+using TrackHub.Security.Application.Lookups;
+
 namespace TrackHub.Security.Application.Action.GetAll;
 
 [Authorize(Resource = Resources.Permissions, Action = Actions.Read)]
@@ -25,6 +27,6 @@ public class GetActionsQueryHandler(IActionReader reader) : IRequestHandler<GetA
     // The Handle method is responsible for handling the GetActionsQuery and returning the result.
     // It asynchronously calls the GetActionsAsync method of the IActionReader dependency to retrieve all actions.
     public async Task<IReadOnlyCollection<ActionVm>> Handle(GetActionsQuery request, CancellationToken cancellationToken)
-        => await reader.GetActionsAsync(cancellationToken);
+        => SeededCatalogLimits.EnsureWithinCeiling(await reader.GetActionsAsync(cancellationToken), "actions");
 
 }

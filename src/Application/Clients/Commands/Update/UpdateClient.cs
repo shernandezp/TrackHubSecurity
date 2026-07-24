@@ -19,6 +19,7 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.Clients.Commands.Update;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Edit)]
+[PlatformScoped("OAuth client registry: service/integration client credentials are platform-owned infrastructure with no tenant dimension, administered from the Administrator-only systemadmin console.")]
 public readonly record struct UpdateClientCommand(ClientUserDto Client) : IRequest;
 public class UpdateClientCommandHandler(IClientWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UpdateClientCommand>
 {

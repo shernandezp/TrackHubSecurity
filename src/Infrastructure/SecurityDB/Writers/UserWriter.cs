@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -13,14 +13,19 @@
 //  limitations under the License.
 //
 
+using Common.Application.Interfaces;
 using Common.Domain.Extensions;
 using TrackHub.Security.Domain.Records;
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Writers;
+namespace TrackHub.Security.Infrastructure.Writers;
 
-// This class represents a writer for the User entity in the security database.
-public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
+// This class represents a writer for the User entity in the security database. Every by-id
+// mutation loads the row first and checks its owning account against the caller
+// (RequireAccountAccess) — the enforcement point the [AccountScopeEnforcedInHandler] markers on
+// the user commands cite.
+public sealed class UserWriter(IApplicationDbContext context, ICurrentPrincipal principal)
+    : AccountScopedDataAccess(context, principal), IUserWriter
 {
     /// <summary>
     /// Creates a new user asynchronously
@@ -31,6 +36,8 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     /// <returns>The created user view model</returns>
     public async Task<UserVm> CreateUserAsync(CreateUserDto userDto, Guid accountId, CancellationToken cancellationToken)
     {
+        RequireAccountAccess(accountId);
+
         // Hash the password
         var password = userDto.Password.HashPassword();
 
@@ -48,9 +55,9 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
             accountId,
             userDto.IntegrationUser);
 
-        await context.Users.AddAsync(user, cancellationToken);
+        await Context.Users.AddAsync(user, cancellationToken);
 
-        await context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellationToken);
 
         return new UserVm(
             user.UserId,
@@ -79,10 +86,11 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     /// <exception cref="NotFoundException">If the user does not exist</exception>
     public async Task UpdateUserAsync(UpdateUserDto userDto, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync([userDto.UserId], cancellationToken)
+        var user = await Context.Users.FindAsync([userDto.UserId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userDto.UserId}");
+        RequireAccountAccess(user.AccountId);
 
-        context.Users.Attach(user);
+        Context.Users.Attach(user);
 
         user.Username = userDto.Username;
         user.EmailAddress = userDto.EmailAddress;
@@ -95,7 +103,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         user.IntegrationUser = userDto.IntegrationUser;
         user.LoginAttempts = 0;
 
-        await context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
@@ -108,10 +116,11 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     /// <exception cref="NotFoundException">If the user does not exist</exception>
     public async Task UpdateUserAsync(UpdateCurrentUserDto userDto, Guid userId, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync([userId], cancellationToken)
+        var user = await Context.Users.FindAsync([userId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userId}");
+        RequireAccountAccess(user.AccountId);
 
-        context.Users.Attach(user);
+        Context.Users.Attach(user);
 
         user.FirstName = userDto.FirstName;
         user.SecondName = userDto.SecondName;
@@ -119,7 +128,7 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
         user.SecondSurname = userDto.SecondSurname;
         user.DOB = userDto.DOB;
 
-        await context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
@@ -131,17 +140,18 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     /// <exception cref="NotFoundException">If the user does not exist</exception>
     public async Task UpdatePasswordAsync(UserPasswordDto userPasswordDto, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync([userPasswordDto.UserId], cancellationToken)
+        var user = await Context.Users.FindAsync([userPasswordDto.UserId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userPasswordDto.UserId}");
+        RequireAccountAccess(user.AccountId);
 
-        context.Users.Attach(user);
+        Context.Users.Attach(user);
 
         var password = userPasswordDto.Password.HashPassword();
 
         user.Password = password;
         user.Active = true;
 
-        await context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
@@ -150,14 +160,15 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     /// </summary>
     public async Task UnlockUserAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync([userId], cancellationToken)
+        var user = await Context.Users.FindAsync([userId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userId}");
+        RequireAccountAccess(user.AccountId);
 
-        context.Users.Attach(user);
+        Context.Users.Attach(user);
         user.LoginAttempts = 0;
         user.LockedUntil = null;
 
-        await context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
@@ -169,12 +180,13 @@ public sealed class UserWriter(IApplicationDbContext context) : IUserWriter
     /// <exception cref="NotFoundException">If the user does not exist</exception>
     public async Task DeleteUserAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var user = await context.Users.FindAsync([userId], cancellationToken)
+        var user = await Context.Users.FindAsync([userId], cancellationToken)
             ?? throw new NotFoundException(nameof(User), $"{userId}");
+        RequireAccountAccess(user.AccountId);
 
-        context.Users.Attach(user);
-        context.Users.Remove(user);
+        Context.Users.Attach(user);
+        Context.Users.Remove(user);
 
-        await context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellationToken);
     }
 }

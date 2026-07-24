@@ -19,6 +19,7 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.Clients.Commands.Delete;
 
 [Authorize(Resource = Resources.Administrative, Action = Actions.Delete)]
+[PlatformScoped("OAuth client registry: service/integration client credentials are platform-owned infrastructure with no tenant dimension, administered from the Administrator-only systemadmin console.")]
 public readonly record struct DeleteClientCommand(Guid Id) : IRequest;
 
 public class DeleteClientCommandHandler(IClientWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteClientCommand>

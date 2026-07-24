@@ -16,10 +16,10 @@
 using Common.Domain.Constants;
 using Common.Domain.Extensions;
 using Microsoft.Extensions.Logging;
-using TrackHub.Security.Infrastructure.SecurityDB.Entities;
-using TrackHub.Security.Infrastructure.SecurityDB;
+using TrackHub.Security.Infrastructure.Entities;
+using TrackHub.Security.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Action = TrackHub.Security.Infrastructure.SecurityDB.Entities.Action;
+using Action = TrackHub.Security.Infrastructure.Entities.Action;
 
 namespace DBInitializer;
 internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
@@ -193,7 +193,7 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
         // stay Administrator-only.
         //
         // Trip Management (spec 11 §15): Manager gets Trips R/W/E/D/Export/Custom + TollCatalog/Read;
-        // User gets Trips R/W/E/Custom + TollCatalog/Read. TollCatalog Write/Edit/Delete
+        // User gets Trips R/W/E/Export/Custom + TollCatalog/Read. TollCatalog Write/Edit/Delete
         // is deliberately NOT granted to Manager or User — the toll catalog is platform reference
         // data, so a non-administrator can read stations/tariffs/vehicle classes but can never
         // create, edit or delete one (spec 11 §17 acceptance 5).
@@ -278,7 +278,10 @@ internal class ApplicationDbContextInitializer(ILogger<ApplicationDbContextIniti
                 // Custom = plan route / share / revoke. The dispatcher is the actor spec 11 §4 names
                 // for exactly these three operations, so withholding it left the primary user of
                 // the module unable to plan a route on a trip they had just created.
-                (Resources.Trips, [Actions.Read, Actions.Write, Actions.Edit, Actions.Custom]),
+                // Export = the six trip-* report feeds, including the POD register. Without it the
+                // dispatcher-facing catalog reports were visible in the picker but failed closed for
+                // the role that owns them.
+                (Resources.Trips, [Actions.Read, Actions.Write, Actions.Edit, Actions.Export, Actions.Custom]),
                 // Custom on Users gates exactly one command: UpdatePasswordCommand, whose handler
                 // requires the subject to be the caller (or a verified manager of the subject). This
                 // is the self-service password change; it grants no user administration.

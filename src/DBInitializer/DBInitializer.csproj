@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <RootNamespace>TrackHub.Security.DBInitializer</RootNamespace>
+    <AssemblyName>TrackHub.Security.DBInitializer</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

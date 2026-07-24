@@ -15,7 +15,7 @@
 
 using Ardalis.GuardClauses;
 using Microsoft.AspNetCore.HttpOverrides;
-using TrackHub.Security.Infrastructure.SecurityDB;
+using TrackHub.Security.Infrastructure;
 using TrackHub.Security.Web.GraphQL.Mutation;
 using TrackHub.Security.Web.GraphQL.Query;
 

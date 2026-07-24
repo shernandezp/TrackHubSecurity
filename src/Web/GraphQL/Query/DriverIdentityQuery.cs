@@ -20,9 +20,9 @@ namespace TrackHub.Security.Web.GraphQL.Query;
 
 public partial class Query
 {
-    public async Task<IReadOnlyCollection<DriverCredentialVm>> GetDriverCredentials([Service] ISender sender, [AsParameters] GetDriverCredentialsQuery query)
-        => await sender.Send(query);
+    public async Task<IReadOnlyCollection<DriverCredentialVm>> GetDriverCredentials([Service] ISender sender, [AsParameters] GetDriverCredentialsQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 
-    public async Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> GetDriverDevices([Service] ISender sender, [AsParameters] GetDriverDevicesQuery query)
-        => await sender.Send(query);
+    public async Task<IReadOnlyCollection<DriverDeviceRegistrationVm>> GetDriverDevices([Service] ISender sender, [AsParameters] GetDriverDevicesQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 }

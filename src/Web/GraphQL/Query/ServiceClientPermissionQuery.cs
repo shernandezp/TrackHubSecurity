@@ -20,6 +20,6 @@ namespace TrackHub.Security.Web.GraphQL.Query;
 
 public partial class Query
 {
-    public async Task<IReadOnlyCollection<ServiceClientPermissionVm>> GetServiceClientPermissions([Service] ISender sender, [AsParameters] GetServiceClientPermissionsQuery query)
-        => await sender.Send(query);
+    public async Task<IReadOnlyCollection<ServiceClientPermissionVm>> GetServiceClientPermissions([Service] ISender sender, [AsParameters] GetServiceClientPermissionsQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 }

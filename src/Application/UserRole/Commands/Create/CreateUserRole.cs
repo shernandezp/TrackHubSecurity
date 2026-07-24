@@ -20,6 +20,9 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.UserRole.Commands.Create;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Write)]
+// Enforcement: UserRoleWriter loads the TARGET user and calls RequireAccountAccess on its owning
+// account before writing the grant.
+[AccountScopeEnforcedInHandler]
 public readonly record struct CreateUserRoleCommand(UserRoleDto UserRole) : IRequest<UserRoleVm>;
 
 public class CreateUserRoleCommandHandler(IUserRoleWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<CreateUserRoleCommand, UserRoleVm>

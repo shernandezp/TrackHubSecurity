@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
+namespace TrackHub.Security.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -145,6 +145,7 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     clientid = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     accountid = table.Column<Guid>(type: "uuid", nullable: true),
+                    allowcrossaccount = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     resource = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     action = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     scope = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
@@ -463,6 +464,26 @@ namespace TrackHub.Security.Infrastructure.SecurityDB.Migrations
                 schema: "security",
                 table: "user_role",
                 column: "userid");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_users_accountid",
+                schema: "security",
+                table: "users",
+                column: "accountid");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_users_emailaddress",
+                schema: "security",
+                table: "users",
+                column: "emailaddress",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_users_username",
+                schema: "security",
+                table: "users",
+                column: "username",
+                unique: true);
         }
 
         /// <inheritdoc />

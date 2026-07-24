@@ -24,20 +24,20 @@ namespace TrackHub.Security.Web.GraphQL.Query;
 
 public partial class Query
 {
-    public async Task<string> GetUserName([Service] ISender sender, [AsParameters] GetUserNameQuery query)
-        => await sender.Send(query);
+    public async Task<string> GetUserName([Service] ISender sender, [AsParameters] GetUserNameQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 
-    public async Task<bool> IsInRole([Service] ISender sender, [AsParameters] IsInRoleQuery query)
-        => await sender.Send(query);
+    public async Task<bool> IsInRole([Service] ISender sender, [AsParameters] IsInRoleQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 
-    public async Task<bool> Authorize([Service] ISender sender, [AsParameters] AuthorizeQuery query)
-        => await sender.Send(query);
+    public async Task<bool> Authorize([Service] ISender sender, [AsParameters] AuthorizeQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 
-    public async Task<bool> AuthorizeUser([Service] ISender sender, [AsParameters] AuthorizeUserQuery query)
-        => await sender.Send(query);
-    public async Task<bool> IsValidService([Service] ISender sender, [AsParameters] IsValidServiceQuery query)
-        => await sender.Send(query);
+    public async Task<bool> AuthorizeUser([Service] ISender sender, [AsParameters] AuthorizeUserQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
+    public async Task<bool> IsValidService([Service] ISender sender, [AsParameters] IsValidServiceQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 
-    public async Task<bool> IsValidServiceForResource([Service] ISender sender, [AsParameters] IsValidServiceForResourceQuery query)
-        => await sender.Send(query);
+    public async Task<bool> IsValidServiceForResource([Service] ISender sender, [AsParameters] IsValidServiceForResourceQuery query, CancellationToken cancellationToken)
+        => await sender.Send(query, cancellationToken);
 }

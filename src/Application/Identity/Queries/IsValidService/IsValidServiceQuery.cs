@@ -17,6 +17,10 @@ using Common.Application.Interfaces;
 
 namespace TrackHub.Security.Application.Identity.Queries.IsValidService;
 
+// Authorization-pipeline primitive: every service validates incoming service tokens through this
+// query under the token being validated — including account-less global service identities, which
+// is why the tenant guard must not require an account here.
+[PlatformScoped("Authorization pipeline: a service client validating its own registration; IdentityCallerGuard.EnsureCallerIsSubjectService binds the subject to the calling client. The client registry is platform-owned.")]
 public readonly record struct IsValidServiceQuery(string? Client) : IRequest<bool>;
 
 public class GetUsersQueryHandler(IIdentityService service, IUser user) : IRequestHandler<IsValidServiceQuery, bool>

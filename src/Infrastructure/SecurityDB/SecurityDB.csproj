@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>TrackHub.Security.Infrastructure.SecurityDB</RootNamespace>
-    <AssemblyName>TrackHub.Security.Infrastructure.SecurityDB</AssemblyName>
+    <RootNamespace>TrackHub.Security.Infrastructure</RootNamespace>
+    <AssemblyName>TrackHub.Security.Infrastructure</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="TrackHubCommon.Application" />

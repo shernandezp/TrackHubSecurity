@@ -13,6 +13,8 @@
 //  limitations under the License.
 //
 
+using TrackHub.Security.Application.Lookups;
+
 namespace TrackHub.Security.Application.Policies.GetAll;
 
 [Authorize(Resource = Resources.Permissions, Action = Actions.Read)]
@@ -24,6 +26,6 @@ public class GetPoliciesQueryHandler(IPolicyReader reader) : IRequestHandler<Get
     // The Handle method is responsible for handling the GetPoliciesQuery and returning the result.
     // It asynchronously calls the GetPoliciesAsync method of the IPolicyReader dependency to retrieve all policies.
     public async Task<IReadOnlyCollection<PolicyVm>> Handle(GetPoliciesQuery request, CancellationToken cancellationToken)
-        => await reader.GetPoliciesAsync(cancellationToken);
+        => SeededCatalogLimits.EnsureWithinCeiling(await reader.GetPoliciesAsync(cancellationToken), "policies");
 
 }

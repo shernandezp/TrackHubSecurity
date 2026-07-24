@@ -13,9 +13,9 @@
 //  limitations under the License.
 //
 
-using TrackHub.Security.Infrastructure.SecurityDB.Interfaces;
+using TrackHub.Security.Infrastructure.Interfaces;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Readers;
+namespace TrackHub.Security.Infrastructure.Readers;
 
 // This class implements the IUserRoleReader interface and provides methods to read user roles from the security database.
 public sealed class UserRoleReader(IApplicationDbContext context) : IUserRoleReader

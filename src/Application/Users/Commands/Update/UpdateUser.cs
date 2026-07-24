@@ -20,6 +20,9 @@ using TrackHub.Security.Application.Users.Events;
 namespace TrackHub.Security.Application.Users.Commands.Update;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Edit)]
+// Enforcement: UserWriter.UpdateUserAsync loads the row and calls RequireAccountAccess on its
+// owning account before mutating it.
+[AccountScopeEnforcedInHandler]
 public readonly record struct UpdateUserCommand(UpdateUserDto User) : IRequest;
 public class UpdateUserCommandHandler(IUserWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UpdateUserCommand>
 {

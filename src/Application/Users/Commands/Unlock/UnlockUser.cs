@@ -19,6 +19,9 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.Users.Commands.Unlock;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Edit)]
+// Enforcement: UserWriter.UnlockUserAsync loads the row and calls RequireAccountAccess on its
+// owning account before clearing the lockout.
+[AccountScopeEnforcedInHandler]
 public readonly record struct UnlockUserCommand(Guid UserId) : IRequest;
 
 public class UnlockUserCommandHandler(IUserWriter writer, IUserReader reader, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<UnlockUserCommand>

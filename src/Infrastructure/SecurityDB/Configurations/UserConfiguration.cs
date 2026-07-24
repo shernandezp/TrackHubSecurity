@@ -16,7 +16,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Common.Domain.Constants;
 
-namespace TrackHub.Security.Infrastructure.SecurityDB.Configurations;
+namespace TrackHub.Security.Infrastructure.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -53,6 +53,22 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(t => t.EmailAddress)
             .HasMaxLength(ColumnMetadata.DefaultEmailLength)
             .IsRequired();
+
+        // Authentication resolves a user by emailaddress on every login (AuthorityServer
+        // UserReader.GetUserAsync) with SingleOrDefault, and both username and emailaddress are
+        // validated for GLOBAL uniqueness by the create/update command validators — so the unique
+        // indexes both serve those lookups and close the gap where CreateUser never checked the
+        // username at all. AccountId carries the per-tenant user listings.
+        builder.HasIndex(x => x.Username)
+            .IsUnique()
+            .HasDatabaseName("ix_users_username");
+
+        builder.HasIndex(x => x.EmailAddress)
+            .IsUnique()
+            .HasDatabaseName("ix_users_emailaddress");
+
+        builder.HasIndex(x => x.AccountId)
+            .HasDatabaseName("ix_users_accountid");
 
         //Constraints
         builder

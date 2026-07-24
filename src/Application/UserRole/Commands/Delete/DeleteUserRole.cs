@@ -20,6 +20,9 @@ using TrackHub.Security.Application.Audit.Events;
 namespace TrackHub.Security.Application.UserRole.Commands.Delete;
 
 [Authorize(Resource = Resources.Users, Action = Actions.Delete)]
+// Enforcement: UserRoleWriter loads the TARGET user and calls RequireAccountAccess on its owning
+// account before removing the grant.
+[AccountScopeEnforcedInHandler]
 public readonly record struct DeleteUserRoleCommand(Guid UserId, int RoleId) : IRequest;
 
 public class DeleteUserRoleCommandHandler(IUserRoleWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<DeleteUserRoleCommand>

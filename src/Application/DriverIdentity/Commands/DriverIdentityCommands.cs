@@ -31,7 +31,9 @@ public class CreateDriverCredentialCommandHandler(IDriverIdentityWriter writer, 
 }
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Edit)]
-public readonly record struct ActivateDriverCredentialCommand(Guid DriverCredentialId, string Password) : IRequest;
+// Enforcement: DriverIdentityWriter loads the row and calls RequireAccountAccess on its owning
+// account before mutating it.
+[AccountScopeEnforcedInHandler]public readonly record struct ActivateDriverCredentialCommand(Guid DriverCredentialId, string Password) : IRequest;
 public class ActivateDriverCredentialCommandHandler(IDriverIdentityWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<ActivateDriverCredentialCommand>
 {
     public async Task Handle(ActivateDriverCredentialCommand request, CancellationToken cancellationToken)
@@ -42,7 +44,9 @@ public class ActivateDriverCredentialCommandHandler(IDriverIdentityWriter writer
 }
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Edit)]
-public readonly record struct LockDriverCredentialCommand(Guid DriverCredentialId, DateTimeOffset LockedUntil) : IRequest;
+// Enforcement: DriverIdentityWriter loads the row and calls RequireAccountAccess on its owning
+// account before mutating it.
+[AccountScopeEnforcedInHandler]public readonly record struct LockDriverCredentialCommand(Guid DriverCredentialId, DateTimeOffset LockedUntil) : IRequest;
 public class LockDriverCredentialCommandHandler(IDriverIdentityWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<LockDriverCredentialCommand>
 {
     public async Task Handle(LockDriverCredentialCommand request, CancellationToken cancellationToken)
@@ -53,7 +57,9 @@ public class LockDriverCredentialCommandHandler(IDriverIdentityWriter writer, IP
 }
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Edit)]
-public readonly record struct ResetDriverCredentialCommand(Guid DriverCredentialId, string Password, bool ResetRequired) : IRequest;
+// Enforcement: DriverIdentityWriter loads the row and calls RequireAccountAccess on its owning
+// account before mutating it.
+[AccountScopeEnforcedInHandler]public readonly record struct ResetDriverCredentialCommand(Guid DriverCredentialId, string Password, bool ResetRequired) : IRequest;
 public class ResetDriverCredentialCommandHandler(IDriverIdentityWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<ResetDriverCredentialCommand>
 {
     public async Task Handle(ResetDriverCredentialCommand request, CancellationToken cancellationToken)
@@ -64,7 +70,9 @@ public class ResetDriverCredentialCommandHandler(IDriverIdentityWriter writer, I
 }
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Delete)]
-public readonly record struct RevokeDriverCredentialCommand(Guid DriverCredentialId) : IRequest;
+// Enforcement: DriverIdentityWriter loads the row and calls RequireAccountAccess on its owning
+// account before mutating it.
+[AccountScopeEnforcedInHandler]public readonly record struct RevokeDriverCredentialCommand(Guid DriverCredentialId) : IRequest;
 public class RevokeDriverCredentialCommandHandler(IDriverIdentityWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<RevokeDriverCredentialCommand>
 {
     public async Task Handle(RevokeDriverCredentialCommand request, CancellationToken cancellationToken)
@@ -87,7 +95,9 @@ public class RegisterDriverDeviceCommandHandler(IDriverIdentityWriter writer, IP
 }
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Edit)]
-public readonly record struct UpdateDriverDevicePushTokenCommand(Guid DriverDeviceRegistrationId, string? PushToken, string? AppVersion) : IRequest;
+// Enforcement: DriverIdentityWriter loads the row and calls RequireAccountAccess on its owning
+// account before mutating it.
+[AccountScopeEnforcedInHandler]public readonly record struct UpdateDriverDevicePushTokenCommand(Guid DriverDeviceRegistrationId, string? PushToken, string? AppVersion) : IRequest;
 public class UpdateDriverDevicePushTokenCommandHandler(IDriverIdentityWriter writer) : IRequestHandler<UpdateDriverDevicePushTokenCommand>
 {
     public async Task Handle(UpdateDriverDevicePushTokenCommand request, CancellationToken cancellationToken)
@@ -95,7 +105,9 @@ public class UpdateDriverDevicePushTokenCommandHandler(IDriverIdentityWriter wri
 }
 
 [Authorize(Resource = Resources.Drivers, Action = Actions.Delete)]
-public readonly record struct RevokeDriverDeviceCommand(Guid DriverDeviceRegistrationId, string RevokedBy) : IRequest;
+// Enforcement: DriverIdentityWriter loads the row and calls RequireAccountAccess on its owning
+// account before mutating it.
+[AccountScopeEnforcedInHandler]public readonly record struct RevokeDriverDeviceCommand(Guid DriverDeviceRegistrationId, string RevokedBy) : IRequest;
 public class RevokeDriverDeviceCommandHandler(IDriverIdentityWriter writer, IPublisher publisher, ICurrentPrincipal principal) : IRequestHandler<RevokeDriverDeviceCommand>
 {
     public async Task Handle(RevokeDriverDeviceCommand request, CancellationToken cancellationToken)
